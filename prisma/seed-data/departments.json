@@ -1,0 +1,50 @@
+[
+  {
+    "deptId": "DEPT-01",
+    "code": "FIN",
+    "name": "Finance",
+    "primaryFocus": "Financial planning, reporting, treasury"
+  },
+  {
+    "deptId": "DEPT-02",
+    "code": "LOG",
+    "name": "Logistics",
+    "primaryFocus": "Warehouse, transportation, supply chain"
+  },
+  {
+    "deptId": "DEPT-03",
+    "code": "CRM",
+    "name": "CRM",
+    "primaryFocus": "Sales, marketing, customer service"
+  },
+  {
+    "deptId": "DEPT-04",
+    "code": "MFG",
+    "name": "Manufacturing",
+    "primaryFocus": "Production, quality, MES systems"
+  },
+  {
+    "deptId": "DEPT-05",
+    "code": "IT",
+    "name": "IT",
+    "primaryFocus": "Infrastructure, monitoring, service desk"
+  },
+  {
+    "deptId": "DEPT-06",
+    "code": "HR",
+    "name": "HR",
+    "primaryFocus": "HCM, payroll, learning, talent"
+  },
+  {
+    "deptId": "DEPT-07",
+    "code": "LEG",
+    "name": "Legal",
+    "primaryFocus": "Contracts, compliance, document management"
+  },
+  {
+    "deptId": "DEPT-08",
+    "code": "SEC",
+    "name": "Security",
+    "primaryFocus": "Identity, access, threat detection"
+  }
+]

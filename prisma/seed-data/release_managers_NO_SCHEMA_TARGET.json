@@ -1,0 +1,134 @@
+[
+  {
+    "ID": "RM-001",
+    "Name": "Nathan Cole",
+    "Email": "nathan.cole@company.com",
+    "Department": "IT",
+    "Region": "North America",
+    "Phone": "+1-555-0101",
+    "Status": "Active",
+    "Start Date": "2020-03-15T00:00:00",
+    "Specialization": "Finance & HR Systems"
+  },
+  {
+    "ID": "RM-002",
+    "Name": "Ethan Black",
+    "Email": "ethan.black@company.com",
+    "Department": "IT",
+    "Region": "North America",
+    "Phone": "+1-555-0102",
+    "Status": "Active",
+    "Start Date": "2019-06-20T00:00:00",
+    "Specialization": "Manufacturing & Logistics"
+  },
+  {
+    "ID": "RM-003",
+    "Name": "Lucas White",
+    "Email": "lucas.white@company.com",
+    "Department": "IT",
+    "Region": "EMEA",
+    "Phone": "+44-20-5550103",
+    "Status": "Active",
+    "Start Date": "2021-01-10T00:00:00",
+    "Specialization": "CRM & Sales Systems"
+  },
+  {
+    "ID": "RM-004",
+    "Name": "Mason Gray",
+    "Email": "mason.gray@company.com",
+    "Department": "IT",
+    "Region": "EMEA",
+    "Phone": "+44-20-5550104",
+    "Status": "Active",
+    "Start Date": "2018-09-01T00:00:00",
+    "Specialization": "Security & Infrastructure"
+  },
+  {
+    "ID": "RM-005",
+    "Name": "Logan Stone",
+    "Email": "logan.stone@company.com",
+    "Department": "IT",
+    "Region": "APAC",
+    "Phone": "+61-2-5550105",
+    "Status": "Active",
+    "Start Date": "2020-11-15T00:00:00",
+    "Specialization": "Legal & Compliance"
+  },
+  {
+    "ID": "RM-006",
+    "Name": "Jacob Hill",
+    "Email": "jacob.hill@company.com",
+    "Department": "IT",
+    "Region": "APAC",
+    "Phone": "+61-2-5550106",
+    "Status": "Active",
+    "Start Date": "2022-02-28T00:00:00",
+    "Specialization": "HR & Talent Systems"
+  },
+  {
+    "ID": "RM-007",
+    "Name": "Aiden Clark",
+    "Email": "aiden.clark@company.com",
+    "Department": "IT",
+    "Region": "North America",
+    "Phone": "+1-555-0107",
+    "Status": "Active",
+    "Start Date": "2019-04-12T00:00:00",
+    "Specialization": "Integration & Middleware"
+  },
+  {
+    "ID": "RM-008",
+    "Name": "Jackson Moore",
+    "Email": "jackson.moore@company.com",
+    "Department": "IT",
+    "Region": "EMEA",
+    "Phone": "+44-20-5550108",
+    "Status": "Active",
+    "Start Date": "2021-07-22T00:00:00",
+    "Specialization": "Data & Analytics"
+  },
+  {
+    "ID": "RM-009",
+    "Name": "Sebastian Hall",
+    "Email": "sebastian.hall@company.com",
+    "Department": "IT",
+    "Region": "LATAM",
+    "Phone": "+55-11-5550109",
+    "Status": "Active",
+    "Start Date": "2020-08-05T00:00:00",
+    "Specialization": "ERP Systems"
+  },
+  {
+    "ID": "RM-010",
+    "Name": "Caleb Young",
+    "Email": "caleb.young@company.com",
+    "Department": "IT",
+    "Region": "North America",
+    "Phone": "+1-555-0110",
+    "Status": "Active",
+    "Start Date": "2017-12-01T00:00:00",
+    "Specialization": "Cloud & SaaS Platforms"
+  },
+  {
+    "ID": "RM-011",
+    "Name": "Owen King",
+    "Email": "owen.king@company.com",
+    "Department": "IT",
+    "Region": "APAC",
+    "Phone": "+65-5550111",
+    "Status": "Active",
+    "Start Date": "2022-05-18T00:00:00",
+    "Specialization": "Manufacturing Execution"
+  },
+  {
+    "ID": "RM-012",
+    "Name": "Liam Wright",
+    "Email": "liam.wright@company.com",
+    "Department": "IT",
+    "Region": "EMEA",
+    "Phone": "+49-30-5550112",
+    "Status": "On Leave",
+    "Start Date": "2019-10-30T00:00:00",
+    "Specialization": "Finance Reporting"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-07-03T09:36:49.701Z",
+  "counts": {
+    "Department": 9,
+    "Application": 85,
+    "Environment": 510,
+    "Release": 80,
+    "User": 100,
+    "EnvBooking": 80,
+    "Risk": 31,
+    "Approval": 27
+  }
+}

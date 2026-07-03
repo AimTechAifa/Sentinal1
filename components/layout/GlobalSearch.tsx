@@ -1,0 +1,143 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FileText, Package, Search, Sparkles, Ticket } from "lucide-react";
+import { searchAll } from "@/lib/search";
+import type { SearchResult } from "@/lib/dummy-data";
+
+interface GlobalSearchProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const icons = {
+  release: Package,
+  ticket: Ticket,
+  change: FileText,
+  template: Sparkles,
+};
+
+export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
+  const [query, setQuery] = useState("");
+  const [apiResults, setApiResults] = useState<SearchResult[]>([]);
+  const [interpreted, setInterpreted] = useState<string | null>(null);
+  const [redirectHref, setRedirectHref] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
+  const localResults = searchAll(query);
+  const merged = mergeResults(localResults, apiResults);
+
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setApiResults([]);
+      setInterpreted(null);
+      setRedirectHref(null);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) {
+      setApiResults([]);
+      setInterpreted(null);
+      setRedirectHref(null);
+      return;
+    }
+    const t = setTimeout(() => {
+      fetch(`/api/search?q=${encodeURIComponent(q)}`)
+        .then((r) => r.json())
+        .then((d) => {
+          setApiResults(d.results ?? []);
+          setInterpreted(d.interpreted ?? null);
+          setRedirectHref(d.redirectHref ?? null);
+        });
+    }, 200);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  if (!open) return null;
+
+  const navigate = (href: string) => {
+    router.push(href);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-[15vh]" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3">
+          <Search className="w-5 h-5 text-slate-400" />
+          <input
+            ref={inputRef}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && redirectHref) {
+                navigate(redirectHref);
+              }
+            }}
+            placeholder='Try "blocked in FIN", "my releases", RD-2026…'
+            className="flex-1 text-sm outline-none placeholder:text-slate-400"
+          />
+          <kbd className="hidden sm:inline text-xs text-slate-400 border border-slate-200 rounded px-1.5 py-0.5">ESC</kbd>
+        </div>
+
+        <div className="max-h-80 overflow-y-auto">
+          {query.trim() === "" ? (
+            <p className="p-4 text-sm text-slate-400">
+              Natural language or keywords — try &ldquo;what&apos;s blocked in FIN&rdquo;, &ldquo;my releases&rdquo;, P1, booking…
+            </p>
+          ) : merged.length === 0 ? (
+            <p className="p-4 text-sm text-slate-500">No results for &ldquo;{query}&rdquo;</p>
+          ) : (
+            <>
+              {interpreted && (
+                <p className="px-4 pt-3 pb-1 text-xs text-brand-600 font-medium">{interpreted}</p>
+              )}
+              {merged.map((r) => {
+              const Icon = r.id.startsWith("tpl-") ? icons.template : icons[r.type];
+              return (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => navigate(r.href)}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 border-b border-slate-50 last:border-0"
+                >
+                  <Icon className="w-4 h-4 text-brand-500 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-slate-800">{r.label}</p>
+                    <p className="text-xs text-slate-400">{r.sublabel}</p>
+                  </div>
+                </button>
+              );
+            })}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function mergeResults(a: SearchResult[], b: SearchResult[]): SearchResult[] {
+  const seen = new Set<string>();
+  return [...a, ...b].filter((r) => {
+    const key = `${r.href}|${r.label}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 14);
+}

@@ -1,0 +1,2690 @@
+[
+  {
+    "department": "Finance",
+    "application": "SAP S/4HANA Finance (FICO)",
+    "applicationOwner": "Sarah Mitchell",
+    "techLead": "James Wilson",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Anaplan",
+    "applicationOwner": "David Chen",
+    "techLead": "Emily Zhang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Oracle Hyperion HFM",
+    "applicationOwner": "Jennifer Walsh",
+    "techLead": "Michael Brown",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Kyriba",
+    "applicationOwner": "Robert Kim",
+    "techLead": "Priya Sharma",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Coupa",
+    "applicationOwner": "Michelle Torres",
+    "techLead": "Christopher Davis",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Zuora",
+    "applicationOwner": "Andrew Patel",
+    "techLead": "Angela Liu",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "RevPro",
+    "applicationOwner": "Lisa Thompson",
+    "techLead": "Daniel Park",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Thomson Reuters ONESOURCE",
+    "applicationOwner": "Mark Rodriguez",
+    "techLead": "Jessica Nguyen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "SAP Concur",
+    "applicationOwner": "Amanda Foster",
+    "techLead": "Ryan Cooper",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Workday Financials",
+    "applicationOwner": "Kevin O'Brien",
+    "techLead": "Samantha Reed",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "MetricStream",
+    "applicationOwner": "Rachel Green",
+    "techLead": "William Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Taylor Singh (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Alex Foster (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Amelia Scott (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Owen King (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Amanda Cross (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Anthony Secure (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "IBM Cognos",
+    "applicationOwner": "Thomas Wright",
+    "techLead": "Olivia Martinez",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Blake Thompson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Morgan Hayes (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Harper Lewis (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Liam Wright (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Rebecca Stone (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Mark Backup (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "HighRadius",
+    "applicationOwner": "Diana Lee",
+    "techLead": "Nathan Brooks",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Finance",
+    "application": "Basware",
+    "applicationOwner": "Steven Martinez",
+    "techLead": "Karen Singh",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "SAP Transportation Management (TM)",
+    "applicationOwner": "Brian Murphy",
+    "techLead": "Marcus Johnson",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "Oracle Transportation Management",
+    "applicationOwner": "Catherine Hayes",
+    "techLead": "Tina Wang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "Blue Yonder WMS",
+    "applicationOwner": "Eric Johansson",
+    "techLead": "Alexander Petrov",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "Manhattan Associates WMS",
+    "applicationOwner": "Patricia Wong",
+    "techLead": "Rachel Kim",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "JDA Supply Chain Planning",
+    "applicationOwner": "Gregory Adams",
+    "techLead": "Vincent Lopez",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "Kinaxis RapidResponse",
+    "applicationOwner": "Nicole Fraser",
+    "techLead": "Heather Stone",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "E2open",
+    "applicationOwner": "Jason Burke",
+    "techLead": "Brandon Lee",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "Descartes Systems",
+    "applicationOwner": "Laura Schmidt",
+    "techLead": "Melissa Chang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "project44",
+    "applicationOwner": "Derek Coleman",
+    "techLead": "Tyler Morrison",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Logistics",
+    "application": "FourKites",
+    "applicationOwner": "Stephanie Mills",
+    "techLead": "Christina Reyes",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Salesforce Sales Cloud",
+    "applicationOwner": "Matthew Clarke",
+    "techLead": "Carlos Mendez",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Salesforce Service Cloud",
+    "applicationOwner": "Victoria Santos",
+    "techLead": "Jennifer Park",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Microsoft Dynamics 365 CRM",
+    "applicationOwner": "Benjamin Scott",
+    "techLead": "Michael Chang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "SAP CRM",
+    "applicationOwner": "Alexis Rivera",
+    "techLead": "Natalie Brooks",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "HubSpot CRM",
+    "applicationOwner": "Jonathan Reed",
+    "techLead": "David Kim",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Zoho CRM",
+    "applicationOwner": "Megan O'Connor",
+    "techLead": "Rebecca Torres",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Oracle CX Cloud",
+    "applicationOwner": "Patrick Dunn",
+    "techLead": "Anthony Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Pega CRM",
+    "applicationOwner": "Ashley Gonzalez",
+    "techLead": "Stephanie Wu",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Zendesk",
+    "applicationOwner": "Trevor Banks",
+    "techLead": "Justin Taylor",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "CRM",
+    "application": "Freshworks CRM",
+    "applicationOwner": "Courtney Price",
+    "techLead": "Amanda Lee",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "SAP S/4HANA Manufacturing",
+    "applicationOwner": "Richard Hoffman",
+    "techLead": "Kenneth Wright",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Siemens Opcenter",
+    "applicationOwner": "Sandra Peters",
+    "techLead": "Laura Schmidt",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Rockwell FactoryTalk",
+    "applicationOwner": "Edward Mueller",
+    "techLead": "Paul Anderson",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "AVEVA MES",
+    "applicationOwner": "Christine Larson",
+    "techLead": "Michelle Davis",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Dassault DELMIA",
+    "applicationOwner": "George Volkov",
+    "techLead": "Steven Nakamura",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Oracle Manufacturing Cloud",
+    "applicationOwner": "Deborah Nash",
+    "techLead": "Teresa Gonzalez",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Plex Smart Manufacturing",
+    "applicationOwner": "Harold Chen",
+    "techLead": "Bruce Thompson",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Epicor Kinetic",
+    "applicationOwner": "Monica Fernandez",
+    "techLead": "Angela Park",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "Infor CloudSuite Industrial",
+    "applicationOwner": "Russell White",
+    "techLead": "Douglas Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Manufacturing",
+    "application": "QAD Adaptive ERP",
+    "applicationOwner": "Janet Kowalski",
+    "techLead": "Carolyn Reed",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "ServiceNow ITSM",
+    "applicationOwner": "Christopher Blake",
+    "techLead": "Jeffrey Kumar",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "BMC Remedy",
+    "applicationOwner": "Elizabeth Morgan",
+    "techLead": "Stephanie Liu",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "Jira Service Management",
+    "applicationOwner": "Joseph Turner",
+    "techLead": "Robert Chang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "Splunk Enterprise",
+    "applicationOwner": "Margaret Sullivan",
+    "techLead": "Karen Patel",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "Dynatrace",
+    "applicationOwner": "Raymond Diaz",
+    "techLead": "Brian Yamamoto",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "New Relic",
+    "applicationOwner": "Pamela Anderson",
+    "techLead": "Lisa Hernandez",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "PagerDuty",
+    "applicationOwner": "Timothy Foster",
+    "techLead": "Scott McKenzie",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "Datadog",
+    "applicationOwner": "Diane Wilson",
+    "techLead": "Nicole Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "Ansible Tower",
+    "applicationOwner": "Gary Martinez",
+    "techLead": "Adam Roberts",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "IT",
+    "application": "Terraform Enterprise",
+    "applicationOwner": "Barbara Collins",
+    "techLead": "Katherine Wong",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "Workday HCM",
+    "applicationOwner": "Daniel Crawford",
+    "techLead": "Nicholas Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "SAP SuccessFactors",
+    "applicationOwner": "Susan Perry",
+    "techLead": "Amanda Foster",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "Oracle HCM Cloud",
+    "applicationOwner": "William Hughes",
+    "techLead": "Jonathan Park",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "ADP Workforce Now",
+    "applicationOwner": "Dorothy Barnes",
+    "techLead": "Christine Lee",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "UKG Pro",
+    "applicationOwner": "Frank Reynolds",
+    "techLead": "Gregory Wang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "Ceridian Dayforce",
+    "applicationOwner": "Helen Stewart",
+    "techLead": "Melissa Johnson",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "BambooHR",
+    "applicationOwner": "Keith Nelson",
+    "techLead": "Eric Tanaka",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "Cornerstone OnDemand",
+    "applicationOwner": "Gloria Ramirez",
+    "techLead": "Patricia Kim",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "Greenhouse",
+    "applicationOwner": "Ronald Cooper",
+    "techLead": "Howard Lin",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "HR",
+    "application": "LinkedIn Talent Solutions",
+    "applicationOwner": "Ruth Simmons",
+    "techLead": "Sandra Mitchell",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Thomson Reuters Legal Tracker",
+    "applicationOwner": "Howard Blackwell",
+    "techLead": "Jeremy Thompson",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Mitratech TeamConnect",
+    "applicationOwner": "Cynthia Drake",
+    "techLead": "Kimberly Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Wolters Kluwer ELM Solutions",
+    "applicationOwner": "Vincent Marshall",
+    "techLead": "Patrick Sullivan",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "ContractPodAi",
+    "applicationOwner": "Evelyn Rhodes",
+    "techLead": "Diana Wong",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Ironclad",
+    "applicationOwner": "Lawrence Griffin",
+    "techLead": "Raymond Lee",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "DocuSign CLM",
+    "applicationOwner": "Judith Palmer",
+    "techLead": "Vanessa Garcia",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Conga Contracts",
+    "applicationOwner": "Stanley Cross",
+    "techLead": "Derek Martin",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Agiloft CLM",
+    "applicationOwner": "Marilyn Webb",
+    "techLead": "Julie Park",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "SimpleLegal",
+    "applicationOwner": "Leonard Foster",
+    "techLead": "Marcus Davis",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Legal",
+    "application": "Onit",
+    "applicationOwner": "Theresa Quinn",
+    "techLead": "Eleanor Kim",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "CrowdStrike Falcon",
+    "applicationOwner": "Charles Hamilton",
+    "techLead": "Donald Chen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Alex Rivera (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Sam Anderson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Rachel Green (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Nathan Cole (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Victoria Sterling (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Robert Shield (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Palo Alto Cortex XDR",
+    "applicationOwner": "Nancy Porter",
+    "techLead": "Sarah Yamamoto",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jordan Lee (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Chris Park (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Monica Geller (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Ethan Black (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Elizabeth Crown (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "William Guard (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Splunk SIEM",
+    "applicationOwner": "Franklin Shaw",
+    "techLead": "Bruce Lee",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Casey Chen (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Pat Murphy (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Phoebe Buffay (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Lucas White (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Catherine Royal (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "James Fortress (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Microsoft Sentinel",
+    "applicationOwner": "Joan Mitchell",
+    "techLead": "Michelle Patel",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Morgan Taylor (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jesse Garcia (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Emma Watson (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Mason Gray (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Margaret Noble (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Michael Bastion (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Okta Identity Cloud",
+    "applicationOwner": "Gerald Davidson",
+    "techLead": "Victor Wang",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Jamie Patel (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Robin Chen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Sophie Turner (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Logan Stone (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Diana Prince (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "David Tower (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "CyberArk PAM",
+    "applicationOwner": "Alice Brennan",
+    "techLead": "Cynthia Kim",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Riley Kim (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Dana Wilson (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Mia Collins (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jacob Hill (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Helena Troy (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Richard Wall (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Qualys VMDR",
+    "applicationOwner": "Eugene Watts",
+    "techLead": "Arthur Santos",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Quinn Johnson (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Kelly Nguyen (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Isabella Moore (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Aiden Clark (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Sophia Grace (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Thomas Castle (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Tenable.io",
+    "applicationOwner": "Marie Coleman",
+    "techLead": "Linda Nguyen",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Avery Williams (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Terry Brooks (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Olivia James (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Jackson Moore (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Alexandra Reid (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Charles Vault (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Zscaler",
+    "applicationOwner": "Henry Sutton",
+    "techLead": "Norman Park",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Drew Martinez (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Skyler Davis (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Ava Mitchell (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Sebastian Hall (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Christina Vale (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Daniel Bunker (Infra Lead)"
+      }
+    ]
+  },
+  {
+    "department": "Security",
+    "application": "Proofpoint",
+    "applicationOwner": "Grace Hartley",
+    "techLead": "Betty Liu",
+    "environments": [
+      {
+        "env": "Dev",
+        "envOwner": "Cameron Brown (Dev Mgr)"
+      },
+      {
+        "env": "Test",
+        "envOwner": "Jordan Reed (QA Lead)"
+      },
+      {
+        "env": "UAT",
+        "envOwner": "Charlotte Price (Bus Analyst)"
+      },
+      {
+        "env": "Pre-prod",
+        "envOwner": "Caleb Young (Release Mgr)"
+      },
+      {
+        "env": "Prod",
+        "envOwner": "Natasha Roman (Ops Mgr)"
+      },
+      {
+        "env": "DR",
+        "envOwner": "Matthew Haven (Infra Lead)"
+      }
+    ]
+  }
+]

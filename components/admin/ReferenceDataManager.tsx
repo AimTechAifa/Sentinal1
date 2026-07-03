@@ -1,0 +1,372 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Database, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  apiJson,
+  FormField,
+  FormModal,
+  inputClass,
+  MasterDataEmptyState,
+  MasterDataError,
+  MasterDataLoading,
+  MasterDataTableShell,
+  tdClass,
+  thClass,
+} from "@/components/master-data/shared";
+
+type ReferenceDataRow = {
+  id: string;
+  category: string;
+  value: string;
+  sortOrder: number;
+  active: boolean;
+};
+
+type ValueFormState = { value: string; sortOrder: string; active: boolean };
+const emptyValueForm: ValueFormState = { value: "", sortOrder: "0", active: true };
+
+/**
+ * General-purpose management screen for the ReferenceData lookup table.
+ * Categories aren't a separate table — they're just the distinct set of
+ * `category` strings already present in ReferenceData rows, so "+ New
+ * Category" is really just creating the first value for a category that
+ * doesn't exist yet.
+ */
+export function ReferenceDataManager() {
+  const [rows, setRows] = useState<ReferenceDataRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const [valueModalOpen, setValueModalOpen] = useState(false);
+  const [editingValue, setEditingValue] = useState<ReferenceDataRow | null>(null);
+  const [valueForm, setValueForm] = useState<ValueFormState>(emptyValueForm);
+  const [valueFormError, setValueFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [categoryForm, setCategoryForm] = useState({ category: "", value: "" });
+  const [categoryFormError, setCategoryFormError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await apiJson<ReferenceDataRow[]>("/api/reference-data?includeInactive=1");
+      setRows(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load reference data");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const categories = useMemo(() => {
+    const map = new Map<string, { total: number; active: number }>();
+    for (const r of rows) {
+      const entry = map.get(r.category) ?? { total: 0, active: 0 };
+      entry.total += 1;
+      if (r.active) entry.active += 1;
+      map.set(r.category, entry);
+    }
+    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([category, stats]) => ({ category, ...stats }));
+  }, [rows]);
+
+  useEffect(() => {
+    if (!selectedCategory && categories.length > 0) {
+      setSelectedCategory(categories[0].category);
+    }
+  }, [categories, selectedCategory]);
+
+  const categoryRows = useMemo(
+    () =>
+      rows
+        .filter((r) => r.category === selectedCategory)
+        .sort((a, b) => a.sortOrder - b.sortOrder || a.value.localeCompare(b.value)),
+    [rows, selectedCategory]
+  );
+
+  const openAddValue = () => {
+    setEditingValue(null);
+    setValueForm({ value: "", sortOrder: String((categoryRows.at(-1)?.sortOrder ?? 0) + 1), active: true });
+    setValueFormError(null);
+    setValueModalOpen(true);
+  };
+
+  const openEditValue = (row: ReferenceDataRow) => {
+    setEditingValue(row);
+    setValueForm({ value: row.value, sortOrder: String(row.sortOrder), active: row.active });
+    setValueFormError(null);
+    setValueModalOpen(true);
+  };
+
+  const handleValueSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!valueForm.value.trim()) {
+      setValueFormError("Value is required");
+      return;
+    }
+    const sortOrder = Number(valueForm.sortOrder);
+    if (Number.isNaN(sortOrder)) {
+      setValueFormError("Sort order must be a number");
+      return;
+    }
+    setSubmitting(true);
+    setValueFormError(null);
+    try {
+      if (editingValue) {
+        await apiJson(`/api/reference-data/${editingValue.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ value: valueForm.value.trim(), sortOrder, active: valueForm.active }),
+        });
+      } else {
+        await apiJson("/api/reference-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: selectedCategory, value: valueForm.value.trim(), sortOrder, active: valueForm.active }),
+        });
+      }
+      setValueModalOpen(false);
+      await load();
+    } catch (err) {
+      setValueFormError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const toggleActive = async (row: ReferenceDataRow) => {
+    try {
+      await apiJson(`/api/reference-data/${row.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: !row.active }),
+      });
+      await load();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Update failed");
+    }
+  };
+
+  const handleCategorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!categoryForm.category.trim() || !categoryForm.value.trim()) {
+      setCategoryFormError("Category key and first value are required");
+      return;
+    }
+    setSubmitting(true);
+    setCategoryFormError(null);
+    try {
+      await apiJson("/api/reference-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: categoryForm.category.trim(), value: categoryForm.value.trim(), sortOrder: 1, active: true }),
+      });
+      setCategoryModalOpen(false);
+      setSelectedCategory(categoryForm.category.trim());
+      setCategoryForm({ category: "", value: "" });
+      await load();
+    } catch (err) {
+      setCategoryFormError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex gap-8 w-full max-w-full font-sans pb-24 min-w-0">
+      <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-[calc(100vh-140px)] flex flex-col border border-gray-200 rounded-xl bg-white p-4 shadow-theme-sm overflow-hidden">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold text-gray-900">Categories</h2>
+          <button
+            type="button"
+            onClick={() => {
+              setCategoryForm({ category: "", value: "" });
+              setCategoryFormError(null);
+              setCategoryModalOpen(true);
+            }}
+            className="flex items-center gap-1 rounded-lg bg-[#2548C9] px-2.5 py-1.5 text-[12px] font-semibold text-white hover:bg-[#1E3A9F]"
+          >
+            <Plus className="h-3.5 w-3.5" /> New
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+          {categories.map((c) => (
+            <button
+              key={c.category}
+              onClick={() => setSelectedCategory(c.category)}
+              className={cn(
+                "w-full text-left px-3 py-2 text-xs font-semibold rounded-lg transition-colors flex items-center justify-between",
+                selectedCategory === c.category
+                  ? "bg-brand-50 text-brand-700"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <span className="truncate">{c.category}</span>
+              <span className="text-[10px] font-normal text-gray-400 shrink-0 ml-2">
+                {c.active}/{c.total}
+              </span>
+            </button>
+          ))}
+          {categories.length === 0 && !loading && (
+            <p className="text-xs text-gray-400 text-center py-4">No categories yet — create one.</p>
+          )}
+        </div>
+      </aside>
+
+      <div className="flex-1 min-w-0 space-y-6">
+        <div>
+          <h1 className="text-[32px] font-bold text-[#111827] tracking-tight mb-2">Reference Data</h1>
+          <p className="text-[15px] text-gray-500 font-medium leading-relaxed">
+            Configurable lookup lists used throughout Sentinel (dropdowns, filters, validation). Deactivated values
+            stop appearing in dropdowns immediately, but records that already reference them keep working.
+          </p>
+        </div>
+
+        {error && <MasterDataError message={error} onRetry={load} />}
+
+        {loading ? (
+          <MasterDataLoading />
+        ) : !selectedCategory ? (
+          <MasterDataEmptyState
+            entityLabel="categories"
+            addLabel="New Category"
+            onAdd={() => {
+              setCategoryForm({ category: "", value: "" });
+              setCategoryFormError(null);
+              setCategoryModalOpen(true);
+            }}
+          />
+        ) : (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-[18px] font-bold text-gray-900 flex items-center gap-2">
+                <Database className="h-4 w-4 text-gray-400" />
+                {selectedCategory}
+              </h2>
+              <button
+                type="button"
+                onClick={openAddValue}
+                className="flex items-center gap-2 rounded-lg bg-[#2548C9] px-4 py-2 text-[13px] font-semibold text-white hover:bg-[#1E3A9F]"
+              >
+                <Plus className="h-4 w-4" /> Add Value
+              </button>
+            </div>
+
+            <MasterDataTableShell>
+              {categoryRows.length === 0 ? (
+                <MasterDataEmptyState entityLabel="values" addLabel="Add Value" onAdd={openAddValue} />
+              ) : (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-gray-200 bg-gray-50/50">
+                      <th className={thClass}>Value</th>
+                      <th className={thClass}>Sort Order</th>
+                      <th className={thClass}>Active</th>
+                      <th className={`${thClass} text-right`}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {categoryRows.map((row) => (
+                      <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className={`${tdClass} font-semibold text-gray-900`}>{row.value}</td>
+                        <td className={cn(tdClass, "font-mono text-gray-500")}>{row.sortOrder}</td>
+                        <td className={tdClass}>
+                          <button
+                            type="button"
+                            onClick={() => toggleActive(row)}
+                            className={cn(
+                              "px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border",
+                              row.active
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-gray-50 text-gray-500 border-gray-200"
+                            )}
+                          >
+                            {row.active ? "Active" : "Inactive"}
+                          </button>
+                        </td>
+                        <td className={`${tdClass} text-right`}>
+                          <button
+                            type="button"
+                            onClick={() => openEditValue(row)}
+                            className="rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-semibold text-gray-700 hover:bg-gray-50"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </MasterDataTableShell>
+          </div>
+        )}
+      </div>
+
+      <FormModal
+        open={valueModalOpen}
+        title={editingValue ? "Edit Value" : `Add Value — ${selectedCategory}`}
+        onClose={() => setValueModalOpen(false)}
+        onSubmit={handleValueSubmit}
+        submitting={submitting}
+      >
+        {valueFormError && <p className="text-[13px] text-red-600">{valueFormError}</p>}
+        <FormField label="Value" required>
+          <input className={inputClass} value={valueForm.value} onChange={(e) => setValueForm((f) => ({ ...f, value: e.target.value }))} />
+        </FormField>
+        <FormField label="Sort Order" required>
+          <input
+            type="number"
+            className={inputClass}
+            value={valueForm.sortOrder}
+            onChange={(e) => setValueForm((f) => ({ ...f, sortOrder: e.target.value }))}
+          />
+        </FormField>
+        <FormField label="Active">
+          <select
+            className={inputClass}
+            value={valueForm.active ? "true" : "false"}
+            onChange={(e) => setValueForm((f) => ({ ...f, active: e.target.value === "true" }))}
+          >
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </FormField>
+      </FormModal>
+
+      <FormModal
+        open={categoryModalOpen}
+        title="New Category"
+        onClose={() => setCategoryModalOpen(false)}
+        onSubmit={handleCategorySubmit}
+        submitting={submitting}
+      >
+        {categoryFormError && <p className="text-[13px] text-red-600">{categoryFormError}</p>}
+        <FormField label="Category Key" required>
+          <input
+            className={inputClass}
+            placeholder="e.g. severity, status, risk_category"
+            value={categoryForm.category}
+            onChange={(e) => setCategoryForm((f) => ({ ...f, category: e.target.value }))}
+          />
+        </FormField>
+        <FormField label="First Value" required>
+          <input
+            className={inputClass}
+            placeholder="e.g. Critical"
+            value={categoryForm.value}
+            onChange={(e) => setCategoryForm((f) => ({ ...f, value: e.target.value }))}
+          />
+        </FormField>
+      </FormModal>
+    </div>
+  );
+}
