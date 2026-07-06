@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Network } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
@@ -30,10 +31,16 @@ const TYPE_CLASSES: Record<string, string> = {
   Integration: "bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-300",
 };
 
+const VALID_STATUS_FILTERS: StatusFilterMode[] = ["all", "Blocked", "At Risk", "Clear", "Resolved"];
+
 export default function DependencyListContent() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status");
   const [deps, setDeps] = useState<DepRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<StatusFilterMode>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilterMode>(
+    VALID_STATUS_FILTERS.includes(initialStatus as StatusFilterMode) ? (initialStatus as StatusFilterMode) : "all"
+  );
 
   useEffect(() => {
     fetch("/api/dependencies")

@@ -1,0 +1,767 @@
+[
+  {
+    "Application": "SAP S/4HANA Finance",
+    "Department": "Finance",
+    "Environment": "Prod",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.985,
+    "Notes": "Complete outage - INC-001 open"
+  },
+  {
+    "Application": "Manhattan Associates WMS",
+    "Department": "Logistics",
+    "Environment": "Prod",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.991,
+    "Notes": "Order processing frozen - INC-002"
+  },
+  {
+    "Application": "Datadog",
+    "Department": "IT",
+    "Environment": "Prod",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.998,
+    "Notes": "Monitoring blackout - INC-003"
+  },
+  {
+    "Application": "Plex Smart Manufacturing",
+    "Department": "Manufacturing",
+    "Environment": "Prod",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.972,
+    "Notes": "Production line failure - INC-013"
+  },
+  {
+    "Application": "Salesforce Service Cloud",
+    "Department": "CRM",
+    "Environment": "Prod",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.992,
+    "Notes": "Performance issues - INC-004"
+  },
+  {
+    "Application": "CrowdStrike Falcon",
+    "Department": "Security",
+    "Environment": "Prod",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.995,
+    "Notes": "Agent deployment issues - INC-005"
+  },
+  {
+    "Application": "Okta Identity Cloud",
+    "Department": "Security",
+    "Environment": "Prod",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.999,
+    "Notes": "SSO intermittent - INC-006"
+  },
+  {
+    "Application": "Kyriba",
+    "Department": "Finance",
+    "Environment": "Prod",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.993,
+    "Notes": "Payment delays - INC-011"
+  },
+  {
+    "Application": "CyberArk PAM",
+    "Department": "Security",
+    "Environment": "Prod",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.994,
+    "Notes": "Password rotation issues - INC-014"
+  },
+  {
+    "Application": "Oracle Hyperion HFM",
+    "Department": "Finance",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.997,
+    "Notes": null
+  },
+  {
+    "Application": "Blue Yonder WMS",
+    "Department": "Logistics",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.998,
+    "Notes": null
+  },
+  {
+    "Application": "Workday HCM",
+    "Department": "HR",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.996,
+    "Notes": null
+  },
+  {
+    "Application": "SAP SuccessFactors",
+    "Department": "HR",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.994,
+    "Notes": null
+  },
+  {
+    "Application": "Zendesk",
+    "Department": "CRM",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.995,
+    "Notes": null
+  },
+  {
+    "Application": "HubSpot CRM",
+    "Department": "CRM",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.997,
+    "Notes": null
+  },
+  {
+    "Application": "Splunk Enterprise",
+    "Department": "IT",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.999,
+    "Notes": null
+  },
+  {
+    "Application": "AVEVA MES",
+    "Department": "Manufacturing",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.993,
+    "Notes": null
+  },
+  {
+    "Application": "Anaplan",
+    "Department": "Finance",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.998,
+    "Notes": null
+  },
+  {
+    "Application": "Coupa",
+    "Department": "Finance",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.996,
+    "Notes": null
+  },
+  {
+    "Application": "BMC Remedy",
+    "Department": "IT",
+    "Environment": "Prod",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:45:36",
+    "Uptime %": 0.992,
+    "Notes": null
+  },
+  {
+    "Application": "Blue Yonder WMS",
+    "Department": "Logistics",
+    "Environment": "UAT",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.955,
+    "Notes": "Refresh in progress"
+  },
+  {
+    "Application": "AVEVA MES",
+    "Department": "Manufacturing",
+    "Environment": "UAT",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.948,
+    "Notes": "Database migration"
+  },
+  {
+    "Application": "Zendesk",
+    "Department": "CRM",
+    "Environment": "UAT",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.972,
+    "Notes": "Performance testing impact"
+  },
+  {
+    "Application": "SAP S/4HANA Finance",
+    "Department": "Finance",
+    "Environment": "UAT",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.989,
+    "Notes": null
+  },
+  {
+    "Application": "Salesforce Service Cloud",
+    "Department": "CRM",
+    "Environment": "UAT",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.991,
+    "Notes": null
+  },
+  {
+    "Application": "Workday HCM",
+    "Department": "HR",
+    "Environment": "UAT",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.987,
+    "Notes": null
+  },
+  {
+    "Application": "Oracle Hyperion HFM",
+    "Department": "Finance",
+    "Environment": "UAT",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.99,
+    "Notes": null
+  },
+  {
+    "Application": "Kyriba",
+    "Department": "Finance",
+    "Environment": "Test",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.921,
+    "Notes": "Environment rebuild"
+  },
+  {
+    "Application": "Manhattan Associates WMS",
+    "Department": "Logistics",
+    "Environment": "Test",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.915,
+    "Notes": "Data refresh"
+  },
+  {
+    "Application": "Oracle HCM Cloud",
+    "Department": "HR",
+    "Environment": "Test",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.963,
+    "Notes": "Integration testing"
+  },
+  {
+    "Application": "SAP S/4HANA Finance",
+    "Department": "Finance",
+    "Environment": "Test",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.975,
+    "Notes": null
+  },
+  {
+    "Application": "Workday HCM",
+    "Department": "HR",
+    "Environment": "Test",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.982,
+    "Notes": null
+  },
+  {
+    "Application": "Splunk Enterprise",
+    "Department": "IT",
+    "Environment": "Dev",
+    "Status": "Down",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.885,
+    "Notes": "Configuration changes"
+  },
+  {
+    "Application": "Datadog",
+    "Department": "IT",
+    "Environment": "Dev",
+    "Status": "Degraded",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.932,
+    "Notes": "Plugin updates"
+  },
+  {
+    "Application": "SAP S/4HANA Finance",
+    "Department": "Finance",
+    "Environment": "Dev",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.951,
+    "Notes": null
+  },
+  {
+    "Application": "Zendesk",
+    "Department": "CRM",
+    "Environment": "Dev",
+    "Status": "Healthy",
+    "Last Check": "2026-06-28T23:31:12",
+    "Uptime %": 0.948,
+    "Notes": null
+  },
+  {
+    "Application": "\ud83d\udcd6 QUICK REFERENCE: Application Health (Collapsible Section for Web)",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "STATUS: Healthy \u2705 | Degraded \u26a0\ufe0f CAUTION | Down \ud83d\uded1 NO DEPLOY",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "UPTIME: < 95% = Instability warning | Check Last Check timestamp for freshness",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "RULE: Target environment must be HEALTHY before deployment",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "[\u25bc Full documentation below]",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\ud83d\udccb APPLICATION STATUS - COMPREHENSIVE GUIDE",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\ud83c\udfaf PURPOSE OF APPLICATION STATUS",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "This sheet provides real-time health status of all applications across environments.",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "Use this to verify system readiness before deploying or to assess current stability.",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "WHY APPLICATION STATUS MATTERS:",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Deploying to a degraded application may worsen the situation",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Lower environment issues (Test/UAT) may block testing before Prod release",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 DR environment status affects disaster recovery readiness",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Uptime % indicates historical stability and reliability",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\ud83d\udcca STATUS DEFINITIONS",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "STATUS    | MEANING                              | CAN YOU DEPLOY?",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "Healthy   | All functions operational            | \u2705 YES",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "Degraded  | Partial functionality, performance   | \u26a0\ufe0f CAUTION NEEDED",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "Down      | System unavailable                   | \ud83d\uded1 NO - WAIT FOR RECOVERY",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "ENVIRONMENT PRIORITY:",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Prod status: Critical \u2014 must be Healthy for go-live",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 UAT status: Important \u2014 must be Healthy for user acceptance",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Test status: Helpful \u2014 affects QA testing pace",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Dev status: Informational \u2014 developers manage internally",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 DR status: Critical \u2014 must mirror Prod for disaster readiness",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\ud83d\udea6 PRE-DEPLOYMENT CHECKLIST",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "BEFORE DEPLOYING TO ANY ENVIRONMENT:",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "1. Filter by Application = your target application",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "2. Check ALL environments your release will touch",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "3. Verify target environment is Healthy, not Degraded or Down",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "4. Check Uptime %: Below 95% indicates instability \u2014 proceed cautiously",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "5. Review Last Check timestamp: Data older than 1 hour may be stale",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "GO/NO-GO BY ENVIRONMENT:",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Prod Healthy, UAT Healthy \u2192 \u2705 FULL RELEASE APPROVED",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Prod Healthy, UAT Degraded \u2192 \u26a0\ufe0f PROD ONLY (skip UAT testing)",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Prod Degraded \u2192 \ud83d\uded1 WAIT until Prod is Healthy",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2022 Prod Down \u2192 \ud83d\uded1 DO NOT DEPLOY \u2014 focus on recovery",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u2705 BEST PRACTICES",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "1. CHECK IMMEDIATELY BEFORE RELEASE: Status can change in minutes",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "2. VERIFY DR STATUS: Ensure DR matches Prod before critical releases",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "3. MONITOR POST-DEPLOY: Check status again 30 minutes after release",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "4. TRACK UPTIME TRENDS: Decreasing uptime % signals recurring issues",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "5. ESCALATE DOWN STATUS: Notify support teams immediately",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "6. DOCUMENT DEGRADED DEPLOYMENTS: Note any compromises in release log",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "7. COORDINATE WITH OPS: They may have visibility you don't",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "\u26a0\ufe0f IMPORTANT:",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "Application Status is a point-in-time snapshot.",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  },
+  {
+    "Application": "Always verify immediately before deployment, not hours in advance.",
+    "Department": null,
+    "Environment": null,
+    "Status": null,
+    "Last Check": null,
+    "Uptime %": null,
+    "Notes": null
+  }
+]

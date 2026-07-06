@@ -34,6 +34,10 @@ model Application {
   mappingTo     SystemMappingEdge[]  @relation("MappingTargetApp")
   envVersions   EnvironmentVersion[]
   drifts        Drift[]
+  monitoringAlerts     MonitoringAlert[]
+  incidents            Incident[]
+  applicationStatuses  ApplicationStatus[]
+  plannedMaintenances  PlannedMaintenance[]
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
 
@@ -472,6 +476,99 @@ model ReferenceData {
 
   @@unique([category, value])
   @@index([category])
+}
+
+/// Monitoring/observability alert (threshold breach etc.) — seeded, read-only
+/// dataset. Distinct from Drift (environment config mismatch) and from
+/// Incident (a confirmed, actively-worked issue).
+model MonitoringAlert {
+  id              String      @id @default(cuid())
+  alertCode       String      @unique
+  timestamp       DateTime
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  departmentName  String?
+  alertType       String
+  severity        String
+  metric          String
+  // Stored as String, not Float — real data mixes numeric ratios (0.85),
+  // latency strings ("200ms"), and qualitative states ("Pass"/"Healthy").
+  threshold       String?
+  currentValue    String?
+  status          String
+  assignedTo      String?
+  environmentName String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([applicationId])
+}
+
+/// Seeded incident register (P1/P2/P3 severities, department, impact,
+/// assignedTo, optional related release). NOT connector-synced — distinct
+/// from P1Issue, which is exclusively populated by Jira/ServiceNow
+/// connectors for the Dashboard P1 widget and only ever carries priority
+/// "P1". See Step 0 audit note in seed-incidents.ts for the full rationale.
+model Incident {
+  id                 String      @id @default(cuid())
+  incidentCode       String      @unique
+  timestamp          DateTime
+  applicationId      String
+  application        Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  departmentName     String?
+  severity           String
+  title              String
+  status             String
+  impact             String
+  assignedTo         String?
+  relatedReleaseCode String?
+  environmentName    String
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@index([applicationId])
+  @@index([relatedReleaseCode])
+}
+
+/// CURRENT STATE table — one row per (applicationId, environmentName),
+/// overwritten on each health check, not appended. Not a history log.
+model ApplicationStatus {
+  id              String      @id @default(cuid())
+  applicationId   String
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  environmentName String
+  status          String
+  lastCheck       DateTime
+  uptimePercent   Float?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([applicationId, environmentName])
+}
+
+/// Every source record has exactly one Application(s) value and one
+/// Environment(s) value (confirmed no multi-app/multi-env spans), so a
+/// single applicationId/environmentName pair per record is sufficient —
+/// no join table needed. applicationId is nullable because some
+/// maintenance windows are org/infra-wide with no specific application.
+model PlannedMaintenance {
+  id              String       @id @default(cuid())
+  maintenanceCode String       @unique
+  scheduledDate   DateTime
+  startTime       String
+  endTime         String
+  type            String
+  applicationId   String?
+  application     Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  environmentName String
+  departmentName  String?
+  impact          String
+  requestor       String?
+  approvalStatus  String
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model Approval {

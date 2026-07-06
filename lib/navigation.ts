@@ -24,6 +24,9 @@ import {
   AlertOctagon,
   Building2,
   UserCircle,
+  Bell,
+  HeartPulse,
+  CalendarClock,
 } from "lucide-react";
 
 export type NavItem = {
@@ -64,6 +67,15 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: "/drifts", label: "Drift Dashboard", icon: GitCompareArrows },
       { href: "/approvals", label: "Approval Queue", icon: ClipboardCheck },
       { href: "/leaves", label: "Leave Calendar", icon: CalendarOff },
+    ],
+  },
+  {
+    title: "Monitoring",
+    items: [
+      { href: "/monitoring-alerts", label: "Monitoring Alerts", icon: Bell },
+      { href: "/incidents", label: "Incidents", icon: AlertOctagon },
+      { href: "/application-status", label: "Application Status", icon: HeartPulse },
+      { href: "/planned-maintenance", label: "Planned Maintenance", icon: CalendarClock },
     ],
   },
   {
