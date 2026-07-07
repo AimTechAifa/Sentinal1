@@ -1,51 +1,116 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
+import {
+  bookingOverlapFilter,
+  buildTimeBuckets,
+  countInBuckets,
+  dashboardPeriodRange,
+  leaveOverlapFilter,
+  parseDashboardPeriod,
+  periodContextLabel,
+  releaseDateFilter,
+  scheduledDateFilter,
+  submittedDateFilter,
+  timestampFilter,
+  type DashboardPeriod,
+} from "@/lib/dashboard-period";
 import { prisma } from "@/lib/prisma";
 import { getRiskLevel, type RiskLevel } from "@/lib/risk-level";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+type TopIssueIcon = "Ban" | "ShieldAlert" | "Clock" | "Server" | "Users";
+type TopIssueSeverity = "rose" | "amber" | "sky";
+
+type TopIssue = {
+  severity: TopIssueSeverity;
+  title: string;
+  reason: string;
+  meta: string;
+  href: string;
+  icon: TopIssueIcon;
+};
+
+function buildBriefing(
+  params: {
+    blocked: number;
+    p1: number;
+    appsDown: number;
+    blockedRelease?: { code: string } | null;
+    pendingCab?: { code: string; days: number } | null;
+  },
+  period: DashboardPeriod
+): string {
+  const ctx = periodContextLabel(period);
+  const attention: string[] = [];
+  if (params.blocked > 0) attention.push(`${params.blocked} blocked release${params.blocked === 1 ? "" : "s"}`);
+  if (params.p1 > 0) attention.push(`${params.p1} P1 incident${params.p1 === 1 ? "" : "s"}`);
+  if (params.appsDown > 0) attention.push(`${params.appsDown} app${params.appsDown === 1 ? "" : "s"} down in Prod`);
+
+  if (attention.length === 0) {
+    return `No critical blockers ${ctx} — review the pipeline, upcoming CAB windows, and environment bookings.`;
+  }
+
+  let sentence = `${attention.join(", ")} need attention ${ctx}.`;
+  const drivers: string[] = [];
+  if (params.blockedRelease) drivers.push(`blockers on ${params.blockedRelease.code}`);
+  if (params.pendingCab && params.pendingCab.days > 0) {
+    drivers.push(`CAB approval pending ${params.pendingCab.days} day${params.pendingCab.days === 1 ? "" : "s"} on ${params.pendingCab.code}`);
+  }
+  if (drivers.length > 0) sentence += ` Driven mostly by ${drivers.join(" and ")}.`;
+  else sentence += " Open the ranked items below for context and next actions.";
+  return sentence;
+}
+
 /**
- * Command Dashboard — every field below is a live aggregate query against
- * Postgres, computed fresh on each request (no hardcoded/mock numbers).
- * Built incrementally, section by section; see inline comments for the
- * exact query logic backing each number.
+ * Command Dashboard — live aggregates filtered by ?period=today|week|month|all
  */
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
+  const url = new URL(req.url);
+  const period = parseDashboardPeriod(url.searchParams.get("period"));
   const now = new Date();
+  const range = dashboardPeriodRange(period, now);
+  const releaseWhere = releaseDateFilter(range);
 
-  // --- 1. Hero: "Needs attention now" ---
+  // --- 1. Hero ---
   const [blockedReleases, activeP1Incidents, appsDownProd] = await Promise.all([
-    prisma.release.count({ where: { status: "Blocked" } }),
-    prisma.incident.count({ where: { severity: "P1", status: { notIn: ["Resolved"] } } }),
-    prisma.applicationStatus.count({ where: { status: "Down", environmentName: "Prod" } }),
+    prisma.release.count({ where: { status: "Blocked", ...releaseWhere } }),
+    prisma.incident.count({
+      where: {
+        severity: "P1",
+        status: { notIn: ["Resolved"] },
+        ...timestampFilter(range),
+      },
+    }),
+    prisma.applicationStatus.count({
+      where: {
+        status: "Down",
+        environmentName: "Prod",
+      },
+    }),
   ]);
 
-  // --- 2. Release Pipeline (Total + 5 most-actionable statuses) ---
-  // Real Release.status values in this dataset: Draft, Planning, Testing,
-  // Pending CAB, Approved, Blocked. "Draft" is excluded from tiles — it's
-  // the pre-actionable bucket (not yet ready for the pipeline), everything
-  // else here is something a release manager needs to move forward.
+  // --- 2. Release Pipeline ---
   const [totalReleases, releaseStatusCounts] = await Promise.all([
-    prisma.release.count(),
-    prisma.release.groupBy({ by: ["status"], _count: true }),
+    prisma.release.count({ where: releaseWhere }),
+    prisma.release.groupBy({ by: ["status"], where: releaseWhere, _count: true }),
   ]);
   const countByStatus = (status: string) =>
     releaseStatusCounts.find((r) => r.status === status)?._count ?? 0;
 
   const pipeline = [
-    { label: "Total Releases", value: totalReleases, href: "/releases", tone: "indigo" as const },
-    { label: "Blocked", value: countByStatus("Blocked"), href: "/releases?status=Blocked", tone: "rose" as const },
-    { label: "Pending CAB", value: countByStatus("Pending CAB"), href: "/releases?status=Pending+CAB", tone: "violet" as const },
-    { label: "In Testing", value: countByStatus("Testing"), href: "/releases?status=Testing", tone: "sky" as const },
-    { label: "Approved", value: countByStatus("Approved"), href: "/releases?status=Approved", tone: "emerald" as const },
-    { label: "Planning", value: countByStatus("Planning"), href: "/releases?status=Planning", tone: "amber" as const },
+    { label: "Total Releases", value: totalReleases, delta: null, href: `/releases?period=${period}`, tone: "indigo" as const },
+    { label: "Blocked", value: countByStatus("Blocked"), delta: null, href: "/releases?status=Blocked", tone: "rose" as const },
+    { label: "Pending CAB", value: countByStatus("Pending CAB"), delta: null, href: "/releases?status=Pending+CAB", tone: "violet" as const },
+    { label: "In Testing", value: countByStatus("Testing"), delta: null, href: "/releases?status=Testing", tone: "sky" as const },
+    { label: "Approved", value: countByStatus("Approved"), delta: null, href: "/releases?status=Approved", tone: "emerald" as const },
+    { label: "Planning", value: countByStatus("Planning"), delta: null, href: "/releases?status=Planning", tone: "amber" as const },
   ];
 
-  // --- 3. Operations & Environments (6 tiles) ---
+  // --- 3. Operations ---
   const [
     incidentSeverityCounts,
     criticalAlertsActive,
@@ -56,25 +121,42 @@ export async function GET() {
     totalDeps,
     pendingApprovals,
     nextCab,
-    staffOnLeaveNext7,
+    staffOnLeave,
   ] = await Promise.all([
-    prisma.incident.groupBy({ by: ["severity"], where: { status: { notIn: ["Resolved"] } }, _count: true }),
-    prisma.monitoringAlert.count({ where: { severity: "Critical", status: "Active" } }),
-    prisma.monitoringAlert.count({ where: { status: "Active" } }),
-    prisma.envBooking.count({ where: { conflictFlag: true } }),
-    prisma.envBooking.count(),
-    prisma.releaseDependency.count({ where: { status: "Blocked" } }),
-    prisma.releaseDependency.count(),
-    prisma.approval.count({ where: { decision: "Pending" } }),
+    prisma.incident.groupBy({
+      by: ["severity"],
+      where: { status: { notIn: ["Resolved"] }, ...timestampFilter(range) },
+      _count: true,
+    }),
+    prisma.monitoringAlert.count({
+      where: { severity: "Critical", status: "Active", ...timestampFilter(range) },
+    }),
+    prisma.monitoringAlert.count({
+      where: { status: "Active", ...timestampFilter(range) },
+    }),
+    prisma.envBooking.count({
+      where: { conflictFlag: true, ...bookingOverlapFilter(range) },
+    }),
+    prisma.envBooking.count({ where: bookingOverlapFilter(range) }),
+    prisma.releaseDependency.count({
+      where: { status: "Blocked", ...(range ? { release: releaseWhere } : {}) },
+    }),
+    prisma.releaseDependency.count({
+      where: range ? { release: releaseWhere } : {},
+    }),
+    prisma.approval.count({
+      where: { decision: "Pending", ...submittedDateFilter(range) },
+    }),
     prisma.release.findFirst({
-      where: { cabDate: { gte: now } },
+      where: {
+        cabDate: range ? { gte: range.start, lte: range.end } : { gte: now },
+      },
       orderBy: { cabDate: "asc" },
       select: { cabDate: true },
     }),
-    prisma.leaveRecord.count({
-      where: { leaveStart: { lte: new Date(now.getTime() + 7 * DAY_MS) }, leaveEnd: { gte: now } },
-    }),
+    prisma.leaveRecord.count({ where: leaveOverlapFilter(range) }),
   ]);
+
   const activeIncidentsTotal = incidentSeverityCounts.reduce((sum, r) => sum + r._count, 0);
   const p1Active = incidentSeverityCounts.find((r) => r.severity === "P1")?._count ?? 0;
   const p2Active = incidentSeverityCounts.find((r) => r.severity === "P2")?._count ?? 0;
@@ -88,6 +170,7 @@ export async function GET() {
       label: "Active Incidents",
       value: activeIncidentsTotal,
       sub: `${p1Active} P1 · ${p2Active} P2 · ${p3Active} P3`,
+      delta: null,
       href: "/incidents",
       tone: "rose" as const,
     },
@@ -95,6 +178,7 @@ export async function GET() {
       label: "Critical Alerts",
       value: criticalAlertsActive,
       sub: `${totalAlertsActive} active total`,
+      delta: null,
       href: "/monitoring-alerts?severity=Critical&status=Active",
       tone: "amber" as const,
     },
@@ -102,6 +186,7 @@ export async function GET() {
       label: "Env Conflicts",
       value: envConflictBookings,
       sub: `${totalBookings} bookings`,
+      delta: null,
       href: "/conflicts",
       tone: "violet" as const,
     },
@@ -109,6 +194,7 @@ export async function GET() {
       label: "Blocked Deps",
       value: blockedDeps,
       sub: `of ${totalDeps} total`,
+      delta: null,
       href: "/dependencies?status=Blocked",
       tone: "sky" as const,
     },
@@ -116,22 +202,182 @@ export async function GET() {
       label: "Pending Approvals",
       value: pendingApprovals,
       sub: daysToNextCab !== null ? `CAB in ${daysToNextCab} day${daysToNextCab === 1 ? "" : "s"}` : "No CAB scheduled",
+      delta: null,
       href: "/approvals",
       tone: "indigo" as const,
     },
     {
       label: "Staff on Leave",
-      value: staffOnLeaveNext7,
-      sub: "next 7 days",
+      value: staffOnLeave,
+      sub: period === "today" ? "today" : period === "week" ? "this week" : period === "month" ? "this month" : "all time",
+      delta: null,
       href: "/leaves",
       tone: "emerald" as const,
     },
   ];
 
-  // --- 4. Application Availability donut ---
+  // --- Needs Your Decision ---
+  const releaseIssueWhere = { ...releaseWhere, status: "Blocked" as const };
+  const [blockedList, severeRelease, pendingCabRelease, oldestPendingApproval, downProdApp] = await Promise.all([
+    prisma.release.findMany({
+      where: releaseIssueWhere,
+      include: { department: true },
+      orderBy: { releaseDate: "asc" },
+      take: 2,
+    }),
+    prisma.release.findFirst({
+      where: { weightedRiskScore: { not: null, gte: 3.5 }, ...releaseWhere },
+      include: { department: true },
+      orderBy: { weightedRiskScore: "desc" },
+    }),
+    prisma.release.findFirst({
+      where: { status: "Pending CAB", ...releaseWhere },
+      include: { department: true },
+      orderBy: { cabDate: "asc" },
+    }),
+    prisma.approval.findFirst({
+      where: { decision: "Pending", ...submittedDateFilter(range) },
+      include: {
+        release: { include: { department: true } },
+        approver: true,
+      },
+      orderBy: { submittedDate: "asc" },
+    }),
+    prisma.applicationStatus.findFirst({
+      where: {
+        status: "Down",
+        environmentName: "Prod",
+      },
+      include: { application: { include: { department: true } } },
+      orderBy: { lastCheck: "desc" },
+    }),
+  ]);
+
+  const topIssues: TopIssue[] = [];
+  const seenHrefs = new Set<string>();
+
+  for (const r of blockedList) {
+    const href = `/releases/${r.id}`;
+    if (seenHrefs.has(href)) continue;
+    seenHrefs.add(href);
+    topIssues.push({
+      severity: "rose",
+      title: `${r.releaseCode} · ${r.name}`,
+      reason:
+        r.blockers?.trim() ||
+        (r.conflictFlag
+          ? "Blocked — environment conflict flagged on this release"
+          : "Blocked — review dependencies and environment bookings"),
+      meta: `${r.department?.name ?? "—"} · Owner: ${r.owner || "—"}`,
+      href,
+      icon: "Ban",
+    });
+  }
+
+  if (severeRelease) {
+    const href = `/releases/${severeRelease.id}`;
+    if (!seenHrefs.has(href)) {
+      seenHrefs.add(href);
+      const score = severeRelease.weightedRiskScore?.toFixed(2) ?? "—";
+      topIssues.push({
+        severity: "rose",
+        title: `${severeRelease.releaseCode} · ${severeRelease.name}`,
+        reason: `${severeRelease.weightedRiskLevel ?? "High"} weighted risk (${score})${
+          severeRelease.blockers?.trim() ? ` — ${severeRelease.blockers.trim()}` : ""
+        }`,
+        meta: `${severeRelease.department?.name ?? "—"} · Owner: ${severeRelease.owner || "—"}`,
+        href,
+        icon: "ShieldAlert",
+      });
+    }
+  }
+
+  if (pendingCabRelease && topIssues.length < 5) {
+    const href = `/releases/${pendingCabRelease.id}`;
+    if (!seenHrefs.has(href)) {
+      seenHrefs.add(href);
+      const daysPending =
+        pendingCabRelease.cabDate && pendingCabRelease.cabDate < now
+          ? Math.round((now.getTime() - pendingCabRelease.cabDate.getTime()) / DAY_MS)
+          : 0;
+      topIssues.push({
+        severity: "amber",
+        title: pendingCabRelease.releaseCode,
+        reason:
+          daysPending > 0
+            ? `CAB approval pending ${daysPending} day${daysPending === 1 ? "" : "s"}`
+            : "Pending CAB — awaiting board decision",
+        meta: pendingCabRelease.department?.name ?? "Awaiting CAB",
+        href,
+        icon: "Clock",
+      });
+    }
+  } else if (oldestPendingApproval && topIssues.length < 5) {
+    const r = oldestPendingApproval.release;
+    const href = `/releases/${r.id}`;
+    if (!seenHrefs.has(href)) {
+      seenHrefs.add(href);
+      const days = Math.max(0, Math.round((now.getTime() - oldestPendingApproval.submittedDate.getTime()) / DAY_MS));
+      topIssues.push({
+        severity: "amber",
+        title: r.releaseCode,
+        reason: `${oldestPendingApproval.approvalType} approval pending ${days} day${days === 1 ? "" : "s"}`,
+        meta: `Awaiting: ${oldestPendingApproval.approver?.name ?? "approver"}`,
+        href,
+        icon: "Clock",
+      });
+    }
+  }
+
+  if (downProdApp && topIssues.length < 5) {
+    topIssues.push({
+      severity: "amber",
+      title: `${downProdApp.application.name} — Production`,
+      reason: "Application down in Production environment",
+      meta: `${downProdApp.application.department?.name ?? "—"} · Env: Prod`,
+      href: "/application-status?status=Down&env=Prod",
+      icon: "Server",
+    });
+  }
+
+  if (staffOnLeave > 0 && topIssues.length < 5) {
+    topIssues.push({
+      severity: "sky",
+      title: `${staffOnLeave} staff on leave ${periodContextLabel(period)}`,
+      reason: "Overlaps with releases requiring their sign-off — check coverage",
+      meta: "Resourcing",
+      href: "/leaves",
+      icon: "Users",
+    });
+  }
+
+  const pendingCabDays =
+    pendingCabRelease?.cabDate && pendingCabRelease.cabDate < now
+      ? Math.round((now.getTime() - pendingCabRelease.cabDate.getTime()) / DAY_MS)
+      : 0;
+
+  const briefing = buildBriefing(
+    {
+      blocked: blockedReleases,
+      p1: activeP1Incidents,
+      appsDown: appsDownProd,
+      blockedRelease: blockedList[0] ? { code: blockedList[0].releaseCode } : null,
+      pendingCab:
+        pendingCabRelease && pendingCabDays > 0
+          ? { code: pendingCabRelease.releaseCode, days: pendingCabDays }
+          : null,
+    },
+    period
+  );
+
+  // --- Application Availability ---
   const [appStatusCounts, appStatusProd] = await Promise.all([
     prisma.applicationStatus.groupBy({ by: ["status"], _count: true }),
-    prisma.applicationStatus.groupBy({ by: ["status"], where: { environmentName: "Prod" }, _count: true }),
+    prisma.applicationStatus.groupBy({
+      by: ["status"],
+      where: { environmentName: "Prod" },
+      _count: true,
+    }),
   ]);
   const healthyCount = appStatusCounts.find((r) => r.status === "Healthy")?._count ?? 0;
   const degradedCount = appStatusCounts.find((r) => r.status === "Degraded")?._count ?? 0;
@@ -151,30 +397,24 @@ export async function GET() {
     total: totalAppStatus,
   };
 
-  // --- 5. Incident Trend — daily count, last 7 days ---
-  // Anchored to the latest Incident.timestamp in the dataset (not real
-  // wall-clock "now"): this is a fixed historical seed snapshot, so "last 7
-  // days" means the most recent 7 days of actual recorded incident
-  // activity, not an empty window past the end of the data.
-  const latestIncident = await prisma.incident.findFirst({ orderBy: { timestamp: "desc" }, select: { timestamp: true } });
-  const trendAnchor = latestIncident?.timestamp ?? now;
-  const trendStart = new Date(trendAnchor.getTime() - 6 * DAY_MS);
-  trendStart.setUTCHours(0, 0, 0, 0);
+  // --- Incident Trend ---
+  const trendRange = range ?? { start: new Date(now.getTime() - 84 * DAY_MS), end: now };
   const incidentsInWindow = await prisma.incident.findMany({
-    where: { timestamp: { gte: trendStart } },
+    where: { timestamp: { gte: trendRange.start, lte: trendRange.end } },
     select: { timestamp: true },
   });
-  const incidentTrend: { date: string; count: number }[] = [];
-  for (let i = 0; i < 7; i++) {
-    const dayStart = new Date(trendStart.getTime() + i * DAY_MS);
-    const dayEnd = new Date(dayStart.getTime() + DAY_MS);
-    const count = incidentsInWindow.filter((r) => r.timestamp >= dayStart && r.timestamp < dayEnd).length;
-    incidentTrend.push({ date: dayStart.toISOString().slice(0, 10), count });
-  }
+  const incidentBuckets = buildTimeBuckets(period, range, now);
+  const incidentTrend = countInBuckets(
+    incidentBuckets,
+    incidentsInWindow.map((r) => ({ at: r.timestamp })),
+    period
+  ).map((b) => ({ date: b.date, count: b.count }));
 
-  // --- 6. Risk Distribution — Risk.riskScore bucketed by corrected Simple
-  // Risk Score bands (1-5/6-11/12-19/20-25, lib/risk-level.ts) ---
-  const risks = await prisma.risk.findMany({ select: { riskScore: true } });
+  // --- Risk Distribution ---
+  const risks = await prisma.risk.findMany({
+    where: range ? { release: releaseWhere } : undefined,
+    select: { riskScore: true },
+  });
   const riskBandCounts: Record<RiskLevel, number> = { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 };
   for (const r of risks) riskBandCounts[getRiskLevel(r.riskScore)]++;
   const riskDistribution = [
@@ -184,38 +424,70 @@ export async function GET() {
     { name: "Critical", value: riskBandCounts.CRITICAL, color: "#f43f5e" },
   ];
 
-  // --- 7. Release Trend — releases scheduled per week, next 4 weeks (real wall-clock now) ---
-  const in4Weeks = new Date(now.getTime() + 28 * DAY_MS);
-  const upcomingReleases = await prisma.release.findMany({
-    where: { releaseDate: { gte: now, lte: in4Weeks } },
+  // --- Release Trend ---
+  const releaseTrendRange =
+    range ??
+    ({ start: now, end: new Date(now.getTime() + 28 * DAY_MS) } as { start: Date; end: Date });
+  const releasesInTrend = await prisma.release.findMany({
+    where: { releaseDate: { gte: releaseTrendRange.start, lte: releaseTrendRange.end } },
     select: { releaseDate: true },
   });
-  const releaseTrend: { week: string; count: number }[] = [];
-  for (let w = 0; w < 4; w++) {
-    const weekStart = new Date(now.getTime() + w * 7 * DAY_MS);
-    const weekEnd = new Date(weekStart.getTime() + 7 * DAY_MS);
-    const count = upcomingReleases.filter((r) => r.releaseDate >= weekStart && r.releaseDate < weekEnd).length;
-    releaseTrend.push({ week: `W${w + 1}`, count });
+
+  let releaseTrend: { week: string; count: number }[] = [];
+  if (period === "today") {
+    releaseTrend = [{ week: "Today", count: releasesInTrend.length }];
+  } else if (period === "week") {
+    for (let i = 0; i < 7; i++) {
+      const dayStart = new Date((range?.start ?? now).getTime() + i * DAY_MS);
+      const dayEnd = new Date(dayStart.getTime() + DAY_MS);
+      const count = releasesInTrend.filter((r) => r.releaseDate >= dayStart && r.releaseDate < dayEnd).length;
+      releaseTrend.push({
+        week: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][dayStart.getUTCDay()],
+        count,
+      });
+    }
+  } else if (period === "month") {
+    for (let w = 0; w < 4; w++) {
+      const weekStart = new Date((range?.start ?? now).getTime() + w * 7 * DAY_MS);
+      const weekEnd = new Date(weekStart.getTime() + 7 * DAY_MS);
+      const count = releasesInTrend.filter((r) => r.releaseDate >= weekStart && r.releaseDate < weekEnd).length;
+      releaseTrend.push({ week: `W${w + 1}`, count });
+    }
+  } else {
+    for (let w = 0; w < 4; w++) {
+      const weekStart = new Date(now.getTime() + w * 7 * DAY_MS);
+      const weekEnd = new Date(weekStart.getTime() + 7 * DAY_MS);
+      const count = releasesInTrend.filter((r) => r.releaseDate >= weekStart && r.releaseDate < weekEnd).length;
+      releaseTrend.push({ week: `W${w + 1}`, count });
+    }
   }
 
-  // --- 8. Planned Maintenance list ---
+  // --- Planned Maintenance ---
+  const maintRange = range ?? { start: now, end: new Date(now.getTime() + 30 * DAY_MS) };
   const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   const todayEnd = new Date(todayStart.getTime() + DAY_MS);
-  const in30Days = new Date(now.getTime() + 30 * DAY_MS);
-  const [scheduledToday, dbRefresh30, vendor30, fullOutage30] = await Promise.all([
-    prisma.plannedMaintenance.count({ where: { scheduledDate: { gte: todayStart, lt: todayEnd } } }),
-    prisma.plannedMaintenance.count({ where: { type: "DB Refresh", scheduledDate: { gte: now, lte: in30Days } } }),
-    prisma.plannedMaintenance.count({ where: { type: "Vendor Maintenance", scheduledDate: { gte: now, lte: in30Days } } }),
-    prisma.plannedMaintenance.count({ where: { impact: "Full Outage", scheduledDate: { gte: now, lte: in30Days } } }),
+  const [scheduledToday, dbRefresh, vendorMaint, fullOutage] = await Promise.all([
+    prisma.plannedMaintenance.count({
+      where: { scheduledDate: { gte: period === "today" ? todayStart : maintRange.start, lte: period === "today" ? todayEnd : maintRange.end } },
+    }),
+    prisma.plannedMaintenance.count({
+      where: { type: "DB Refresh", scheduledDate: { gte: maintRange.start, lte: maintRange.end } },
+    }),
+    prisma.plannedMaintenance.count({
+      where: { type: "Vendor Maintenance", scheduledDate: { gte: maintRange.start, lte: maintRange.end } },
+    }),
+    prisma.plannedMaintenance.count({
+      where: { impact: "Full Outage", scheduledDate: { gte: maintRange.start, lte: maintRange.end } },
+    }),
   ]);
   const maintenance = [
-    { label: "Scheduled today", value: scheduledToday, href: "/planned-maintenance" },
-    { label: "DB refreshes (30d)", value: dbRefresh30, href: "/planned-maintenance?type=DB+Refresh" },
-    { label: "Vendor windows (30d)", value: vendor30, href: "/planned-maintenance?type=Vendor+Maintenance" },
-    { label: "Full outages (30d)", value: fullOutage30, href: "/planned-maintenance" },
+    { label: period === "today" ? "Scheduled today" : "Scheduled in period", value: scheduledToday, href: "/planned-maintenance" },
+    { label: "DB refreshes", value: dbRefresh, href: "/planned-maintenance?type=DB+Refresh" },
+    { label: "Vendor windows", value: vendorMaint, href: "/planned-maintenance?type=Vendor+Maintenance" },
+    { label: "Full outages", value: fullOutage, href: "/planned-maintenance" },
   ];
 
-  // --- 9. Overall Health — recomputed from real thresholds, not hardcoded ---
+  // --- Overall Health ---
   const health = [
     { label: "Release Pipeline", status: blockedReleases > 0 ? "Critical" : "Healthy" },
     { label: "Environment Health", status: envConflictBookings > 0 ? "Critical" : "Healthy" },
@@ -224,8 +496,12 @@ export async function GET() {
   ];
 
   return NextResponse.json({
+    period,
+    range: range ? { start: range.start.toISOString(), end: range.end.toISOString() } : null,
     generatedAt: now.toISOString(),
     hero: { blockedReleases, activeP1Incidents, appsDownProd },
+    briefing,
+    topIssues,
     pipeline,
     ops,
     availability,

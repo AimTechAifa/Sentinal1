@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { prisma } from "@/lib/prisma";
+import { referenceDataWhere, sp } from "@/lib/list-api-filters";
 
 /**
  * Generic reference-data lookup endpoint. Supports ?category=drift_type to
@@ -12,15 +13,10 @@ export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
-  const { searchParams } = new URL(req.url);
-  const category = searchParams.get("category");
-  const includeInactive = searchParams.get("includeInactive") === "1";
+  const params = sp(req);
 
   const data = await prisma.referenceData.findMany({
-    where: {
-      ...(category ? { category } : {}),
-      ...(includeInactive ? {} : { active: true }),
-    },
+    where: referenceDataWhere(params),
     orderBy: [{ category: "asc" }, { sortOrder: "asc" }, { value: "asc" }],
   });
   return NextResponse.json(data);

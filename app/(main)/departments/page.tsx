@@ -1,11 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
+import { TablePageSuspenseFallback } from "@/components/ui/TableSkeleton";
 import { DepartmentsBrowse } from "@/components/master-data/browse/DepartmentsBrowse";
 
 export default function DepartmentsPage() {
   return (
-    <div className="max-w-[1400px] font-sans pb-24">
-      <DepartmentsBrowse />
-    </div>
+    <Suspense fallback={<TablePageSuspenseFallback />}>
+      <div className="max-w-[1400px] font-sans pb-24">
+        <DepartmentsBrowse />
+      </div>
+    </Suspense>
   );
 }

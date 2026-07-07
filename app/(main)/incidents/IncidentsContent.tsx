@@ -1,13 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Filter, AlertOctagon } from "lucide-react";
+import { AlertOctagon } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { INCIDENT_COLUMNS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
+import { useFilteredFetch } from "@/hooks/useTableFilters";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { INCIDENTS_FILTER_SCHEMA } from "@/lib/table-filters";
 
 type IncidentRow = {
   id: string;
@@ -31,87 +39,99 @@ const SEVERITY_CLASSES: Record<string, string> = {
   P3: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300",
 };
 
-const selectClass =
-  "h-9 rounded-lg border border-gray-300 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] px-3 py-1 text-sm text-gray-700 dark:text-white shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 disabled:opacity-50";
-
 export default function IncidentsContent() {
-  const searchParams = useSearchParams();
-  const [incidents, setIncidents] = useState<IncidentRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [severityFilter, setSeverityFilter] = useState(searchParams.get("severity") ?? "");
-  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") ?? "");
+  const { rows: incidents, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<IncidentRow>(
+    "/api/incidents",
+    INCIDENTS_FILTER_SCHEMA
+  );
+  const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/incidents")
+    fetch("/api/applications")
       .then((r) => (r.ok ? r.json() : []))
-      .then(setIncidents)
-      .finally(() => setLoading(false));
+      .then(setApps);
   }, []);
 
   const severities = useMemo(() => [...new Set(incidents.map((i) => i.severity))].sort(), [incidents]);
   const statuses = useMemo(() => [...new Set(incidents.map((i) => i.status))].sort(), [incidents]);
-
-  const filtered = useMemo(
-    () =>
-      incidents.filter(
-        (i) => (!severityFilter || i.severity === severityFilter) && (!statusFilter || i.status === statusFilter)
-      ),
-    [incidents, severityFilter, statusFilter]
+  const departments = useMemo(
+    () => [...new Set(incidents.map((i) => i.departmentName).filter(Boolean))].sort() as string[],
+    [incidents]
   );
+  const envs = useMemo(() => [...new Set(incidents.map((i) => i.environmentName))].sort(), [incidents]);
 
-  const hasActiveFilter = severityFilter || statusFilter;
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("incidents", INCIDENT_COLUMNS, { lockedKeys: ["incidentCode"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
 
   return (
     <div>
       <TopBar
+        trailing={<PageDocumentation pageKey="incidents" />}
         title="Incidents"
-        subtitle={`${filtered.length} incident${filtered.length === 1 ? "" : "s"} across all applications`}
+        subtitle={`${incidents.length} incident${incidents.length === 1 ? "" : "s"} across all applications`}
       />
 
-      {!loading && incidents.length > 0 && (
-        <div className="flex flex-wrap items-center gap-4 mb-6">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-white/65">
-            <Filter className="h-4 w-4" />
-            <span className="text-xs font-bold uppercase tracking-wider">Filter By</span>
-          </div>
-          <select value={severityFilter} onChange={(e) => setSeverityFilter(e.target.value)} className={selectClass}>
+      {!tablePending && (
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+          <FilterSelect value={values.severity} onChange={(v) => setFilter("severity", v)}>
             <option value="">All severities</option>
             {severities.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
-          </select>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={selectClass}>
+          </FilterSelect>
+          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
             <option value="">All statuses</option>
             {statuses.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
-          </select>
-          {hasActiveFilter && (
-            <button
-              type="button"
-              onClick={() => {
-                setSeverityFilter("");
-                setStatusFilter("");
-              }}
-              className="h-9 px-3 text-sm font-medium text-gray-500 dark:text-white/65 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Clear
-            </button>
-          )}
-        </div>
+          </FilterSelect>
+          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+            <option value="">All applications</option>
+            {apps.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </FilterSelect>
+          <FilterSelect value={values.departmentName} onChange={(v) => setFilter("departmentName", v)}>
+            <option value="">All departments</option>
+            {departments.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </FilterSelect>
+          <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
+            <option value="">All environments</option>
+            {envs.map((e) => (
+              <option key={e} value={e}>{e}</option>
+            ))}
+          </FilterSelect>
+        </TableFilterBar>
       )}
 
-      {loading ? (
-        <p className="text-gray-500 p-6">Loading…</p>
+      {tablePending ? (
+        <TableSkeleton columns={INCIDENT_COLUMNS.length} />
       ) : incidents.length === 0 ? (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
           <AlertOctagon className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">No incidents recorded.</p>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
-          <AlertOctagon className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">No incidents match the selected filters.</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            {hasActive ? "No incidents match the selected filters." : "No incidents recorded."}
+          </p>
         </div>
       ) : (
         <DataTable title="All Incidents" subtitle="Sorted by most recent" icon={AlertOctagon}>
@@ -119,33 +139,38 @@ export default function IncidentsContent() {
             <table className="w-full text-sm">
               <thead className={tableHeadRow}>
                 <tr>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Incident</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Severity</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Title</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Related Release</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Assigned To</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Env</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Timestamp</th>
+                  {isColumnVisible("incidentCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Incident</th>}
+                  {isColumnVisible("application") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>}
+                  {isColumnVisible("severity") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Severity</th>}
+                  {isColumnVisible("title") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Title</th>}
+                  {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
+                  {isColumnVisible("impact") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>}
+                  {isColumnVisible("relatedRelease") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Related Release</th>}
+                  {isColumnVisible("assignedTo") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Assigned To</th>}
+                  {isColumnVisible("environment") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Env</th>}
+                  {isColumnVisible("timestamp") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Timestamp</th>}
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((i) => (
+                {incidents.map((i) => (
                   <tr key={i.id} className={tableRow}>
+                    {isColumnVisible("incidentCode") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       <span className="font-mono text-xs text-brand-600 dark:text-brand-400">{i.incidentCode}</span>
                     </td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{i.application.name}</td>
+                    )}
+                    {isColumnVisible("application") && <td className={`${tableCell} whitespace-nowrap`}>{i.application.name}</td>}
+                    {isColumnVisible("severity") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold", SEVERITY_CLASSES[i.severity] ?? SEVERITY_CLASSES.P3)}>
                         {i.severity}
                       </span>
                     </td>
-                    <td className={`${tableCell} truncate max-w-[280px]`} title={i.title}>{i.title}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={i.status} /></td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{i.impact}</td>
+                    )}
+                    {isColumnVisible("title") && <td className={`${tableCell} truncate max-w-[280px]`} title={i.title}>{i.title}</td>}
+                    {isColumnVisible("status") && <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={i.status} /></td>}
+                    {isColumnVisible("impact") && <td className={`${tableCell} whitespace-nowrap`}>{i.impact}</td>}
+                    {isColumnVisible("relatedRelease") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       {i.relatedRelease ? (
                         <ProgressLink href={`/releases/${i.relatedRelease.id}`} className="text-brand-600 dark:text-brand-400 hover:underline text-xs">
@@ -157,9 +182,10 @@ export default function IncidentsContent() {
                         "—"
                       )}
                     </td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{i.assignedTo ?? "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{i.environmentName}</td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{formatDate(i.timestamp)}</td>
+                    )}
+                    {isColumnVisible("assignedTo") && <td className={`${tableCell} whitespace-nowrap`}>{i.assignedTo ?? "—"}</td>}
+                    {isColumnVisible("environment") && <td className={`${tableCell} whitespace-nowrap`}>{i.environmentName}</td>}
+                    {isColumnVisible("timestamp") && <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{formatDate(i.timestamp)}</td>}
                   </tr>
                 ))}
               </tbody>

@@ -73,10 +73,8 @@ export function NewUserWelcomeModal() {
 
           <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-4 text-sm text-gray-600 space-y-2">
             <p>
-              <strong className="text-gray-800">Every page</strong> shows a help banner at the top — what the screen is for, tips, and quick links.
-            </p>
-            <p>
-              Use the <strong className="text-gray-800">?</strong> button in the header for the full site map, or{" "}
+              <strong className="text-gray-800">Every desk page</strong> has collapsible Full Documentation and Quick Reference at the top — use the{" "}
+              <strong className="text-gray-800">?</strong> button in the header to jump there, or{" "}
               <kbd className="text-xs border border-gray-200 rounded px-1">⌘K</kbd> to search naturally
               (e.g. &ldquo;blocked in FIN&rdquo;).
             </p>

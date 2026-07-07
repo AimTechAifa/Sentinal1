@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { prisma } from "@/lib/prisma";
+import { releaseListOrderBy, releaseListWhere, sp } from "@/lib/list-api-filters";
 import { generateReleaseId, normalizeProgramProject } from "@/lib/release-id";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
+  const params = sp(req);
   const data = await prisma.release.findMany({
+    where: releaseListWhere(params),
     include: {
       department: true,
       applications: { include: { application: true } },
       dependsOn: { include: { dependsOnRelease: true } },
       stakeholders: { include: { user: true } },
     },
-    orderBy: { releaseDate: "asc" },
+    orderBy: releaseListOrderBy(params),
   });
   return NextResponse.json(data);
 }

@@ -2,18 +2,20 @@ import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { createUserRow } from "@/lib/org-compat";
 import { prisma } from "@/lib/prisma";
+import { userOrderBy, userWhere, sp } from "@/lib/list-api-filters";
 
 async function nextUserId() {
   const count = await prisma.user.count();
   return `USR-${String(count + 1).padStart(4, "0")}`;
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
   const data = await prisma.user.findMany({
-    orderBy: [{ department: "asc" }, { name: "asc" }],
+    where: userWhere(sp(req)),
+    orderBy: userOrderBy(sp(req)),
   });
   return NextResponse.json(data);
 }

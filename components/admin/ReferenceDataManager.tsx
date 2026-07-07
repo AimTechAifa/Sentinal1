@@ -1,8 +1,16 @@
 "use client";
 
+import { Suspense } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Database, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTableFilters } from "@/hooks/useTableFilters";
+import { REFERENCE_DATA_FILTER_SCHEMA } from "@/lib/table-filters";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { REFERENCE_DATA_COLUMNS } from "@/lib/table-page-columns";
 import {
   apiJson,
   FormField,
@@ -35,10 +43,11 @@ const emptyValueForm: ValueFormState = { value: "", sortOrder: "0", active: true
  * doesn't exist yet.
  */
 export function ReferenceDataManager() {
+  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(REFERENCE_DATA_FILTER_SCHEMA);
   const [rows, setRows] = useState<ReferenceDataRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const selectedCategory = values.category;
 
   const [valueModalOpen, setValueModalOpen] = useState(false);
   const [editingValue, setEditingValue] = useState<ReferenceDataRow | null>(null);
@@ -54,14 +63,15 @@ export function ReferenceDataManager() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiJson<ReferenceDataRow[]>("/api/reference-data?includeInactive=1");
+      const qs = apiQuery ? `${apiQuery}&includeInactive=1` : "?includeInactive=1";
+      const data = await apiJson<ReferenceDataRow[]>(`/api/reference-data${qs}`);
       setRows(data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load reference data");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiQuery]);
 
   useEffect(() => {
     load();
@@ -80,9 +90,9 @@ export function ReferenceDataManager() {
 
   useEffect(() => {
     if (!selectedCategory && categories.length > 0) {
-      setSelectedCategory(categories[0].category);
+      setFilter("category", categories[0].category);
     }
-  }, [categories, selectedCategory]);
+  }, [categories, selectedCategory, setFilter]);
 
   const categoryRows = useMemo(
     () =>
@@ -90,6 +100,27 @@ export function ReferenceDataManager() {
         .filter((r) => r.category === selectedCategory)
         .sort((a, b) => a.sortOrder - b.sortOrder || a.value.localeCompare(b.value)),
     [rows, selectedCategory]
+  );
+
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("reference-data", REFERENCE_DATA_COLUMNS, { lockedKeys: ["value", "actions"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
   );
 
   const openAddValue = () => {
@@ -170,7 +201,7 @@ export function ReferenceDataManager() {
         body: JSON.stringify({ category: categoryForm.category.trim(), value: categoryForm.value.trim(), sortOrder: 1, active: true }),
       });
       setCategoryModalOpen(false);
-      setSelectedCategory(categoryForm.category.trim());
+      setFilter("category", categoryForm.category.trim());
       setCategoryForm({ category: "", value: "" });
       await load();
     } catch (err) {
@@ -201,7 +232,7 @@ export function ReferenceDataManager() {
           {categories.map((c) => (
             <button
               key={c.category}
-              onClick={() => setSelectedCategory(c.category)}
+              onClick={() => setFilter("category", c.category)}
               className={cn(
                 "w-full text-left px-3 py-2 text-xs font-semibold rounded-lg transition-colors flex items-center justify-between",
                 selectedCategory === c.category
@@ -232,8 +263,16 @@ export function ReferenceDataManager() {
 
         {error && <MasterDataError message={error} onRetry={load} />}
 
-        {loading ? (
-          <MasterDataLoading />
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+          <FilterSelect value={values.active} onChange={(v) => setFilter("active", v)}>
+            <option value="">All values</option>
+            <option value="true">Active only</option>
+            <option value="false">Inactive only</option>
+          </FilterSelect>
+        </TableFilterBar>
+
+        {tablePending ? (
+          <MasterDataLoading columns={REFERENCE_DATA_COLUMNS.length} />
         ) : !selectedCategory ? (
           <MasterDataEmptyState
             entityLabel="categories"
@@ -267,17 +306,18 @@ export function ReferenceDataManager() {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="border-b border-gray-200 bg-gray-50/50">
-                      <th className={thClass}>Value</th>
-                      <th className={thClass}>Sort Order</th>
-                      <th className={thClass}>Active</th>
+                      {isColumnVisible("value") && <th className={thClass}>Value</th>}
+                      {isColumnVisible("sortOrder") && <th className={thClass}>Sort Order</th>}
+                      {isColumnVisible("active") && <th className={thClass}>Active</th>}
                       <th className={`${thClass} text-right`}>Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {categoryRows.map((row) => (
                       <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className={`${tdClass} font-semibold text-gray-900`}>{row.value}</td>
-                        <td className={cn(tdClass, "font-mono text-gray-500")}>{row.sortOrder}</td>
+                        {isColumnVisible("value") && <td className={`${tdClass} font-semibold text-gray-900`}>{row.value}</td>}
+                        {isColumnVisible("sortOrder") && <td className={cn(tdClass, "font-mono text-gray-500")}>{row.sortOrder}</td>}
+                        {isColumnVisible("active") && (
                         <td className={tdClass}>
                           <button
                             type="button"
@@ -292,6 +332,7 @@ export function ReferenceDataManager() {
                             {row.active ? "Active" : "Inactive"}
                           </button>
                         </td>
+                        )}
                         <td className={`${tdClass} text-right`}>
                           <button
                             type="button"

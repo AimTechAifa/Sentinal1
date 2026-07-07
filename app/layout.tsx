@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Poppins, JetBrains_Mono } from "next/font/google";
 import { NavigationProgressProvider } from "@/components/layout/NavigationProgress";
 import "./globals.css";
@@ -39,9 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
-        <MuiThemeProvider>
-          <NavigationProgressProvider>{children}</NavigationProgressProvider>
-        </MuiThemeProvider>
+        <ClerkProvider afterSignOutUrl="/sign-in">
+          <MuiThemeProvider>
+            <NavigationProgressProvider>{children}</NavigationProgressProvider>
+          </MuiThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

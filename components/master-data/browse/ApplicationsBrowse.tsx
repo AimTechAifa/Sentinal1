@@ -8,9 +8,15 @@ import {
   filterRows,
   pageCount,
   paginateRows,
-  sortRows,
   type SortDir,
 } from "@/lib/master-data/table-utils";
+import { useTableFilters } from "@/hooks/useTableFilters";
+import { APPLICATIONS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { APPLICATION_COLUMNS } from "@/lib/table-page-columns";
 import {
   apiJson,
   BrowseToolbar,
@@ -89,18 +95,22 @@ const emptyEnvForm: EnvFormState = {
 type AppSortKey = "name" | "type" | "criticality" | "productOwner" | "techLead";
 
 export function ApplicationsBrowse() {
+  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(APPLICATIONS_FILTER_SCHEMA);
   const [apps, setApps] = useState<ApplicationRow[]>([]);
   const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [sortKey, setSortKey] = useState<AppSortKey>("name");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const search = values.q;
+  const page = parseInt(values.page || "1", 10) || 1;
+  const sortKey = (values.sort || "name") as AppSortKey;
+  const sortDir = (values.sortDir || "asc") as SortDir;
   const [envSearch, setEnvSearch] = useState("");
   const [envPage, setEnvPage] = useState(1);
 
-  const [managingApp, setManagingApp] = useState<ApplicationRow | null>(null);
+  const managingApp = useMemo(
+    () => apps.find((a) => a.id === values.manageApp) ?? null,
+    [apps, values.manageApp]
+  );
   const [envs, setEnvs] = useState<EnvironmentRow[]>([]);
   const [envLoading, setEnvLoading] = useState(false);
 
@@ -121,7 +131,7 @@ export function ApplicationsBrowse() {
     setError(null);
     try {
       const [appData, deptData] = await Promise.all([
-        apiJson<ApplicationRow[]>("/api/applications"),
+        apiJson<ApplicationRow[]>(`/api/applications${apiQuery}`),
         apiJson<DepartmentOption[]>("/api/departments"),
       ]);
       setApps(appData);
@@ -131,7 +141,7 @@ export function ApplicationsBrowse() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiQuery]);
 
   const loadEnvs = useCallback(async (applicationId: string) => {
     setEnvLoading(true);
@@ -155,30 +165,11 @@ export function ApplicationsBrowse() {
   }, [managingApp, loadEnvs]);
 
   useEffect(() => {
-    setPage(1);
-  }, [search]);
-
-  useEffect(() => {
     setEnvPage(1);
   }, [envSearch]);
 
-  const filteredApps = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    let list = sortRows(apps, sortKey, sortDir);
-    if (!q) return list;
-    return list.filter(
-      (row) =>
-        row.name.toLowerCase().includes(q) ||
-        row.department?.name?.toLowerCase().includes(q) ||
-        row.type.toLowerCase().includes(q) ||
-        row.criticality.toLowerCase().includes(q) ||
-        row.productOwner.toLowerCase().includes(q) ||
-        row.techLead.toLowerCase().includes(q)
-    );
-  }, [apps, search, sortKey, sortDir]);
-
-  const appTotalPages = pageCount(filteredApps.length, DEFAULT_PAGE_SIZE);
-  const appPageRows = paginateRows(filteredApps, page, DEFAULT_PAGE_SIZE);
+  const appTotalPages = pageCount(apps.length, DEFAULT_PAGE_SIZE);
+  const appPageRows = paginateRows(apps, page, DEFAULT_PAGE_SIZE);
 
   const filteredEnvs = useMemo(
     () => filterRows(envs, envSearch, ["name", "type", "owner", "status"]),
@@ -187,11 +178,32 @@ export function ApplicationsBrowse() {
   const envTotalPages = pageCount(filteredEnvs.length, DEFAULT_PAGE_SIZE);
   const envPageRows = paginateRows(filteredEnvs, envPage, DEFAULT_PAGE_SIZE);
 
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("applications", APPLICATION_COLUMNS, { lockedKeys: ["name", "actions"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
+
   const toggleSort = (key: AppSortKey) => {
-    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
-      setSortKey(key);
-      setSortDir("asc");
+      setFilter("sort", key);
+      setFilter("sortDir", "asc");
     }
   };
 
@@ -320,7 +332,7 @@ export function ApplicationsBrowse() {
       <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
         <button
           type="button"
-          onClick={() => setManagingApp(null)}
+          onClick={() => setFilter("manageApp", "")}
           className="flex items-center gap-2 text-[14px] font-semibold text-[#2548C9] mb-4 hover:underline"
         >
           <ArrowLeft className="h-4 w-4" /> Back to Applications
@@ -429,47 +441,78 @@ export function ApplicationsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={loadApps} />}
 
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+        <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
+          <option value="">All departments</option>
+          {departments.map((d) => (
+            <option key={d.id} value={d.id}>{d.name}</option>
+          ))}
+        </FilterSelect>
+        <FilterSelect value={values.criticality} onChange={(v) => setFilter("criticality", v)}>
+          <option value="">All criticality</option>
+          {["Low", "Medium", "High", "Critical"].map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </FilterSelect>
+        <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
+          <option value="">All types</option>
+          {[...new Set(apps.map((a) => a.type).filter(Boolean))].sort().map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </FilterSelect>
+      </TableFilterBar>
+
       <MasterDataTableShell>
         <BrowseToolbar
           search={search}
-          onSearchChange={setSearch}
+          onSearchChange={(v) => setFilter("q", v)}
           page={page}
           totalPages={appTotalPages}
-          totalRows={filteredApps.length}
+          totalRows={apps.length}
           pageSize={DEFAULT_PAGE_SIZE}
-          onPageChange={setPage}
+          onPageChange={(p) => setFilter("page", String(p))}
         />
-        {loading ? (
-          <MasterDataLoading />
-        ) : filteredApps.length === 0 ? (
+        {tablePending ? (
+          <MasterDataLoading columns={APPLICATION_COLUMNS.length} />
+        ) : apps.length === 0 ? (
           <MasterDataEmptyState entityLabel="applications" addLabel="Add Application" onAdd={openCreateApp} />
         ) : (
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
-                <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
-                <th className={thClass}>Department</th>
-                <SortableTh label="Type" active={sortKey === "type"} dir={sortDir} onClick={() => toggleSort("type")} />
-                <SortableTh label="Criticality" active={sortKey === "criticality"} dir={sortDir} onClick={() => toggleSort("criticality")} />
-                <SortableTh label="Product Owner" active={sortKey === "productOwner"} dir={sortDir} onClick={() => toggleSort("productOwner")} />
-                <SortableTh label="Tech Lead" active={sortKey === "techLead"} dir={sortDir} onClick={() => toggleSort("techLead")} />
-                <th className={thClass}>Env Count</th>
+                {isColumnVisible("name") && (
+                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
+                )}
+                {isColumnVisible("department") && <th className={thClass}>Department</th>}
+                {isColumnVisible("type") && (
+                  <SortableTh label="Type" active={sortKey === "type"} dir={sortDir} onClick={() => toggleSort("type")} />
+                )}
+                {isColumnVisible("criticality") && (
+                  <SortableTh label="Criticality" active={sortKey === "criticality"} dir={sortDir} onClick={() => toggleSort("criticality")} />
+                )}
+                {isColumnVisible("productOwner") && (
+                  <SortableTh label="Product Owner" active={sortKey === "productOwner"} dir={sortDir} onClick={() => toggleSort("productOwner")} />
+                )}
+                {isColumnVisible("techLead") && (
+                  <SortableTh label="Tech Lead" active={sortKey === "techLead"} dir={sortDir} onClick={() => toggleSort("techLead")} />
+                )}
+                {isColumnVisible("envCount") && <th className={thClass}>Env Count</th>}
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {appPageRows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className={`${tdClass} font-semibold text-gray-900 max-w-[200px]`}>{row.name}</td>
-                  <td className={tdClass}>{row.department?.name ?? "—"}</td>
-                  <td className={tdClass}>{row.type}</td>
-                  <td className={tdClass}>{row.criticality}</td>
-                  <td className={tdClass}>{row.productOwner}</td>
-                  <td className={tdClass}>{row.techLead}</td>
-                  <td className={tdClass}>{row._count?.environments ?? 0}</td>
+                  {isColumnVisible("name") && <td className={`${tdClass} font-semibold text-gray-900 max-w-[200px]`}>{row.name}</td>}
+                  {isColumnVisible("department") && <td className={tdClass}>{row.department?.name ?? "—"}</td>}
+                  {isColumnVisible("type") && <td className={tdClass}>{row.type}</td>}
+                  {isColumnVisible("criticality") && <td className={tdClass}>{row.criticality}</td>}
+                  {isColumnVisible("productOwner") && <td className={tdClass}>{row.productOwner}</td>}
+                  {isColumnVisible("techLead") && <td className={tdClass}>{row.techLead}</td>}
+                  {isColumnVisible("envCount") && <td className={tdClass}>{row._count?.environments ?? 0}</td>}
                   <td className={`${tdClass} text-right`}>
                     <RowActionsMenu
-                      extraItems={[{ label: "Manage Environments", onClick: () => setManagingApp(row) }]}
+                      extraItems={[{ label: "Manage Environments", onClick: () => setFilter("manageApp", row.id) }]}
                       onEdit={() => openEditApp(row)}
                       onDelete={() => handleDeleteApp(row)}
                     />

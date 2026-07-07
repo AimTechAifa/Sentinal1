@@ -114,8 +114,8 @@ export function DbReleaseDetail({ id }: { id: string }) {
     router.push("/releases");
   };
 
-  if (loading) return <p className="text-gray-500">Loading release…</p>;
-  if (!release) return <p className="text-gray-500">Release not found.</p>;
+  if (loading) return <p className="text-gray-500 dark:text-white/60">Loading release…</p>;
+  if (!release) return <p className="text-gray-500 dark:text-white/60">Release not found.</p>;
 
   return (
     <div className="space-y-6">
@@ -177,7 +177,7 @@ export function DbReleaseDetail({ id }: { id: string }) {
             <Item label="Stakeholders" value={release.stakeholders?.map((s) => s.user.name).join(", ") || "—"} />
           </dl>
           {(release.blockers || release.vendorMaintenance || release.changeFreeze || release.regulatory || release.rollbackPlan) && (
-            <dl className="grid sm:grid-cols-2 gap-3 text-sm mt-4 pt-4 border-t border-gray-100">
+            <dl className="grid sm:grid-cols-2 gap-3 text-sm mt-4 pt-4 border-t border-gray-100 dark:border-[var(--border)]">
               {release.blockers && <Item label="Blockers" value={release.blockers} />}
               {release.vendorMaintenance && <Item label="Vendor maintenance" value={release.vendorMaintenance} />}
               {release.changeFreeze && <Item label="Change freeze" value={release.changeFreeze} />}
@@ -187,7 +187,7 @@ export function DbReleaseDetail({ id }: { id: string }) {
           )}
           {canEdit && (
             <div className="mt-4 flex flex-wrap gap-2">
-              <span className="text-xs text-gray-500 w-full">Quick status</span>
+              <span className="text-xs text-gray-500 dark:text-white/55 w-full">Quick status</span>
               {STATUSES.map((s) => (
                 <button
                   key={s}
@@ -195,7 +195,7 @@ export function DbReleaseDetail({ id }: { id: string }) {
                   onClick={() => patchStatus(s)}
                   className={cn(
                     "rounded-lg px-2.5 py-1 text-xs border transition-colors",
-                    release.status === s ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 hover:border-brand-300"
+                    release.status === s ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 dark:border-[var(--border)] hover:border-brand-300 dark:hover:border-brand-500/50 dark:text-white/75"
                   )}
                 >
                   {s}
@@ -203,7 +203,7 @@ export function DbReleaseDetail({ id }: { id: string }) {
               ))}
             </div>
           )}
-          {release.notes && <p className="mt-4 text-sm text-gray-600 border-t pt-3">{release.notes}</p>}
+          {release.notes && <p className="mt-4 text-sm text-gray-600 dark:text-white/75 border-t border-gray-100 dark:border-[var(--border)] pt-3">{release.notes}</p>}
         </AdvancedCard>
         </div>
 
@@ -215,7 +215,7 @@ export function DbReleaseDetail({ id }: { id: string }) {
                 <button type="button" className={taBtnPrimary + " flex-1 !bg-error-600"} onClick={() => recordDecision("No-Go — blocked")}>No-Go</button>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">{release.decision ?? "No decision recorded"}</p>
+              <p className="text-sm text-gray-500 dark:text-white/60">{release.decision ?? "No decision recorded"}</p>
             )}
           </AdvancedCard>
         </div>
@@ -225,11 +225,11 @@ export function DbReleaseDetail({ id }: { id: string }) {
         <AdvancedCard title="Linked environment bookings">
           <ul className="space-y-2 text-sm">
             {release.bookings.map((b) => (
-              <li key={b.id} className="text-gray-700">
+              <li key={b.id} className="text-gray-700 dark:text-white/80">
                 <strong>{b.application.name}</strong> · {formatDate(b.fromDate)} → {formatDate(b.toDate)}
-                {b.bookedBy && <span className="text-gray-500"> · Booked by {b.bookedBy}</span>}
-                {b.team && <span className="text-gray-500"> · Team {b.team}</span>}
-                {b.purpose && <span className="text-gray-500"> · {b.purpose}</span>}
+                {b.bookedBy && <span className="text-gray-500 dark:text-white/50"> · Booked by {b.bookedBy}</span>}
+                {b.team && <span className="text-gray-500 dark:text-white/50"> · Team {b.team}</span>}
+                {b.purpose && <span className="text-gray-500 dark:text-white/50"> · {b.purpose}</span>}
               </li>
             ))}
           </ul>
@@ -245,9 +245,9 @@ export function DbReleaseDetail({ id }: { id: string }) {
             </div>
           )}
           {release.auditEvents.map((e) => (
-            <div key={e.id} className="text-sm border-b border-gray-100 pb-2">
-              <span className="text-xs text-gray-400">{formatDateTime(e.createdAt)} · {e.actor}</span>
-              <p className="text-gray-700 capitalize">{e.action.replace("_", " ")}{e.detail ? ` — ${e.detail}` : ""}</p>
+            <div key={e.id} className="text-sm border-b border-gray-100 dark:border-[var(--border)] pb-2">
+              <span className="text-xs text-gray-400 dark:text-white/45">{formatDateTime(e.createdAt)} · {e.actor}</span>
+              <p className="text-gray-700 dark:text-white/80 capitalize">{e.action.replace("_", " ")}{e.detail ? ` — ${e.detail}` : ""}</p>
             </div>
           ))}
         </div>
@@ -284,8 +284,8 @@ export function DbReleaseDetail({ id }: { id: string }) {
 function Item({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs text-gray-400">{label}</dt>
-      <dd className="font-medium text-gray-800">{value}</dd>
+      <dt className="text-xs text-gray-400 dark:text-white/45">{label}</dt>
+      <dd className="font-medium text-gray-800 dark:text-white">{value}</dd>
     </div>
   );
 }

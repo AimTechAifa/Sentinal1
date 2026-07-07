@@ -89,7 +89,7 @@ export function StakeholderCommsPanel({
 
   return (
     <AdvancedCard title="Stakeholder comms" subtitle="Draft status update for email or Teams" icon={MessageSquare} variant="ai">
-      <p className="text-xs text-gray-500 mb-3">
+      <p className="text-xs text-gray-500 dark:text-white/60 mb-3">
         Uses live readiness, blockers, slip impact, and Jira counts for {releaseCode}.
       </p>
       <div className="flex flex-wrap gap-2 mb-4">

@@ -283,7 +283,7 @@ const STATIC_GUIDES: Record<string, PageGuideEntry> = {
       "Team roster and role labels for the demo. Production would connect to Entra ID / SSO.",
     dataSource: "none",
     tips: ["Sign in role (Admin/Editor/Read only) is chosen at login."],
-    related: [{ label: "Login", href: "/login" }],
+    related: [{ label: "Sign in", href: "/sign-in" }],
   },
   "/templates": {
     key: "templates",

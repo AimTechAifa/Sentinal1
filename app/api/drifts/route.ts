@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { prisma } from "@/lib/prisma";
+import { driftWhere, sp } from "@/lib/list-api-filters";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
   const data = await prisma.drift.findMany({
+    where: driftWhere(sp(req)),
     include: {
       release: { select: { id: true, releaseCode: true, name: true, status: true } },
       application: { select: { id: true, name: true } },

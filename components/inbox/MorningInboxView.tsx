@@ -9,6 +9,7 @@ import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
 import { TopActionsToday } from "@/components/inbox/TopActionsToday";
 import { InboxCrmWidgets } from "@/components/inbox/InboxCrmWidgets";
 import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { filterLabel } from "@/lib/release-filters";
 import {
   inboxSectionLabel,
@@ -171,7 +172,7 @@ export function MorningInboxView() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-gray-500">Loading inbox…</p>
+        <TableSkeleton columns={5} rows={6} showFilterBar={false} />
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] px-8 py-16 text-center shadow-sm animate-fade-in-up">
           <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-emerald-100 to-teal-50 flex items-center justify-center mb-4 shadow-sm border border-emerald-200/50">

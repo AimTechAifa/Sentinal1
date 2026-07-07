@@ -1,11 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Filter, GitCompareArrows } from "lucide-react";
+import { GitCompareArrows } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { DRIFT_COLUMNS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
+import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { useFilteredFetch } from "@/hooks/useTableFilters";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
+import { DRIFTS_FILTER_SCHEMA } from "@/lib/table-filters";
 
 type ReferenceDataRow = { id: string; category: string; value: string; sortOrder: number; active: boolean };
 
@@ -33,128 +43,125 @@ const SEVERITY_CLASSES: Record<string, string> = {
   Low: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
 };
 
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
-
 export default function DriftDashboardContent() {
-  const [drifts, setDrifts] = useState<DriftRow[]>([]);
+  const { rows: drifts, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<DriftRow>(
+    "/api/drifts",
+    DRIFTS_FILTER_SCHEMA
+  );
   const [driftTypes, setDriftTypes] = useState<ReferenceDataRow[]>([]);
-  const [driftTypeFilter, setDriftTypeFilter] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
+  const [allDrifts, setAllDrifts] = useState<DriftRow[]>([]);
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/drifts").then((r) => (r.ok ? r.json() : [])),
       fetch("/api/reference-data?category=drift_type").then((r) => (r.ok ? r.json() : [])),
-    ])
-      .then(([d, t]) => {
-        setDrifts(d);
-        setDriftTypes(t);
-      })
-      .finally(() => setLoading(false));
+      fetch("/api/applications").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/drifts").then((r) => (r.ok ? r.json() : [])),
+    ]).then(([t, a, d]) => {
+      setDriftTypes(t);
+      setApps(a);
+      setAllDrifts(d);
+    });
   }, []);
 
-  const filteredDrifts = useMemo(
-    () => (driftTypeFilter ? drifts.filter((d) => d.driftType === driftTypeFilter) : drifts),
-    [drifts, driftTypeFilter]
-  );
+  const severities = useMemo(() => [...new Set(allDrifts.map((d) => d.severity))].sort(), [allDrifts]);
+  const statuses = useMemo(() => [...new Set(allDrifts.map((d) => d.status))].sort(), [allDrifts]);
 
-  const selectClass =
-    "h-9 rounded-lg border border-gray-300 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] px-3 py-1 text-sm text-gray-700 dark:text-white shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 disabled:opacity-50";
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("drifts", DRIFT_COLUMNS, { lockedKeys: ["driftCode"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
 
   return (
     <div>
       <TopBar
+        trailing={<PageDocumentation pageKey="drifts" />}
         title="Drift Dashboard"
-        subtitle={`${filteredDrifts.length} drift${filteredDrifts.length === 1 ? "" : "s"} detected across environments`}
+        subtitle={`${drifts.length} drift${drifts.length === 1 ? "" : "s"} detected across environments`}
       />
-
-      {!loading && drifts.length > 0 && (
-        <div className="flex flex-wrap items-center gap-4 mb-6">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-white/65">
-            <Filter className="h-4 w-4" />
-            <span className="text-xs font-bold uppercase tracking-wider">Filter By</span>
-          </div>
-          <select
-            value={driftTypeFilter}
-            onChange={(e) => setDriftTypeFilter(e.target.value)}
-            className={selectClass}
-          >
+      {!tablePending && (
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+          <FilterSelect value={values.driftType} onChange={(v) => setFilter("driftType", v)}>
             <option value="">All drift types</option>
-            {driftTypes.map((t) => (
-              <option key={t.id} value={t.value}>{t.value}</option>
-            ))}
-          </select>
-          {driftTypeFilter && (
-            <button
-              type="button"
-              onClick={() => setDriftTypeFilter("")}
-              className="h-9 px-3 text-sm font-medium text-gray-500 dark:text-white/65 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Clear
-            </button>
-          )}
-        </div>
+            {driftTypes.map((t) => <option key={t.id} value={t.value}>{t.value}</option>)}
+          </FilterSelect>
+          <FilterSelect value={values.severity} onChange={(v) => setFilter("severity", v)}>
+            <option value="">All severities</option>
+            {severities.map((s) => <option key={s} value={s}>{s}</option>)}
+          </FilterSelect>
+          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+            <option value="">All statuses</option>
+            {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+          </FilterSelect>
+          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+            <option value="">All applications</option>
+            {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+          </FilterSelect>
+        </TableFilterBar>
       )}
-
-      {loading ? (
-        <p className="text-gray-500 p-6">Loading…</p>
+      {tablePending ? (
+        <TableSkeleton columns={DRIFT_COLUMNS.length} />
       ) : drifts.length === 0 ? (
         <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
           <GitCompareArrows className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">No drift detected. All environments are in sync.</p>
-        </div>
-      ) : filteredDrifts.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
-          <GitCompareArrows className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-500 dark:text-gray-400">No drifts match the selected filter.</p>
+          <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No drifts match the selected filters." : "No configuration drifts detected."}</p>
         </div>
       ) : (
-        <DataTable title="All Drifts" subtitle="Sorted by detected date" icon={GitCompareArrows}>
+        <DataTable title="All Drifts" subtitle="Sorted by most recently detected" icon={GitCompareArrows}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className={tableHeadRow}>
                 <tr>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Drift Code</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Environment</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Type</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Category</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Detected Date</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Severity</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Description</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Remediation</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>ETA</th>
+                  {isColumnVisible("driftCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Drift</th>}
+                  {isColumnVisible("release") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release</th>}
+                  {isColumnVisible("application") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>}
+                  {isColumnVisible("environment") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Env</th>}
+                  {isColumnVisible("type") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Type</th>}
+                  {isColumnVisible("severity") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Severity</th>}
+                  {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
+                  {isColumnVisible("detected") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Detected</th>}
                 </tr>
               </thead>
               <tbody>
-                {filteredDrifts.map((d) => (
+                {drifts.map((d) => (
                   <tr key={d.id} className={tableRow}>
+                    {isColumnVisible("driftCode") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       <span className="font-mono text-xs text-brand-600 dark:text-brand-400">{d.driftCode}</span>
+                      <div className="text-xs text-gray-500 truncate max-w-[200px]" title={d.description}>{d.description}</div>
                     </td>
+                    )}
+                    {isColumnVisible("release") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
-                      <ProgressLink href={`/releases/${d.release.id}`} className="text-brand-600 dark:text-brand-400 hover:underline text-xs">
-                        {d.release.releaseCode}
-                      </ProgressLink>
+                      <ProgressLink href={`/releases/${d.release.id}`} className="text-brand-600 dark:text-brand-400 hover:underline text-xs">{d.release.releaseCode}</ProgressLink>
                     </td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{d.application.name}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{d.environmentName}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{d.driftType}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{d.driftCategory ?? "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{formatDate(d.detectedDate)}</td>
+                    )}
+                    {isColumnVisible("application") && <td className={`${tableCell} whitespace-nowrap`}>{d.application.name}</td>}
+                    {isColumnVisible("environment") && <td className={`${tableCell} whitespace-nowrap`}>{d.environmentName}</td>}
+                    {isColumnVisible("type") && <td className={`${tableCell} whitespace-nowrap`}>{d.driftType}</td>}
+                    {isColumnVisible("severity") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
-                      <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold", SEVERITY_CLASSES[d.severity] ?? SEVERITY_CLASSES.Medium)}>
-                        {d.severity}
-                      </span>
+                      <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold", SEVERITY_CLASSES[d.severity] ?? SEVERITY_CLASSES.Medium)}>{d.severity}</span>
                     </td>
-                    <td className={`${tableCell} truncate max-w-[200px]`} title={d.description}>{d.description}</td>
-                    <td className={`${tableCell} truncate max-w-[200px] whitespace-nowrap`} title={d.impactOnRelease ?? ""}>{d.impactOnRelease ?? "—"}</td>
-                    <td className={`${tableCell} truncate max-w-[200px] whitespace-nowrap`} title={d.remediationAction ?? ""}>{d.remediationAction ?? "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={d.status} /></td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{d.etaToFix ? formatDate(d.etaToFix) : "—"}</td>
+                    )}
+                    {isColumnVisible("status") && <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={d.status} /></td>}
+                    {isColumnVisible("detected") && <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{formatDate(d.detectedDate)}</td>}
                   </tr>
                 ))}
               </tbody>

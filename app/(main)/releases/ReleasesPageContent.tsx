@@ -8,11 +8,16 @@ import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { NeedsAttentionPanel } from "@/components/dashboard/NeedsAttentionPanel";
 import { ReleaseFormModal, type ReleaseFormData } from "@/components/releases/ReleaseFormModal";
-import { ReleasePlaybookBar } from "@/components/releases/ReleasePlaybookBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { RELEASE_COLUMNS } from "@/lib/table-page-columns";
 import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
-import { dbReleaseMatchesFilters, filterLabel } from "@/lib/release-filters";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { filterLabel } from "@/lib/release-filters";
 import { isNeedsAttentionStatus, type NeedsAttentionItem } from "@/lib/needs-attention";
 import {
   dbToUnified,
@@ -21,9 +26,7 @@ import {
 } from "@/lib/unified-releases";
 import { formatDate, cn } from "@/lib/utils";
 import { readinessKey } from "@/lib/release-readiness-batch";
-import { taBtnPrimary, taBtnSecondary, taInput } from "@/lib/styles";
-import { cloneReleaseForm } from "@/lib/release-playbooks";
-import { resolveSessionName } from "@/lib/user-match";
+import { taBtnPrimary } from "@/lib/styles";
 import type { SessionUser } from "@/lib/auth/roles";
 
 
@@ -59,22 +62,40 @@ export default function ReleasesPageContent() {
     bookings,
     dbRows,
     refreshLookups,
+    setSort,
+    loading: filtersLoading,
   } = useReleaseFilters();
 
   const attentionMode = searchParams.get("attention") === "1";
-  const statusFilter = searchParams.get("status");
+  const attentionStatusFilter = attentionMode ? searchParams.get("status") : null;
 
   const [user, setUser] = useState<SessionUser | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editRow, setEditRow] = useState<ReleaseRow | null>(null);
   const [formPrefill, setFormPrefill] = useState<Partial<ReleaseFormData> | null>(null);
-  const [showClonePicker, setShowClonePicker] = useState(false);
-  const [cloneSourceId, setCloneSourceId] = useState("");
   const [attentionItems, setAttentionItems] = useState<NeedsAttentionItem[]>([]);
   const [readinessByKey, setReadinessByKey] = useState<
     Record<string, { readiness: number; blockerCount: number }>
   >({});
-  const [sortMode, setSortMode] = useState<SortMode>("releaseId");
+  const [filterOptions, setFilterOptions] = useState<{ statuses: string[]; priorities: string[]; impacts: string[] }>({
+    statuses: [],
+    priorities: [],
+    impacts: [],
+  });
+
+  const sortMode = (filters.sort || "releaseId") as SortMode;
+
+  useEffect(() => {
+    fetch("/api/releases")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((rows: ReleaseRow[]) => {
+        setFilterOptions({
+          statuses: [...new Set(rows.map((r) => r.status))].sort(),
+          priorities: [...new Set(rows.map((r) => r.priority))].sort(),
+          impacts: [...new Set(rows.map((r) => r.impact))].sort(),
+        });
+      });
+  }, []);
 
   useEffect(() => {
     fetch("/api/releases/readiness")
@@ -97,10 +118,10 @@ export default function ReleasesPageContent() {
       .then((r) => r.json())
       .then((d) => {
         let items: NeedsAttentionItem[] = d.items ?? [];
-        if (statusFilter) items = items.filter((i) => i.status === statusFilter);
+        if (attentionStatusFilter) items = items.filter((i) => i.status === attentionStatusFilter);
         setAttentionItems(items);
       });
-  }, [attentionMode, filterQuery, statusFilter]);
+  }, [attentionMode, filterQuery, attentionStatusFilter]);
 
   const scopeLabel = useMemo(
     () => filterLabel(filters, departments, applications, environments),
@@ -108,15 +129,10 @@ export default function ReleasesPageContent() {
   );
 
   const unified = useMemo(() => {
-    const filteredDb = (dbRows as ReleaseRow[]).filter((r) =>
-      dbReleaseMatchesFilters(r, filters, bookings, environments)
-    );
-    
-    const db = filteredDb.map((r) => dbToUnified(r));
-
+    const db = (dbRows as ReleaseRow[]).map((r) => dbToUnified(r));
     if (attentionMode) return db.filter((r) => isNeedsAttentionStatus(r.status));
     return db;
-  }, [dbRows, filters, bookings, environments, attentionMode]);
+  }, [dbRows, attentionMode]);
 
   const sorted = useMemo(() => {
     const list = [...unified];
@@ -142,6 +158,27 @@ export default function ReleasesPageContent() {
 
   const canEdit = user?.role === "editor" || user?.role === "admin";
 
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("releases", RELEASE_COLUMNS, { lockedKeys: ["releaseCode", "actions"] });
+
+  const tablePending = useTablePageLoading(filtersLoading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
+
   const remove = async (id: string) => {
     if (!confirm("Delete this release?")) return;
     await fetch(`/api/releases/${id}`, { method: "DELETE" });
@@ -155,41 +192,10 @@ export default function ReleasesPageContent() {
     [dbRows]
   );
 
-  const openNewWithPrefill = (prefill: Partial<ReleaseFormData>) => {
-    setEditRow(null);
-    setFormPrefill(prefill);
-    setModalOpen(true);
-    setShowClonePicker(false);
-  };
-
-  const applyClone = () => {
-    const source = dbRowById(cloneSourceId);
-    if (!source) return;
-    openNewWithPrefill(
-      cloneReleaseForm(
-        {
-          releaseCode: source.releaseCode,
-          name: source.name,
-          programProject: source.programProject,
-          owner: source.owner,
-          status: source.status,
-          releaseDate: source.releaseDate,
-          priority: source.priority,
-          impact: source.impact,
-          departmentId: source.departmentId,
-          applicationIds: source.applications.map((a) => a.application.id),
-          dependsOnReleaseIds: source.dependsOn.map((d) => d.dependsOnRelease.id),
-        },
-        releaseCodes
-      )
-    );
-  };
-
-  const ownerName = user ? resolveSessionName(user.email, user.name) : "Release Desk";
-
   return (
     <div>
       <TopBar
+        trailing={<PageDocumentation pageKey="releases" />}
         title={attentionMode ? "Needs attention" : "Releases"}
         subtitle={
           attentionMode
@@ -214,7 +220,7 @@ export default function ReleasesPageContent() {
               href={`/releases?attention=1${filterQuery}`}
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                !statusFilter ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
+                !attentionStatusFilter ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
               )}
             >
               All stuck
@@ -223,7 +229,7 @@ export default function ReleasesPageContent() {
               href={`/releases?attention=1&status=Blocked${filterQuery}`}
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                statusFilter === "Blocked" ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
+                attentionStatusFilter === "Blocked" ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
               )}
             >
               Blocked
@@ -232,7 +238,7 @@ export default function ReleasesPageContent() {
               href={`/releases?attention=1&status=At%20Risk${filterQuery}`}
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                statusFilter === "At Risk" ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
+                attentionStatusFilter === "At Risk" ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
               )}
             >
               At risk
@@ -250,50 +256,14 @@ export default function ReleasesPageContent() {
         )}
       </div>
 
-      <ReleaseFiltersBar className="mb-4" />
-
-      {!attentionMode && canEdit && (
-        <>
-          <ReleasePlaybookBar
-            canEdit={canEdit}
-            lookups={{
-              departments,
-              applications,
-              releaseCodes,
-              owner: ownerName,
-            }}
-            onApply={openNewWithPrefill}
-            onClone={() => setShowClonePicker((v) => !v)}
-          />
-          {showClonePicker && (
-            <div className="mb-4 flex flex-wrap items-end gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-3">
-              <div className="min-w-[200px] flex-1">
-                <label className="text-xs font-medium text-gray-600">Clone from</label>
-                <select
-                  className={taInput}
-                  value={cloneSourceId}
-                  onChange={(e) => setCloneSourceId(e.target.value)}
-                >
-                  <option value="">Select a DB release…</option>
-                  {(dbRows as ReleaseRow[]).map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.releaseCode} — {r.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                type="button"
-                className={taBtnSecondary + " text-sm !py-2"}
-                disabled={!cloneSourceId}
-                onClick={applyClone}
-              >
-                Clone & edit
-              </button>
-            </div>
-          )}
-        </>
-      )}
+      <ReleaseFiltersBar
+        className="mb-4"
+        showListFilters={!attentionMode}
+        statusOptions={filterOptions.statuses}
+        priorityOptions={filterOptions.priorities}
+        impactOptions={filterOptions.impacts}
+        trailing={!attentionMode ? columnPicker : undefined}
+      />
 
       {!attentionMode && (
         <div className="flex flex-wrap gap-2 mb-4">
@@ -309,7 +279,7 @@ export default function ReleasesPageContent() {
             <button
               key={s.id}
               type="button"
-              onClick={() => setSortMode(s.id)}
+              onClick={() => setSort(s.id, s.id === "blockers" ? "desc" : "asc")}
               className={cn(
                 "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
                 sortMode === s.id
@@ -327,7 +297,11 @@ export default function ReleasesPageContent() {
         <NeedsAttentionPanel items={attentionItems} showViewAll={false} />
       )}
 
-      {!attentionMode && (
+      {!attentionMode && tablePending && (
+        <TableSkeleton columns={8} rows={10} />
+      )}
+
+      {!attentionMode && !tablePending && (
       <DataTable
         title="All Releases"
         subtitle="Manage releases in the central database"
@@ -343,40 +317,16 @@ export default function ReleasesPageContent() {
         <table className="w-full text-sm">
           <thead className={tableHeadRow}>
             <tr>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release ID</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release Name</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Department</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release Size</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Priority</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>CAB Date</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Start Date</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>End Date</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Test Env Required</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>UAT Env Required</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Conflict Flag</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Readiness %</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Blockers</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Vendor Maintenance</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Change Freeze</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Regulatory</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release Owner ID</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approval Status</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Depends On</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Rollback Plan</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Go-Live Checklist %</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Stakeholder IDs</th>
-              <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Deployment Window</th>
+              {RELEASE_COLUMNS.filter((c) => isColumnVisible(c.key)).map((c) => (
+                <th key={c.key} className={`${tableCell} text-left font-medium whitespace-nowrap`}>{c.label}</th>
+              ))}
               {canEdit && <th className={`${tableCell} text-left font-medium`} />}
             </tr>
           </thead>
           <tbody>
             {sorted.length === 0 ? (
               <tr>
-                <td colSpan={canEdit ? 12 : 11} className={`${tableCell} text-center text-gray-400 py-8`}>
+                <td colSpan={RELEASE_COLUMNS.filter((c) => isColumnVisible(c.key)).length + (canEdit ? 1 : 0)} className={`${tableCell} text-center text-gray-400 py-8`}>
                   No releases match the current filters.
                 </td>
               </tr>
@@ -387,6 +337,7 @@ export default function ReleasesPageContent() {
                   row={r}
                   dbRow={dbRowById(r.id)}
                   canEdit={canEdit}
+                  isColumnVisible={isColumnVisible}
                   onEdit={() => {
                     const db = dbRowById(r.id);
                     if (db) { setFormPrefill(null); setEditRow(db); setModalOpen(true); }
@@ -432,12 +383,14 @@ function UnifiedRow({
   row,
   dbRow,
   canEdit,
+  isColumnVisible,
   onEdit,
   onDelete,
 }: {
   row: UnifiedRelease;
   dbRow?: ReleaseRow;
   canEdit: boolean;
+  isColumnVisible: (key: string) => boolean;
   onEdit: () => void;
   onDelete: () => void;
 }) {
@@ -457,37 +410,41 @@ function UnifiedRow({
 
   return (
     <tr className={cn(tableRow, "group")}>
+      {isColumnVisible("releaseCode") && (
       <td className={`${tableCell} whitespace-nowrap`}>
         <ProgressLink href={row.href} className="font-mono text-xs text-brand-600 hover:underline">{row.code}</ProgressLink>
       </td>
+      )}
+      {isColumnVisible("name") && (
       <td className={`${tableCell} whitespace-nowrap`}>
         <ProgressLink href={row.href} className="hover:text-brand-600">{row.name}</ProgressLink>
       </td>
-      <td className={`${tableCell} whitespace-nowrap`}>{department}</td>
-      <td className={`${tableCell} text-xs text-gray-600 max-w-[140px] truncate`}>{applications}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.releaseSize ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap`}>{impact}</td>
-      <td className={`${tableCell} whitespace-nowrap`}>{priority}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{row.cabDate ? formatDate(row.cabDate as string) : "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{row.startDate ? formatDate(row.startDate as string) : "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{formatDate(row.date)}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.testEnvRequired ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.uatEnvRequired ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={row.status as "Ready"} /></td>
-      <td className={`${tableCell} whitespace-nowrap font-medium text-error-600`}>{row.conflictFlag ? "⚠️ CONFLICT" : "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[200px] truncate`} title={row.notes ?? ""}>{row.notes ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap font-medium`}>{row.readinessPercent !== null && row.readinessPercent !== undefined ? `${row.readinessPercent}%` : "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[200px] truncate`} title={row.blockers ?? ""}>{row.blockers ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.vendorMaintenance ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.changeFreeze ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.regulatory ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.releaseOwnerId ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.approvalStatus ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 font-mono`}>{dependsOn}</td>
-      <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[140px] truncate`}>{row.rollbackPlan ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap font-medium`}>{row.goLiveChecklistPercent !== null && row.goLiveChecklistPercent !== undefined ? `${row.goLiveChecklistPercent}%` : "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[140px] truncate`} title={row.stakeholderIds ?? ""}>{row.stakeholderIds ?? "—"}</td>
-      <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.deploymentWindow ?? "—"}</td>
+      )}
+      {isColumnVisible("department") && <td className={`${tableCell} whitespace-nowrap`}>{department}</td>}
+      {isColumnVisible("application") && <td className={`${tableCell} text-xs text-gray-600 max-w-[140px] truncate`}>{applications}</td>}
+      {isColumnVisible("releaseSize") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.releaseSize ?? "—"}</td>}
+      {isColumnVisible("impact") && <td className={`${tableCell} whitespace-nowrap`}>{impact}</td>}
+      {isColumnVisible("priority") && <td className={`${tableCell} whitespace-nowrap`}>{priority}</td>}
+      {isColumnVisible("cabDate") && <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{row.cabDate ? formatDate(row.cabDate as string) : "—"}</td>}
+      {isColumnVisible("startDate") && <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{row.startDate ? formatDate(row.startDate as string) : "—"}</td>}
+      {isColumnVisible("endDate") && <td className={`${tableCell} whitespace-nowrap text-gray-500`}>{formatDate(row.date)}</td>}
+      {isColumnVisible("testEnvRequired") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.testEnvRequired ?? "—"}</td>}
+      {isColumnVisible("uatEnvRequired") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.uatEnvRequired ?? "—"}</td>}
+      {isColumnVisible("status") && <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={row.status as "Ready"} /></td>}
+      {isColumnVisible("conflictFlag") && <td className={`${tableCell} whitespace-nowrap font-medium text-error-600`}>{row.conflictFlag ? "⚠️ CONFLICT" : "—"}</td>}
+      {isColumnVisible("notes") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[200px] truncate`} title={row.notes ?? ""}>{row.notes ?? "—"}</td>}
+      {isColumnVisible("readinessPercent") && <td className={`${tableCell} whitespace-nowrap font-medium`}>{row.readinessPercent !== null && row.readinessPercent !== undefined ? `${row.readinessPercent}%` : "—"}</td>}
+      {isColumnVisible("blockers") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[200px] truncate`} title={row.blockers ?? ""}>{row.blockers ?? "—"}</td>}
+      {isColumnVisible("vendorMaintenance") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.vendorMaintenance ?? "—"}</td>}
+      {isColumnVisible("changeFreeze") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.changeFreeze ?? "—"}</td>}
+      {isColumnVisible("regulatory") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.regulatory ?? "—"}</td>}
+      {isColumnVisible("releaseOwnerId") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.releaseOwnerId ?? "—"}</td>}
+      {isColumnVisible("approvalStatus") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.approvalStatus ?? "—"}</td>}
+      {isColumnVisible("dependsOn") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 font-mono`}>{dependsOn}</td>}
+      {isColumnVisible("rollbackPlan") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[140px] truncate`}>{row.rollbackPlan ?? "—"}</td>}
+      {isColumnVisible("goLiveChecklistPercent") && <td className={`${tableCell} whitespace-nowrap font-medium`}>{row.goLiveChecklistPercent !== null && row.goLiveChecklistPercent !== undefined ? `${row.goLiveChecklistPercent}%` : "—"}</td>}
+      {isColumnVisible("stakeholderIds") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[140px] truncate`} title={row.stakeholderIds ?? ""}>{row.stakeholderIds ?? "—"}</td>}
+      {isColumnVisible("deploymentWindow") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.deploymentWindow ?? "—"}</td>}
       {canEdit && (
         <td className={`${tableCell} whitespace-nowrap`}>
           {row.source === "database" && (

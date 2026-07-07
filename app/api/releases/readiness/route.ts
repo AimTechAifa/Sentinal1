@@ -7,8 +7,12 @@ export async function GET() {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
-  const items = await buildAllReadinessSummaries(prisma);
-  const byKey = Object.fromEntries(items.map((i) => [i.key, i]));
-
-  return NextResponse.json({ items, byKey });
+  try {
+    const items = await buildAllReadinessSummaries(prisma);
+    const byKey = Object.fromEntries(items.map((i) => [i.key, i]));
+    return NextResponse.json({ items, byKey });
+  } catch (err) {
+    console.error("releases/readiness failed:", err);
+    return NextResponse.json({ items: [], byKey: {} });
+  }
 }

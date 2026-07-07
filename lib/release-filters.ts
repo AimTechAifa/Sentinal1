@@ -10,12 +10,28 @@ export type ReleaseListFilters = {
   departmentId: string;
   applicationId: string;
   environmentId: string;
+  status: string;
+  priority: string;
+  impact: string;
+  sort: string;
+  sortDir: string;
+  period: string;
+  anchor: string;
+  tab: string;
 };
 
 export const EMPTY_RELEASE_FILTERS: ReleaseListFilters = {
   departmentId: "",
   applicationId: "",
   environmentId: "",
+  status: "",
+  priority: "",
+  impact: "",
+  sort: "",
+  sortDir: "",
+  period: "",
+  anchor: "",
+  tab: "",
 };
 
 export function filtersFromSearchParams(sp: URLSearchParams): ReleaseListFilters {
@@ -23,20 +39,38 @@ export function filtersFromSearchParams(sp: URLSearchParams): ReleaseListFilters
     departmentId: sp.get("dept") ?? "",
     applicationId: sp.get("app") ?? "",
     environmentId: sp.get("env") ?? "",
+    status: sp.get("status") ?? "",
+    priority: sp.get("priority") ?? "",
+    impact: sp.get("impact") ?? "",
+    sort: sp.get("sort") ?? "",
+    sortDir: sp.get("sortDir") ?? "",
+    period: sp.get("period") ?? "",
+    anchor: sp.get("anchor") ?? "",
+    tab: sp.get("tab") ?? "",
   };
 }
+
+const RELEASE_FILTER_PARAMS = ["dept", "app", "env", "status", "priority", "impact", "sort", "sortDir", "period", "anchor", "tab"] as const;
 
 export function filtersToSearchParams(
   filters: ReleaseListFilters,
   base?: URLSearchParams
 ): URLSearchParams {
   const params = new URLSearchParams(base?.toString() ?? "");
-  for (const key of ["dept", "app", "env"] as const) {
+  for (const key of RELEASE_FILTER_PARAMS) {
     params.delete(key);
   }
   if (filters.departmentId) params.set("dept", filters.departmentId);
   if (filters.applicationId) params.set("app", filters.applicationId);
   if (filters.environmentId) params.set("env", filters.environmentId);
+  if (filters.status) params.set("status", filters.status);
+  if (filters.priority) params.set("priority", filters.priority);
+  if (filters.impact) params.set("impact", filters.impact);
+  if (filters.sort) params.set("sort", filters.sort);
+  if (filters.sortDir) params.set("sortDir", filters.sortDir);
+  if (filters.period) params.set("period", filters.period);
+  if (filters.anchor) params.set("anchor", filters.anchor);
+  if (filters.tab) params.set("tab", filters.tab);
   return params;
 }
 
@@ -56,7 +90,17 @@ export function appendFilterQuery(url: string, filters: ReleaseListFilters): str
 }
 
 export function hasActiveFilters(filters: ReleaseListFilters): boolean {
-  return !!(filters.departmentId || filters.applicationId || filters.environmentId);
+  return !!(
+    filters.departmentId ||
+    filters.applicationId ||
+    filters.environmentId ||
+    filters.status ||
+    filters.priority ||
+    filters.impact ||
+    filters.period ||
+    filters.anchor ||
+    filters.tab
+  );
 }
 
 export type DbReleaseFilterRow = {

@@ -1,23 +1,32 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import { useSidebar } from "@/context/SidebarContext";
 import { Bell, CircleHelp, Menu, Search } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { GlobalSearch } from "@/components/layout/GlobalSearch";
 import { NotificationPanel } from "@/components/layout/NotificationPanel";
-import { HelpCenterModal } from "@/components/help/HelpCenterModal";
+import { usePageDocumentationTrigger } from "@/context/PageDocumentationContext";
 import { ThemeModeToggle } from "@/components/materio/ThemeModeToggle";
 import { useReleaseStore } from "@/context/ReleaseStoreContext";
 
 export function AppHeader() {
+  const { user, isLoaded } = useUser();
   const { toggleMobileSidebar } = useSidebar();
   const { unreadNotifications } = useReleaseStore();
+  const { requestPageDocumentationOpen } = usePageDocumentationTrigger();
   const [searchOpen, setSearchOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
 
   const [mounted, setMounted] = useState(false);
+
+  const displayName =
+    user?.fullName?.trim() ||
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim() ||
+    user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
+    "User";
+  const displayEmail = user?.primaryEmailAddress?.emailAddress ?? "";
 
   useEffect(() => {
     setMounted(true);
@@ -74,10 +83,10 @@ export function AppHeader() {
 
             <button
               type="button"
-              onClick={() => setHelpOpen(true)}
+              onClick={requestPageDocumentationOpen}
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] text-gray-600 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/10 hover:text-brand-600 transition-colors"
-              aria-label="Help and navigation"
-              title="Help & navigation"
+              aria-label="Open page documentation"
+              title="Page help"
             >
               <CircleHelp className="h-5 w-5" />
             </button>
@@ -101,19 +110,30 @@ export function AppHeader() {
 
             <div className="ml-2 flex items-center gap-3 border-l border-gray-300/50 dark:border-[var(--border)] pl-4">
               <div className="rounded-full ring-2 ring-gray-100 dark:ring-white/10 p-0.5">
-                <Avatar name="Priya Sharma" size="sm" />
+                <Avatar name={isLoaded ? displayName : "…"} size="sm" />
               </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-bold text-gray-900 dark:text-white">Priya Sharma</p>
-                <p className="text-xs font-medium text-brand-600 dark:text-brand-400">Release Manager</p>
+              <div className="hidden sm:block min-w-0">
+                <p className="text-sm font-bold text-gray-900 dark:text-white truncate max-w-[160px]">
+                  {isLoaded ? displayName : "…"}
+                </p>
+                <p className="text-xs font-medium text-brand-600 dark:text-brand-400 truncate max-w-[160px]">
+                  {isLoaded ? displayEmail : ""}
+                </p>
               </div>
+              <SignOutButton>
+                <button
+                  type="button"
+                  className="rounded-lg border border-gray-200 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] px-3 py-1.5 text-xs font-semibold text-gray-600 dark:text-white/80 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors"
+                >
+                  Sign out
+                </button>
+              </SignOutButton>
             </div>
           </div>
         </div>
       </header>
 
       <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
-      <HelpCenterModal open={helpOpen} onClose={() => setHelpOpen(false)} />
     </>
   );
 }

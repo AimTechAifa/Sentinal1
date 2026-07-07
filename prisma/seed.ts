@@ -11,6 +11,7 @@ import fs from "fs";
 import path from "path";
 import { prisma } from "../lib/prisma";
 import { seedSystemMapping } from "../lib/seed-system-mapping";
+import { APPLICATION_NAME_ALIASES } from "./seed-data/app-name-aliases";
 
 const DATA_DIR = path.join(process.cwd(), "prisma", "seed-data");
 const DATA = (f: string) => JSON.parse(fs.readFileSync(path.join(DATA_DIR, f), "utf-8"));
@@ -19,38 +20,23 @@ const toDate = (v: unknown): Date | null => (v ? new Date(String(v)) : null);
 const isConflict = (v: unknown) => typeof v === "string" && v.includes("CONFLICT");
 const splitIds = (v: unknown): string[] =>
   v ? String(v).split(",").map((s) => s.trim()).filter(Boolean) : [];
+const toInt = (v: unknown): number | undefined => {
+  if (v === null || v === undefined || v === "") return undefined;
+  const n = Number(v);
+  return Number.isFinite(n) ? Math.round(n) : undefined;
+};
 
-async function clearDatabase() {
-  await prisma.leaveRecordRelease.deleteMany();
-  await prisma.releaseStakeholder.deleteMany();
-  await prisma.releaseApplication.deleteMany();
-  await prisma.releaseDependency.deleteMany();
-  await prisma.releaseAuditEvent.deleteMany();
-  await prisma.risk.deleteMany();
-  await prisma.drift.deleteMany();
-  await prisma.approval.deleteMany();
-  await prisma.leaveRecord.deleteMany();
-  await prisma.calendarEvent.deleteMany();
-  await prisma.envBooking.deleteMany();
-  await prisma.environmentVersion.deleteMany();
-  await prisma.releaseHistoryEvent.deleteMany();
-  await prisma.releaseDecisionState.deleteMany();
-  await prisma.deploymentState.deleteMany();
-  await prisma.appNotificationRow.deleteMany();
-  await prisma.agentPauseState.deleteMany();
-  await prisma.systemMappingEdge.deleteMany();
-  await prisma.systemMappingGroup.deleteMany();
-  await prisma.release.deleteMany();
-  await prisma.environment.deleteMany();
-  await prisma.application.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.department.deleteMany();
-  console.log("Cleared existing seed tables.");
+function resolveAppId(
+  rawName: string,
+  appIdByName: Map<string, string>
+): string | undefined {
+  if (appIdByName.has(rawName)) return appIdByName.get(rawName);
+  const alias = APPLICATION_NAME_ALIASES[rawName];
+  if (alias && appIdByName.has(alias)) return appIdByName.get(alias);
+  return undefined;
 }
 
 async function main() {
-  await clearDatabase();
-
   // ── 1. Departments ──────────────────────────────────────────────
   const departments = DATA("departments.json");
   const deptIdByName = new Map<string, string>();
@@ -237,8 +223,9 @@ async function main() {
   const bookings = DATA("env_booking.json").filter((b: Record<string, unknown>) =>
     String(b["Booking ID"] ?? "").startsWith("ENV-")
   );
+  let bookingCount = 0;
   for (const b of bookings) {
-    const applicationId = appIdByName.get(b["Application"]);
+    const applicationId = resolveAppId(String(b["Application"] ?? ""), appIdByName);
     if (!applicationId) continue;
     const releaseId = releaseIdByCode.get(b["Release ID"]);
     const ownerDbId = releaseId ? releaseOwnerDbIdByCode.get(b["Release ID"]) : undefined;
@@ -254,35 +241,43 @@ async function main() {
     const fromDate = legDates.length ? new Date(Math.min(...legDates.map((d) => d.getTime()))) : prodDate;
     const toDt = legDates.length ? new Date(Math.max(...legDates.map((d) => d.getTime()))) : prodDate;
 
-    await prisma.envBooking.create({
-      data: {
-        applicationId,
-        bookedBy: bookedByName ?? "Unknown", // GAP-FILL
-        team: b["Department"] ?? "Unknown", // GAP-FILL
-        departmentName: b["Department"],
-        fromDate, // GAP-FILL
-        toDate: toDt,
-        releaseId,
-        releaseSize: b["Release Size"],
-        prodReleaseDate: toDate(b["Prod Release Date"]),
-        cabDate: toDate(b["CAB Date"]),
-        testEnvCode: b["Test Env"],
-        testStart: toDate(b["Test Start"]),
-        testEnd: toDate(b["Test End"]),
-        testDays: b["Test Days"],
-        uatEnvCode: b["UAT Env"],
-        uatStart: toDate(b["UAT Start"]),
-        uatEnd: toDate(b["UAT End"]),
-        uatDays: b["UAT Days"],
-        preProdEnvCode: b["Pre-Prod Env"],
-        preProdStart: toDate(b["Pre-Prod Start"]),
-        preProdEnd: toDate(b["Pre-Prod End"]),
-        preProdDays: b["Pre-Prod Days"],
-        conflictFlag: isConflict(b["Conflict Flag"]),
-      },
+    const bookingCode = String(b["Booking ID"]);
+    const data = {
+      applicationId,
+      bookedBy: bookedByName ?? "Unknown",
+      team: b["Department"] ?? "Unknown",
+      departmentName: b["Department"],
+      fromDate,
+      toDate: toDt,
+      releaseId,
+      dependencies: b["Dependencies"] ? String(b["Dependencies"]) : "NA",
+      purpose: b["Notes"] ? String(b["Notes"]) : null,
+      releaseSize: b["Release Size"] ? String(b["Release Size"]) : null,
+      prodReleaseDate: toDate(b["Prod Release Date"]),
+      cabDate: toDate(b["CAB Date"]),
+      testEnvCode: b["Test Env"] ? String(b["Test Env"]) : null,
+      testStart: toDate(b["Test Start"]),
+      testEnd: toDate(b["Test End"]),
+      testDays: toInt(b["Test Days"]),
+      uatEnvCode: b["UAT Env"] ? String(b["UAT Env"]) : null,
+      uatStart: toDate(b["UAT Start"]),
+      uatEnd: toDate(b["UAT End"]),
+      uatDays: toInt(b["UAT Days"]),
+      preProdEnvCode: b["Pre-Prod Env"] ? String(b["Pre-Prod Env"]) : null,
+      preProdStart: toDate(b["Pre-Prod Start"]),
+      preProdEnd: toDate(b["Pre-Prod End"]),
+      preProdDays: toInt(b["Pre-Prod Days"]),
+      conflictFlag: isConflict(b["Conflict Flag"]),
+    };
+
+    await prisma.envBooking.upsert({
+      where: { bookingCode },
+      create: { bookingCode, ...data },
+      update: data,
     });
+    bookingCount++;
   }
-  console.log(`Env Bookings: ${bookings.length}`);
+  console.log(`Env Bookings: ${bookingCount}`);
 
   // ── 8. Risk ──────────────────────────────────────────────────────
   const risks = DATA("risk.json");

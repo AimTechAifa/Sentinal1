@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
+import { TablePageSuspenseFallback } from "@/components/ui/TableSkeleton";
 import CommandDashboardContent from "./CommandDashboardContent";
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<p className="text-gray-500 p-6">Loading dashboard…</p>}>
+    <Suspense fallback={<TablePageSuspenseFallback />}>
       <CommandDashboardContent />
     </Suspense>
   );

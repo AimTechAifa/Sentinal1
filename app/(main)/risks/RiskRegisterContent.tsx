@@ -8,6 +8,15 @@ import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { cn } from "@/lib/utils";
 import { getRiskLevel, RISK_LEVEL_COLOR } from "@/lib/risk-level";
+import { FilterPills, FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { RISK_COLUMNS } from "@/lib/table-page-columns";
+import { useFilteredFetch } from "@/hooks/useTableFilters";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
+import { RISKS_FILTER_SCHEMA } from "@/lib/table-filters";
 
 type RiskRow = {
   id: string;
@@ -26,7 +35,7 @@ type RiskRow = {
   notes: string | null;
 };
 
-type StatusFilter = "all" | "Open" | "Monitoring" | "Mitigating" | "In Progress" | "Escalated" | "Accepted";
+type StatusFilter = "Open" | "Monitoring" | "Mitigating" | "In Progress" | "Escalated" | "Accepted";
 
 // 5×5 heat map
 function RiskHeatMap({ risks }: { risks: RiskRow[] }) {
@@ -83,105 +92,123 @@ function RiskHeatMap({ risks }: { risks: RiskRow[] }) {
 }
 
 export default function RiskRegisterContent() {
-  const [risks, setRisks] = useState<RiskRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const { rows: risks, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<RiskRow>(
+    "/api/risks",
+    RISKS_FILTER_SCHEMA
+  );
+  const [allRisks, setAllRisks] = useState<RiskRow[]>([]);
 
   useEffect(() => {
-    fetch("/api/risks")
-      .then((r) => (r.ok ? r.json() : []))
-      .then((d) => setRisks(d))
-      .finally(() => setLoading(false));
+    fetch("/api/risks").then((r) => (r.ok ? r.json() : [])).then(setAllRisks);
   }, []);
 
-  const filtered = useMemo(() => {
-    if (statusFilter === "all") return risks;
-    return risks.filter((r) => r.status === statusFilter);
-  }, [risks, statusFilter]);
+  const categories = useMemo(() => [...new Set(allRisks.map((r) => r.category))].sort(), [allRisks]);
+  const statuses: StatusFilter[] = ["Open", "Monitoring", "Mitigating", "In Progress", "Escalated", "Accepted"];
 
-  const statuses: StatusFilter[] = ["all", "Open", "Monitoring", "Mitigating", "In Progress", "Escalated", "Accepted"];
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("risks", RISK_COLUMNS, { lockedKeys: ["riskCode"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
+
+  const visibleColCount = RISK_COLUMNS.filter((c) => isColumnVisible(c.key)).length;
 
   return (
     <div>
       <TopBar
-        title="Risk Register"
-        subtitle={`${filtered.length} risk${filtered.length === 1 ? "" : "s"} across all releases`}
-      />
+        trailing={<PageDocumentation pageKey="risks" />}
+        title="Risk Register" subtitle={`${risks.length} risk${risks.length === 1 ? "" : "s"} across all releases`} />
+      {!tablePending && (
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+          <FilterPills
+            options={statuses.map((s) => ({ value: s, label: s }))}
+            value={(values.status as StatusFilter) || ""}
+            onChange={(v) => setFilter("status", v)}
+          />
+          <FilterSelect value={values.category} onChange={(v) => setFilter("category", v)}>
+            <option value="">All categories</option>
+            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+          </FilterSelect>
+        </TableFilterBar>
+      )}
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        {statuses.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setStatusFilter(s)}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-xs font-medium capitalize border transition-colors",
-              statusFilter === s
-                ? "bg-brand-500 text-white border-brand-500"
-                : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-brand-300"
-            )}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
+      <RiskHeatMap risks={risks} />
 
-      <RiskHeatMap risks={filtered} />
-
-      {loading ? (
-        <p className="text-gray-500 p-6">Loading…</p>
+      {tablePending ? (
+        <TableSkeleton columns={RISK_COLUMNS.length} />
       ) : (
         <DataTable title="All Risks" subtitle="Sorted by risk score (highest first)" icon={AlertTriangle}>
           <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className={tableHeadRow}>
               <tr>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk ID</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Category</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Description</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Likelihood</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk Score</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Affected Area</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Mitigation Strategy</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk Owner</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>
-                <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>
+                {isColumnVisible("riskCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk ID</th>}
+                {isColumnVisible("release") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release</th>}
+                {isColumnVisible("category") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Category</th>}
+                {isColumnVisible("description") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Description</th>}
+                {isColumnVisible("likelihood") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Likelihood</th>}
+                {isColumnVisible("impact") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>}
+                {isColumnVisible("riskScore") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk Score</th>}
+                {isColumnVisible("affectedArea") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Affected Area</th>}
+                {isColumnVisible("mitigationStrategy") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Mitigation Strategy</th>}
+                {isColumnVisible("riskOwner") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk Owner</th>}
+                {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
+                {isColumnVisible("notes") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>}
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {risks.length === 0 ? (
                 <tr>
-                  <td colSpan={12} className={`${tableCell} text-center text-gray-400 py-8`}>
+                  <td colSpan={visibleColCount} className={`${tableCell} text-center text-gray-400 py-8`}>
                     No risks found.
                   </td>
                 </tr>
               ) : (
-                filtered.map((r) => (
+                risks.map((r) => (
                   <tr key={r.id} className={tableRow}>
+                    {isColumnVisible("riskCode") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       <span className="font-mono text-xs text-brand-600 dark:text-brand-400">{r.riskCode}</span>
                     </td>
+                    )}
+                    {isColumnVisible("release") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       <ProgressLink href={`/releases/${r.release.id}`} className="text-brand-600 dark:text-brand-400 hover:underline text-xs">
                         {r.release.releaseCode}
                       </ProgressLink>
                     </td>
-                    <td className={`${tableCell} whitespace-nowrap`}>{r.category}</td>
-                    <td className={`${tableCell} max-w-[260px] truncate`} title={r.description}>{r.description}</td>
-                    <td className={`${tableCell} text-center whitespace-nowrap`}>{r.likelihood}</td>
-                    <td className={`${tableCell} text-center whitespace-nowrap`}>{r.impact}</td>
+                    )}
+                    {isColumnVisible("category") && <td className={`${tableCell} whitespace-nowrap`}>{r.category}</td>}
+                    {isColumnVisible("description") && <td className={`${tableCell} max-w-[260px] truncate`} title={r.description}>{r.description}</td>}
+                    {isColumnVisible("likelihood") && <td className={`${tableCell} text-center whitespace-nowrap`}>{r.likelihood}</td>}
+                    {isColumnVisible("impact") && <td className={`${tableCell} text-center whitespace-nowrap`}>{r.impact}</td>}
+                    {isColumnVisible("riskScore") && (
                     <td className={`${tableCell} whitespace-nowrap`}>
                       <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold", RISK_LEVEL_COLOR[getRiskLevel(r.riskScore)])}>
                         {r.riskScore} · {getRiskLevel(r.riskScore)}
                       </span>
                     </td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300 truncate max-w-[200px]`} title={r.affectedArea ?? ""}>{r.affectedArea ?? "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300 truncate max-w-[200px]`} title={r.mitigationStrategy ?? ""}>{r.mitigationStrategy ?? "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300`}>{r.riskOwner?.name ?? r.riskOwner?.userId ?? "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={r.status} /></td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300 truncate max-w-[200px]`} title={r.notes ?? ""}>{r.notes ?? "—"}</td>
+                    )}
+                    {isColumnVisible("affectedArea") && <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300 truncate max-w-[200px]`} title={r.affectedArea ?? ""}>{r.affectedArea ?? "—"}</td>}
+                    {isColumnVisible("mitigationStrategy") && <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300 truncate max-w-[200px]`} title={r.mitigationStrategy ?? ""}>{r.mitigationStrategy ?? "—"}</td>}
+                    {isColumnVisible("riskOwner") && <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300`}>{r.riskOwner?.name ?? r.riskOwner?.userId ?? "—"}</td>}
+                    {isColumnVisible("status") && <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={r.status} /></td>}
+                    {isColumnVisible("notes") && <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300 truncate max-w-[200px]`} title={r.notes ?? ""}>{r.notes ?? "—"}</td>}
                   </tr>
                 ))
               )}

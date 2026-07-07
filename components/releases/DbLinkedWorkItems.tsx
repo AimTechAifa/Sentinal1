@@ -55,26 +55,26 @@ export function DbLinkedWorkItems({ releaseId }: { releaseId: string }) {
       )}
 
       {items.length === 0 ? (
-        <p className="text-sm text-gray-500">No linked Jira work items for this release code.</p>
+        <p className="text-sm text-gray-500 dark:text-white/55">No linked Jira work items for this release code.</p>
       ) : (
         <div className="space-y-2">
           {items.map((t) => (
             <div
               key={t.externalId}
-              className="flex items-center justify-between gap-3 py-2 border-b border-gray-100 last:border-0"
+              className="flex items-center justify-between gap-3 py-2 border-b border-gray-100 dark:border-[var(--border)] last:border-0"
             >
               <div className="min-w-0">
                 <a
                   href={`https://jira.example.com/browse/${t.externalId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-mono text-brand-600 hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-mono text-brand-600 dark:text-brand-400 hover:underline"
                 >
                   {t.externalId}
                   <ExternalLink className="h-3 w-3" />
                 </a>
-                <p className="text-sm text-gray-700 truncate">{t.title}</p>
-                <span className="text-[10px] text-gray-400">
+                <p className="text-sm text-gray-700 dark:text-white/80 truncate">{t.title}</p>
+                <span className="text-[10px] text-gray-400 dark:text-white/45">
                   {t.itemType}
                   {t.priority ? ` · ${t.priority}` : ""}
                   {t.assignee ? ` · ${t.assignee}` : ""}
@@ -94,7 +94,9 @@ function Stat({ label, value, warn }: { label: string; value: number; warn?: boo
   return (
     <span
       className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${
-        warn ? "bg-error-50 text-error-700" : "bg-gray-100 text-gray-600"
+        warn
+          ? "bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400"
+          : "bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-white/65"
       }`}
     >
       {label}: {value}

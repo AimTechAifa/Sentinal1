@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { prisma } from "@/lib/prisma";
+import { approvalWhere, sp } from "@/lib/list-api-filters";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
   const data = await prisma.approval.findMany({
+    where: approvalWhere(sp(req)),
     include: {
       release: { select: { id: true, releaseCode: true, name: true, status: true, releaseDate: true } },
       approver: { select: { id: true, userId: true, name: true, email: true, role: true } },

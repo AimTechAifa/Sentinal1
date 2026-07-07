@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TopBar } from "@/components/layout/TopBar";
-import {
-  DEFAULT_PAGE_SIZE,
-  filterRows,
-  pageCount,
-  paginateRows,
-  sortRows,
-  type SortDir,
-} from "@/lib/master-data/table-utils";
+import { DEFAULT_PAGE_SIZE, pageCount, paginateRows, type SortDir } from "@/lib/master-data/table-utils";
+import { useTableFilters } from "@/hooks/useTableFilters";
+import { DEPARTMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { DEPARTMENT_COLUMNS } from "@/lib/table-page-columns";
 import {
   apiJson,
   BrowseToolbar,
@@ -37,13 +37,14 @@ type FormState = { name: string; head: string };
 const emptyForm: FormState = { name: "", head: "" };
 
 export function DepartmentsBrowse() {
+  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(DEPARTMENTS_FILTER_SCHEMA);
   const [rows, setRows] = useState<DepartmentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [sortKey, setSortKey] = useState<"name" | "head">("name");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const search = values.q;
+  const page = parseInt(values.page || "1", 10) || 1;
+  const sortKey = (values.sort || "name") as "name" | "head";
+  const sortDir = (values.sortDir || "asc") as SortDir;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<DepartmentRow | null>(null);
@@ -55,34 +56,47 @@ export function DepartmentsBrowse() {
     setLoading(true);
     setError(null);
     try {
-      setRows(await apiJson<DepartmentRow[]>("/api/departments"));
+      setRows(await apiJson<DepartmentRow[]>(`/api/departments${apiQuery}`));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load departments");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiQuery]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
+  const totalPages = pageCount(rows.length, DEFAULT_PAGE_SIZE);
+  const pageRows = paginateRows(rows, page, DEFAULT_PAGE_SIZE);
 
-  const filtered = useMemo(
-    () => filterRows(sortRows(rows, sortKey, sortDir), search, ["name", "head"]),
-    [rows, search, sortKey, sortDir]
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("departments", DEPARTMENT_COLUMNS, { lockedKeys: ["name", "actions"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
   );
-  const totalPages = pageCount(filtered.length, DEFAULT_PAGE_SIZE);
-  const pageRows = paginateRows(filtered, page, DEFAULT_PAGE_SIZE);
 
   const toggleSort = (key: "name" | "head") => {
-    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
-      setSortKey(key);
-      setSortDir("asc");
+      setFilter("sort", key);
+      setFilter("sortDir", "asc");
     }
   };
 
@@ -156,36 +170,44 @@ export function DepartmentsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={load} />}
 
+      <TableFilterBar hasActive={false} trailing={columnPicker}>
+        <span className="sr-only">Column visibility</span>
+      </TableFilterBar>
+
       <MasterDataTableShell>
         <BrowseToolbar
           search={search}
-          onSearchChange={setSearch}
+          onSearchChange={(v) => setFilter("q", v)}
           page={page}
           totalPages={totalPages}
-          totalRows={filtered.length}
+          totalRows={rows.length}
           pageSize={DEFAULT_PAGE_SIZE}
-          onPageChange={setPage}
+          onPageChange={(p) => setFilter("page", String(p))}
         />
-        {loading ? (
-          <MasterDataLoading />
-        ) : filtered.length === 0 ? (
+        {tablePending ? (
+          <MasterDataLoading columns={DEPARTMENT_COLUMNS.length} />
+        ) : rows.length === 0 ? (
           <MasterDataEmptyState entityLabel="departments" addLabel="Add Department" onAdd={openCreate} />
         ) : (
           <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
-                <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
-                <SortableTh label="Head" active={sortKey === "head"} dir={sortDir} onClick={() => toggleSort("head")} />
-                <th className={thClass}>Application Count</th>
+                {isColumnVisible("name") && (
+                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
+                )}
+                {isColumnVisible("head") && (
+                  <SortableTh label="Head" active={sortKey === "head"} dir={sortDir} onClick={() => toggleSort("head")} />
+                )}
+                {isColumnVisible("applicationCount") && <th className={thClass}>Application Count</th>}
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {pageRows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className={`${tdClass} font-semibold text-gray-900`}>{row.name}</td>
-                  <td className={tdClass}>{row.head || "—"}</td>
-                  <td className={tdClass}>{row._count?.applications ?? 0}</td>
+                  {isColumnVisible("name") && <td className={`${tdClass} font-semibold text-gray-900`}>{row.name}</td>}
+                  {isColumnVisible("head") && <td className={tdClass}>{row.head || "—"}</td>}
+                  {isColumnVisible("applicationCount") && <td className={tdClass}>{row._count?.applications ?? 0}</td>}
                   <td className={`${tdClass} text-right`}>
                     <RowActionsMenu onEdit={() => openEdit(row)} onDelete={() => handleDelete(row)} />
                   </td>

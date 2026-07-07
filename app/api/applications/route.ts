@@ -2,16 +2,18 @@ import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { createApplicationRow } from "@/lib/org-compat";
 import { prisma } from "@/lib/prisma";
+import { applicationOrderBy, applicationWhere, sp } from "@/lib/list-api-filters";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
   const data = await prisma.application.findMany({
+    where: applicationWhere(sp(req)),
     include: {
       department: true,
       _count: { select: { environments: true, releaseLinks: true, bookings: true } },
     },
-    orderBy: { name: "asc" },
+    orderBy: applicationOrderBy(sp(req)),
   });
   return NextResponse.json(data);
 }

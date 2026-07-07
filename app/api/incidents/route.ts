@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { prisma } from "@/lib/prisma";
+import { incidentWhere, sp } from "@/lib/list-api-filters";
 
 /**
  * Read-only for this pass — seeded incident register, distinct from
  * /api/p1-issues (connector-synced). See Incident model doc comment in
  * schema.prisma for the full rationale.
  */
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
   const data = await prisma.incident.findMany({
+    where: incidentWhere(sp(req)),
     include: { application: { select: { id: true, name: true } } },
     orderBy: { timestamp: "desc" },
   });

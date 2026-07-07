@@ -4,12 +4,18 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { TopBar } from "@/components/layout/TopBar";
 import {
   DEFAULT_PAGE_SIZE,
-  filterRows,
   pageCount,
   paginateRows,
-  sortRows,
   type SortDir,
 } from "@/lib/master-data/table-utils";
+import { useTableFilters } from "@/hooks/useTableFilters";
+import { RISK_FACTORS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { RISK_FACTOR_COLUMNS } from "@/lib/table-page-columns";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
 import {
   apiJson,
   BrowseToolbar,
@@ -42,13 +48,14 @@ const emptyForm: FormState = { category: "", factorName: "", weight: "", descrip
 type SortKey = "category" | "factorName" | "weight";
 
 export function RiskFactorsBrowse() {
+  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(RISK_FACTORS_FILTER_SCHEMA);
   const [rows, setRows] = useState<RiskFactorRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [sortKey, setSortKey] = useState<SortKey>("category");
-  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const search = values.q;
+  const page = parseInt(values.page || "1", 10) || 1;
+  const sortKey = (values.sort || "category") as SortKey;
+  const sortDir = (values.sortDir || "asc") as SortDir;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<RiskFactorRow | null>(null);
@@ -60,39 +67,52 @@ export function RiskFactorsBrowse() {
     setLoading(true);
     setError(null);
     try {
-      setRows(await apiJson<RiskFactorRow[]>("/api/risk-factors"));
+      setRows(await apiJson<RiskFactorRow[]>(`/api/risk-factors${apiQuery}`));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load risk factors");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiQuery]);
 
   useEffect(() => {
     load();
   }, [load]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
 
   const activeWeightSum = useMemo(
     () => rows.filter((r) => r.active).reduce((s, r) => s + r.weight, 0),
     [rows]
   );
 
-  const filtered = useMemo(
-    () => filterRows(sortRows(rows, sortKey, sortDir), search, ["category", "factorName", "description"]),
-    [rows, search, sortKey, sortDir]
+  const totalPages = pageCount(rows.length, DEFAULT_PAGE_SIZE);
+  const pageRows = paginateRows(rows, page, DEFAULT_PAGE_SIZE);
+
+  const {
+    isColumnVisible,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("risk-factors", RISK_FACTOR_COLUMNS, { lockedKeys: ["factorName", "actions"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
   );
-  const totalPages = pageCount(filtered.length, DEFAULT_PAGE_SIZE);
-  const pageRows = paginateRows(filtered, page, DEFAULT_PAGE_SIZE);
 
   const toggleSort = (key: SortKey) => {
-    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
-      setSortKey(key);
-      setSortDir("asc");
+      setFilter("sort", key);
+      setFilter("sortDir", "asc");
     }
   };
 
@@ -179,14 +199,17 @@ export function RiskFactorsBrowse() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-2">
-        <TopBar title="Risk Factors" subtitle={`${rows.length} weighted-scoring factors`} />
-        <button
+        <TopBar title="Risk Factors" subtitle={`${rows.length} weighted-scoring factors`} className="mb-0 flex-1" />
+        <div className="flex shrink-0 items-center gap-2">
+          <PageDocumentation pageKey="risk-factors" />
+          <button
           type="button"
           onClick={openCreate}
           className="shrink-0 rounded-lg bg-[#2548C9] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#1E3A9F]"
         >
           Add Risk Factor
         </button>
+        </div>
       </div>
 
       <p className="text-[13px] text-gray-500 mb-4">
@@ -196,39 +219,60 @@ export function RiskFactorsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={load} />}
 
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+        <FilterSelect value={values.category} onChange={(v) => setFilter("category", v)}>
+          <option value="">All categories</option>
+          {[...new Set(rows.map((r) => r.category).filter(Boolean))].sort().map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </FilterSelect>
+        <FilterSelect value={values.active} onChange={(v) => setFilter("active", v)}>
+          <option value="">All</option>
+          <option value="true">Active only</option>
+          <option value="false">Inactive only</option>
+        </FilterSelect>
+      </TableFilterBar>
+
       <MasterDataTableShell>
         <BrowseToolbar
           search={search}
-          onSearchChange={setSearch}
+          onSearchChange={(v) => setFilter("q", v)}
           page={page}
           totalPages={totalPages}
-          totalRows={filtered.length}
+          totalRows={rows.length}
           pageSize={DEFAULT_PAGE_SIZE}
-          onPageChange={setPage}
+          onPageChange={(p) => setFilter("page", String(p))}
         />
-        {loading ? (
-          <MasterDataLoading />
-        ) : filtered.length === 0 ? (
+        {tablePending ? (
+          <MasterDataLoading columns={RISK_FACTOR_COLUMNS.length} />
+        ) : rows.length === 0 ? (
           <MasterDataEmptyState entityLabel="risk factors" addLabel="Add Risk Factor" onAdd={openCreate} />
         ) : (
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
-                <SortableTh label="Category" active={sortKey === "category"} dir={sortDir} onClick={() => toggleSort("category")} />
-                <SortableTh label="Factor Name" active={sortKey === "factorName"} dir={sortDir} onClick={() => toggleSort("factorName")} />
-                <SortableTh label="Weight" active={sortKey === "weight"} dir={sortDir} onClick={() => toggleSort("weight")} />
-                <th className={thClass}>Description</th>
-                <th className={thClass}>Active</th>
+                {isColumnVisible("category") && (
+                  <SortableTh label="Category" active={sortKey === "category"} dir={sortDir} onClick={() => toggleSort("category")} />
+                )}
+                {isColumnVisible("factorName") && (
+                  <SortableTh label="Factor Name" active={sortKey === "factorName"} dir={sortDir} onClick={() => toggleSort("factorName")} />
+                )}
+                {isColumnVisible("weight") && (
+                  <SortableTh label="Weight" active={sortKey === "weight"} dir={sortDir} onClick={() => toggleSort("weight")} />
+                )}
+                {isColumnVisible("description") && <th className={thClass}>Description</th>}
+                {isColumnVisible("active") && <th className={thClass}>Active</th>}
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {pageRows.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className={tdClass}>{row.category}</td>
-                  <td className={`${tdClass} font-semibold text-gray-900`}>{row.factorName}</td>
-                  <td className={tdClass}>{row.weight}</td>
-                  <td className={`${tdClass} text-gray-500 max-w-[280px] truncate`} title={row.description ?? ""}>{row.description || "—"}</td>
+                  {isColumnVisible("category") && <td className={tdClass}>{row.category}</td>}
+                  {isColumnVisible("factorName") && <td className={`${tdClass} font-semibold text-gray-900`}>{row.factorName}</td>}
+                  {isColumnVisible("weight") && <td className={tdClass}>{row.weight}</td>}
+                  {isColumnVisible("description") && <td className={`${tdClass} text-gray-500 max-w-[280px] truncate`} title={row.description ?? ""}>{row.description || "—"}</td>}
+                  {isColumnVisible("active") && (
                   <td className={tdClass}>
                     <button
                       type="button"
@@ -242,6 +286,7 @@ export function RiskFactorsBrowse() {
                       {row.active ? "Active" : "Inactive"}
                     </button>
                   </td>
+                  )}
                   <td className={`${tdClass} text-right`}>
                     <RowActionsMenu onEdit={() => openEdit(row)} onDelete={() => handleDelete(row)} />
                   </td>

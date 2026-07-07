@@ -51,7 +51,7 @@ export function DbReleaseCommandCenter({ releaseId }: { releaseId: string }) {
         <div className="space-y-6">
           <AdvancedCard title="Readiness" variant="glass" innerClassName="flex flex-col items-center py-6">
             <ReadinessGauge value={data.readiness} size={140} />
-            <p className="mt-3 text-xs text-gray-500 text-center px-4">
+            <p className="mt-3 text-xs text-gray-500 dark:text-white/55 text-center px-4">
               Based on status, bookings, dependencies, decision, and linked P1 issues
             </p>
           </AdvancedCard>
@@ -61,22 +61,22 @@ export function DbReleaseCommandCenter({ releaseId }: { releaseId: string }) {
               {data.nextActions.map((action) => (
                 <li key={action.label}>
                   {action.href.startsWith("#") ? (
-                    <a href={action.href} className="flex items-start gap-2 text-sm text-brand-600 hover:underline group">
+                    <a href={action.href} className="flex items-start gap-2 text-sm text-brand-600 dark:text-brand-400 hover:underline group">
                       <ArrowRight className="h-4 w-4 mt-0.5 shrink-0 opacity-60 group-hover:opacity-100" />
                       <span>
                         <span className="font-medium">{action.label}</span>
                         {action.detail && (
-                          <span className="block text-xs text-gray-500 mt-0.5">{action.detail}</span>
+                          <span className="block text-xs text-gray-500 dark:text-white/50 mt-0.5">{action.detail}</span>
                         )}
                       </span>
                     </a>
                   ) : (
-                    <ProgressLink href={action.href} className="flex items-start gap-2 text-sm text-brand-600 hover:underline group">
+                    <ProgressLink href={action.href} className="flex items-start gap-2 text-sm text-brand-600 dark:text-brand-400 hover:underline group">
                       <ArrowRight className="h-4 w-4 mt-0.5 shrink-0 opacity-60 group-hover:opacity-100" />
                       <span>
                         <span className="font-medium">{action.label}</span>
                         {action.detail && (
-                          <span className="block text-xs text-gray-500 mt-0.5">{action.detail}</span>
+                          <span className="block text-xs text-gray-500 dark:text-white/50 mt-0.5">{action.detail}</span>
                         )}
                       </span>
                     </ProgressLink>

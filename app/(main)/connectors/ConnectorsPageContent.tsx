@@ -19,6 +19,7 @@ import {
   statusBadge,
   type ConnectorTypeId,
 } from "@/lib/connectors/types";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import {
   CONNECTOR_DATA_TYPES,
   dataTypesFromConfig,
@@ -195,6 +196,9 @@ export default function ConnectorsPageContent() {
         <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>
       )}
 
+      {loading ? (
+        <TableSkeleton showTitle={false} columns={5} rows={5} showFilterBar={false} />
+      ) : (
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 border-b border-gray-200 text-[12px] uppercase tracking-wide text-gray-500 font-semibold">
@@ -207,13 +211,7 @@ export default function ConnectorsPageContent() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={5} className="px-5 py-10 text-center text-gray-500">
-                  <Loader2 className="h-5 w-5 animate-spin inline mr-2" /> Loading connectors…
-                </td>
-              </tr>
-            ) : connectors.length === 0 ? (
+            {connectors.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-5 py-10 text-center text-gray-500">
                   No connectors yet. Click &quot;Add Connector&quot; to get started.
@@ -294,6 +292,7 @@ export default function ConnectorsPageContent() {
           </tbody>
         </table>
       </div>
+      )}
 
       {wizardOpen && (
         <ConnectorWizard

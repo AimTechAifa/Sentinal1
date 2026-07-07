@@ -1,27 +1,45 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Network } from "lucide-react";
+import { useMemo } from "react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
+import { FilterPills, FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
 import { cn } from "@/lib/utils";
+import { useFilteredFetch } from "@/hooks/useTableFilters";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { DEPENDENCIES_FILTER_SCHEMA } from "@/lib/table-filters";
 
 type DepRow = {
   id: string;
-  releaseId: string;
-  dependsOnReleaseId: string;
-  release: { id: string; releaseCode: string; name: string; status: string; releaseDate: string };
-  dependsOnRelease: { id: string; releaseCode: string; name: string; status: string; releaseDate: string };
-  dependencyType: string | null;
-  status: string | null;
-  impactIfBlocked: string | null;
+  depCode: string;
+  releaseCode: string;
+  releaseName: string;
+  releaseDbId: string | null;
+  dependsOnCode: string;
+  dependsOnName: string;
+  dependsOnDbId: string | null;
+  dependencyType: string;
+  status: string;
+  impactIfBlocked: string;
   notes: string | null;
 };
 
-type StatusFilterMode = "all" | "Blocked" | "At Risk" | "Clear" | "Resolved";
+const COLUMNS = [
+  { key: "depCode", label: "Dep ID" },
+  { key: "releaseCode", label: "Release ID" },
+  { key: "releaseName", label: "Release Name" },
+  { key: "dependsOnCode", label: "Depends On Release" },
+  { key: "dependsOnName", label: "Depends On Name" },
+  { key: "dependencyType", label: "Dependency Type" },
+  { key: "status", label: "Status" },
+  { key: "impactIfBlocked", label: "Impact if Blocked" },
+  { key: "notes", label: "Notes" },
+] as const;
 
 const TYPE_CLASSES: Record<string, string> = {
   Hard: "bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300",
@@ -31,120 +49,183 @@ const TYPE_CLASSES: Record<string, string> = {
   Integration: "bg-cyan-100 text-cyan-800 dark:bg-cyan-500/20 dark:text-cyan-300",
 };
 
-const VALID_STATUS_FILTERS: StatusFilterMode[] = ["all", "Blocked", "At Risk", "Clear", "Resolved"];
+const STATUS_OPTIONS = ["Blocked", "At Risk", "Clear", "Resolved"] as const;
+const IMPACT_OPTIONS = [
+  "Release Delay",
+  "Partial Functionality",
+  "Data Integrity Risk",
+  "Integration Failure",
+  "Scope Reduction",
+] as const;
+
+function ReleaseLink({ code, dbId, name }: { code: string; dbId: string | null; name?: string }) {
+  if (dbId) {
+    return (
+      <div>
+        <ProgressLink href={`/releases/${dbId}`} className="font-mono text-xs text-brand-600 hover:underline dark:text-brand-400">
+          {code}
+        </ProgressLink>
+        {name ? <div className="text-xs text-gray-500 dark:text-white/50">{name}</div> : null}
+      </div>
+    );
+  }
+  return (
+    <div>
+      <span className="font-mono text-xs text-gray-800 dark:text-white/80">{code}</span>
+      {name ? <div className="text-xs text-gray-500 dark:text-white/50">{name}</div> : null}
+    </div>
+  );
+}
+
+function renderDepCell(d: DepRow, key: (typeof COLUMNS)[number]["key"]) {
+  switch (key) {
+    case "depCode":
+      return (
+        <td key={key} className="px-4 py-3 font-mono text-xs text-gray-700 dark:text-white/80 whitespace-nowrap">
+          {d.depCode}
+        </td>
+      );
+    case "releaseCode":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <ReleaseLink code={d.releaseCode} dbId={d.releaseDbId} />
+        </td>
+      );
+    case "releaseName":
+      return <td key={key} className="px-4 py-3 text-gray-700 dark:text-white/80 whitespace-nowrap">{d.releaseName}</td>;
+    case "dependsOnCode":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <ReleaseLink code={d.dependsOnCode} dbId={d.dependsOnDbId} />
+        </td>
+      );
+    case "dependsOnName":
+      return <td key={key} className="px-4 py-3 text-gray-700 dark:text-white/80 whitespace-nowrap">{d.dependsOnName}</td>;
+    case "dependencyType":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <span className={cn("inline-flex rounded-full px-2 py-0.5 text-xs font-bold", TYPE_CLASSES[d.dependencyType] ?? "")}>
+            {d.dependencyType}
+          </span>
+        </td>
+      );
+    case "status":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <StatusBadge status={d.status} />
+        </td>
+      );
+    case "impactIfBlocked":
+      return <td key={key} className="px-4 py-3 text-gray-700 dark:text-white/80 whitespace-nowrap">{d.impactIfBlocked}</td>;
+    case "notes":
+      return (
+        <td key={key} className="px-4 py-3 text-gray-600 dark:text-white/70 max-w-[280px] truncate" title={d.notes ?? ""}>
+          {d.notes ?? "—"}
+        </td>
+      );
+    default:
+      return null;
+  }
+}
 
 export default function DependencyListContent() {
-  const searchParams = useSearchParams();
-  const initialStatus = searchParams.get("status");
-  const [deps, setDeps] = useState<DepRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<StatusFilterMode>(
-    VALID_STATUS_FILTERS.includes(initialStatus as StatusFilterMode) ? (initialStatus as StatusFilterMode) : "all"
+  const { rows: deps, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<DepRow>(
+    "/api/dependencies",
+    DEPENDENCIES_FILTER_SCHEMA
   );
 
-  useEffect(() => {
-    fetch("/api/dependencies")
-      .then((r) => (r.ok ? r.json() : []))
-      .then((d) => setDeps(d))
-      .finally(() => setLoading(false));
-  }, []);
+  const {
+    visibleColumns,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("dependencies", [...COLUMNS], { lockedKeys: ["depCode"] });
 
-  const filtered = useMemo(() => {
-    if (statusFilter === "all") return deps;
-    return deps.filter((d) => d.status === statusFilter);
-  }, [deps, statusFilter]);
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
 
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
+
+  const types = useMemo(
+    () => [...new Set(deps.map((d) => d.dependencyType).filter(Boolean))].sort(),
+    [deps]
+  );
   const blockedCount = deps.filter((d) => d.status === "Blocked" || d.status === "At Risk").length;
-  const filters: StatusFilterMode[] = ["all", "Blocked", "At Risk", "Clear", "Resolved"];
 
   return (
     <div>
       <TopBar
+        trailing={<PageDocumentation pageKey="dependencies" />}
         title="Release Dependencies"
-        subtitle={`${deps.length} dependenc${deps.length === 1 ? "y" : "ies"}${blockedCount > 0 ? ` · ${blockedCount} blocked/at risk` : ""}`}
+        subtitle={`${deps.length} dependencies${blockedCount > 0 ? ` · ${blockedCount} blocked or at risk` : ""}`}
       />
-
-      <div className="flex flex-wrap gap-2 mb-4">
-        {filters.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setStatusFilter(s)}
-            className={cn(
-              "rounded-lg px-3 py-1.5 text-xs font-medium capitalize border transition-colors",
-              statusFilter === s
-                ? "bg-brand-500 text-white border-brand-500"
-                : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-brand-300"
-            )}
-          >
-            {s === "all" ? "All" : s}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <p className="text-gray-500 p-6">Loading…</p>
+      {!tablePending && (
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+          <FilterPills
+            options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))}
+            value={(values.status as (typeof STATUS_OPTIONS)[number]) || ""}
+            onChange={(v) => setFilter("status", v)}
+          />
+          <FilterSelect value={values.dependencyType} onChange={(v) => setFilter("dependencyType", v)}>
+            <option value="">All types</option>
+            {types.map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect value={values.impact} onChange={(v) => setFilter("impact", v)}>
+            <option value="">All impacts</option>
+            {IMPACT_OPTIONS.map((i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+          </FilterSelect>
+        </TableFilterBar>
+      )}
+      {tablePending ? (
+        <TableSkeleton showTitle={false} columns={COLUMNS.length} />
       ) : (
-        <DataTable title="All Dependencies" subtitle="Release-to-release dependency relationships" icon={Network}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
+      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-[var(--card)]">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1400px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/50 text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:border-gray-700 dark:bg-white/5 dark:text-white/50">
+                {visibleColumns.map((col) => (
+                  <th key={col.key} className="px-4 py-3 font-bold whitespace-nowrap">
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {deps.length === 0 ? (
                 <tr>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Dep ID</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release ID</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release Name</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Depends On Release</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Depends On Name</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Dependency Type</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact if Blocked</th>
-                  <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>
-                </tr>
-              </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={9} className={`${tableCell} text-center text-gray-400 py-8`}>
-                    No dependencies found.
+                  <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
+                    {hasActive ? "No dependencies match the selected filters." : "No dependencies recorded."}
                   </td>
                 </tr>
               ) : (
-                filtered.map((d) => (
-                  <tr key={d.id} className={tableRow}>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-900`}>{d.id.startsWith("DEP-") ? d.id : "—"}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>
-                      <ProgressLink href={`/releases/${d.release.id}`} className="font-mono text-xs text-brand-600 dark:text-brand-400 hover:underline">
-                        {d.release.releaseCode}
-                      </ProgressLink>
-                    </td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300`}>{d.release.name}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>
-                      <ProgressLink href={`/releases/${d.dependsOnRelease.id}`} className="font-mono text-xs text-brand-600 dark:text-brand-400 hover:underline">
-                        {d.dependsOnRelease.releaseCode}
-                      </ProgressLink>
-                    </td>
-                    <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300`}>{d.dependsOnRelease.name}</td>
-                    <td className={`${tableCell} whitespace-nowrap`}>
-                      {d.dependencyType ? (
-                        <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium", TYPE_CLASSES[d.dependencyType] ?? "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300")}>
-                          {d.dependencyType}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400">—</span>
-                      )}
-                    </td>
-                    <td className={`${tableCell} whitespace-nowrap`}>
-                      {d.status ? <StatusBadge status={d.status} /> : <span className="text-gray-400">—</span>}
-                    </td>
-                    <td className={`${tableCell} max-w-[200px] text-gray-600 dark:text-gray-300 truncate`} title={d.impactIfBlocked ?? ""}>{d.impactIfBlocked ?? "—"}</td>
-                    <td className={`${tableCell} max-w-[200px] text-gray-500 dark:text-gray-400 text-xs truncate`} title={d.notes ?? ""}>{d.notes ?? "—"}</td>
+                deps.map((d) => (
+                  <tr key={d.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                    {visibleColumns.map((col) => renderDepCell(d, col.key as (typeof COLUMNS)[number]["key"]))}
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-          </div>
-        </DataTable>
+        </div>
+      </div>
       )}
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Loader2, MoreVertical, Plus, X } from "lucide-react";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { cn } from "@/lib/utils";
 
 export const thClass =
@@ -69,13 +70,8 @@ export function MasterDataEmptyState({
   );
 }
 
-export function MasterDataLoading() {
-  return (
-    <div className="flex items-center justify-center py-16 text-gray-500 gap-2">
-      <Loader2 className="h-5 w-5 animate-spin" />
-      <span className="text-[14px]">Loading…</span>
-    </div>
-  );
+export function MasterDataLoading({ columns = 5 }: { columns?: number }) {
+  return <TableSkeleton showFilterBar={false} showTitle={false} columns={columns} rows={6} />;
 }
 
 export function MasterDataError({ message, onRetry }: { message: string; onRetry?: () => void }) {

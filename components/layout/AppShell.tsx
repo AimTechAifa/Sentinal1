@@ -6,11 +6,12 @@ import { AppHeader } from "./AppHeader";
 import { Backdrop } from "./Backdrop";
 import { ChatProvider } from "@/components/chat/ChatProvider";
 import { ChatPanel } from "@/components/chat/ChatPanel";
-import { PageHelpBanner } from "@/components/help/PageHelpBanner";
+import { PageDocumentationProvider } from "@/context/PageDocumentationContext";
 import { NewUserWelcomeModal } from "@/components/help/HelpCenterModal";
 import { SidebarProvider, useSidebar } from "@/context/SidebarContext";
 import { ReleaseStoreProvider } from "@/context/ReleaseStoreContext";
 import { ReleaseFiltersProvider } from "@/context/ReleaseFiltersContext";
+import { ColumnPreferencesProvider } from "@/context/ColumnPreferencesProvider";
 import { cn } from "@/lib/utils";
 
 function ShellInner({ children }: { children: React.ReactNode }) {
@@ -44,9 +45,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <ReleaseStoreProvider>
         <Suspense fallback={null}>
-          <ReleaseFiltersProvider>
-            <ShellInner>{children}</ShellInner>
-          </ReleaseFiltersProvider>
+          <ColumnPreferencesProvider>
+            <PageDocumentationProvider>
+              <ReleaseFiltersProvider>
+                <ShellInner>{children}</ShellInner>
+              </ReleaseFiltersProvider>
+            </PageDocumentationProvider>
+          </ColumnPreferencesProvider>
         </Suspense>
       </ReleaseStoreProvider>
     </SidebarProvider>

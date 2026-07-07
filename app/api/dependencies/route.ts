@@ -1,17 +1,31 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
+import {
+  filterSeedDependencies,
+  loadSeedDependencies,
+  mapSeedDependencyRow,
+} from "@/lib/dependency-view";
 import { prisma } from "@/lib/prisma";
+import { sp } from "@/lib/list-api-filters";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
-  const data = await prisma.releaseDependency.findMany({
-    include: {
-      release: { select: { id: true, releaseCode: true, name: true, status: true, releaseDate: true } },
-      dependsOnRelease: { select: { id: true, releaseCode: true, name: true, status: true, releaseDate: true } },
-    },
-    orderBy: { releaseId: "asc" },
+  const params = sp(req);
+  const status = params.get("status") ?? undefined;
+  const dependencyType = params.get("type") ?? undefined;
+  const impact = params.get("impact") ?? undefined;
+
+  const releases = await prisma.release.findMany({
+    select: { id: true, releaseCode: true },
   });
-  return NextResponse.json(data);
+  const releaseIdByCode = new Map(releases.map((r) => [r.releaseCode, r.id]));
+
+  const rows = loadSeedDependencies()
+    .map((row) => mapSeedDependencyRow(row, releaseIdByCode))
+    .sort((a, b) => a.depCode.localeCompare(b.depCode, undefined, { numeric: true }));
+
+  const filtered = filterSeedDependencies(rows, { status, dependencyType, impact });
+  return NextResponse.json(filtered);
 }

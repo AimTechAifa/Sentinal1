@@ -1,152 +1,253 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AlertOctagon, AlertTriangle, Calendar } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { formatDate } from "@/lib/utils";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
+import { ColumnPicker } from "@/components/filters/ColumnPicker";
+import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { cn } from "@/lib/utils";
+import { useFilteredFetch } from "@/hooks/useTableFilters";
+import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { CONFLICTS_FILTER_SCHEMA } from "@/lib/table-filters";
 
-type ConflictRelease = {
+type ConflictRow = {
   id: string;
-  releaseCode: string;
-  name: string;
+  conflictCode: string;
   status: string;
-  releaseDate: string;
-  department: { name: string };
-  applications: { application: { name: string } }[];
+  priority: string;
+  assignedTo: string;
+  release1Code: string;
+  release2Code: string;
+  release1DbId: string | null;
+  release2DbId: string | null;
+  application: string;
+  department: string;
+  conflictingEnvironment: string;
+  environmentConflictType: string;
+  notes: string | null;
 };
 
-type ConflictBooking = {
-  id: string;
-  application: { id: string; name: string };
-  environment: { id: string; name: string } | null;
-  release: { id: string; releaseCode: string; name: string } | null;
-  fromDate: string;
-  toDate: string;
-  bookedBy: string;
-  team: string;
-  purpose: string | null;
-  testEnvCode: string | null;
-  uatEnvCode: string | null;
-  preProdEnvCode: string | null;
+const COLUMNS = [
+  { key: "conflictCode", label: "Conflict ID" },
+  { key: "status", label: "Status" },
+  { key: "priority", label: "Priority" },
+  { key: "assignedTo", label: "Assigned To" },
+  { key: "release1Code", label: "Release 1" },
+  { key: "release2Code", label: "Release 2" },
+  { key: "application", label: "Application" },
+  { key: "department", label: "Department" },
+  { key: "conflictingEnvironment", label: "Conflicting Environment" },
+  { key: "environmentConflictType", label: "Environment Conflict Type" },
+  { key: "notes", label: "Notes" },
+] as const;
+
+const STATUS_OPTIONS = ["Open", "In Progress", "Pending Review", "Escalated", "Resolved"] as const;
+const PRIORITY_OPTIONS = ["P1 - Critical", "P2 - High", "P3 - Medium"] as const;
+
+const PRIORITY_CLASSES: Record<string, string> = {
+  "P1 - Critical": "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300",
+  "P2 - High": "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300",
+  "P3 - Medium": "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-300",
 };
+
+function ReleaseCode({ code, dbId }: { code: string; dbId: string | null }) {
+  if (dbId) {
+    return (
+      <ProgressLink href={`/releases/${dbId}`} className="font-mono text-xs text-brand-600 hover:underline dark:text-brand-400">
+        {code}
+      </ProgressLink>
+    );
+  }
+  return <span className="font-mono text-xs text-gray-800 dark:text-white/80">{code}</span>;
+}
+
+function renderConflictCell(c: ConflictRow, key: (typeof COLUMNS)[number]["key"]) {
+  switch (key) {
+    case "conflictCode":
+      return (
+        <td key={key} className="px-4 py-3 font-mono text-xs font-semibold text-gray-800 dark:text-white whitespace-nowrap">
+          {c.conflictCode}
+        </td>
+      );
+    case "status":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <StatusBadge status={c.status} />
+        </td>
+      );
+    case "priority":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <span className={cn("inline-flex rounded-full px-2 py-0.5 text-xs font-bold", PRIORITY_CLASSES[c.priority] ?? "")}>
+            {c.priority}
+          </span>
+        </td>
+      );
+    case "assignedTo":
+      return <td key={key} className="px-4 py-3 text-gray-700 dark:text-white/80 whitespace-nowrap">{c.assignedTo}</td>;
+    case "release1Code":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <ReleaseCode code={c.release1Code} dbId={c.release1DbId} />
+        </td>
+      );
+    case "release2Code":
+      return (
+        <td key={key} className="px-4 py-3 whitespace-nowrap">
+          <ReleaseCode code={c.release2Code} dbId={c.release2DbId} />
+        </td>
+      );
+    case "application":
+      return <td key={key} className="px-4 py-3 text-gray-700 dark:text-white/80 whitespace-nowrap">{c.application}</td>;
+    case "department":
+      return <td key={key} className="px-4 py-3 text-gray-700 dark:text-white/80 whitespace-nowrap">{c.department}</td>;
+    case "conflictingEnvironment":
+      return <td key={key} className="px-4 py-3 text-gray-600 dark:text-white/70 whitespace-nowrap">{c.conflictingEnvironment}</td>;
+    case "environmentConflictType":
+      return <td key={key} className="px-4 py-3 text-gray-600 dark:text-white/70 whitespace-nowrap">{c.environmentConflictType}</td>;
+    case "notes":
+      return (
+        <td key={key} className="px-4 py-3 text-gray-600 dark:text-white/70 max-w-[280px] truncate" title={c.notes ?? ""}>
+          {c.notes ?? "—"}
+        </td>
+      );
+    default:
+      return null;
+  }
+}
 
 export default function ConflictQueueContent() {
-  const [releases, setReleases] = useState<ConflictRelease[]>([]);
-  const [bookings, setBookings] = useState<ConflictBooking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { rows: conflicts, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<ConflictRow>(
+    "/api/conflicts",
+    CONFLICTS_FILTER_SCHEMA
+  );
+  const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
+  const [apps, setApps] = useState<{ id: string; name: string; departmentId: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/conflicts")
-      .then((r) => (r.ok ? r.json() : { releases: [], bookings: [] }))
-      .then((d) => {
-        setReleases(d.releases ?? []);
-        setBookings(d.bookings ?? []);
-      })
-      .finally(() => setLoading(false));
+    Promise.all([
+      fetch("/api/departments").then((r) => (r.ok ? r.json() : [])),
+      fetch("/api/applications").then((r) => (r.ok ? r.json() : [])),
+    ]).then(([d, a]) => {
+      setDepartments(d);
+      setApps(a);
+    });
   }, []);
 
-  const totalConflicts = releases.length + bookings.length;
+  const appOptions = useMemo(
+    () => (values.departmentId ? apps.filter((a) => a.departmentId === values.departmentId) : apps),
+    [apps, values.departmentId]
+  );
+
+  const openCount = conflicts.filter((c) => c.status === "Open" || c.status === "Escalated").length;
+
+  const {
+    visibleColumns,
+    hideableColumns,
+    hiddenColumns,
+    toggleColumn,
+    saveNow,
+    loaded: columnsLoaded,
+  } = useColumnPreferences("conflicts", [...COLUMNS], { lockedKeys: ["conflictCode"] });
+
+  const tablePending = useTablePageLoading(loading, columnsLoaded);
+
+  const columnPicker = (
+    <ColumnPicker
+      hideableColumns={hideableColumns}
+      hiddenColumns={hiddenColumns}
+      toggleColumn={toggleColumn}
+      saveNow={saveNow}
+      loaded={columnsLoaded}
+    />
+  );
 
   return (
     <div>
       <TopBar
+        trailing={<PageDocumentation pageKey="conflicts" />}
         title="Conflict Resolution Queue"
         subtitle={
-          totalConflicts > 0
-            ? `${releases.length} release conflict${releases.length === 1 ? "" : "s"}, ${bookings.length} booking conflict${bookings.length === 1 ? "" : "s"}`
+          conflicts.length > 0
+            ? `${conflicts.length} conflict${conflicts.length === 1 ? "" : "s"}${openCount > 0 ? ` · ${openCount} open or escalated` : ""}`
             : "No active conflicts detected"
         }
       />
 
-      {loading ? (
-        <p className="text-gray-500 p-6">Loading…</p>
-      ) : totalConflicts === 0 ? (
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-12 text-center">
-          <AlertOctagon className="h-10 w-10 text-emerald-400 mx-auto mb-3" />
-          <p className="text-gray-700 dark:text-gray-300 font-semibold">All clear!</p>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">No release or environment booking conflicts detected.</p>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {/* Release conflicts */}
-          {releases.length > 0 && (
-            <DataTable title="Release Conflicts" subtitle="Releases flagged with environment or scheduling conflicts" icon={AlertTriangle}>
-              <table className="w-full text-sm">
-                <thead className={tableHeadRow}>
-                  <tr>
-                    <th className={`${tableCell} text-left font-medium`}>Release</th>
-                    <th className={`${tableCell} text-left font-medium`}>Name</th>
-                    <th className={`${tableCell} text-left font-medium`}>Status</th>
-                    <th className={`${tableCell} text-left font-medium`}>Target Date</th>
-                    <th className={`${tableCell} text-left font-medium`}>Department</th>
-                    <th className={`${tableCell} text-left font-medium`}>Applications</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {releases.map((r) => (
-                    <tr key={r.id} className={tableRow}>
-                      <td className={tableCell}>
-                        <ProgressLink href={`/releases/${r.id}`} className="font-mono text-xs text-brand-600 dark:text-brand-400 hover:underline">
-                          {r.releaseCode}
-                        </ProgressLink>
-                      </td>
-                      <td className={`${tableCell} font-medium text-gray-900 dark:text-white`}>{r.name}</td>
-                      <td className={tableCell}><StatusBadge status={r.status} /></td>
-                      <td className={`${tableCell} text-gray-500 dark:text-gray-400`}>{formatDate(r.releaseDate)}</td>
-                      <td className={`${tableCell} text-gray-600 dark:text-gray-300`}>{r.department.name}</td>
-                      <td className={`${tableCell} text-xs text-gray-600 dark:text-gray-300`}>
-                        {r.applications.map((a) => a.application.name).join(", ") || "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </DataTable>
-          )}
+      {!tablePending && (
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
+          <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
+            <option value="">All departments</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+            <option value="">All applications</option>
+            {appOptions.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+            <option value="">All statuses</option>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </FilterSelect>
+          <FilterSelect value={values.priority} onChange={(v) => setFilter("priority", v)}>
+            <option value="">All priorities</option>
+            {PRIORITY_OPTIONS.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </FilterSelect>
+        </TableFilterBar>
+      )}
 
-          {/* Booking conflicts */}
-          {bookings.length > 0 && (
-            <DataTable title="Booking Conflicts" subtitle="Overlapping environment booking windows" icon={Calendar}>
-              <table className="w-full text-sm">
-                <thead className={tableHeadRow}>
-                  <tr>
-                    <th className={`${tableCell} text-left font-medium`}>Application</th>
-                    <th className={`${tableCell} text-left font-medium`}>Environment</th>
-                    <th className={`${tableCell} text-left font-medium`}>Release</th>
-                    <th className={`${tableCell} text-left font-medium`}>From</th>
-                    <th className={`${tableCell} text-left font-medium`}>To</th>
-                    <th className={`${tableCell} text-left font-medium`}>Booked By</th>
-                    <th className={`${tableCell} text-left font-medium`}>Purpose</th>
+      {tablePending ? (
+        <TableSkeleton showTitle={false} columns={COLUMNS.length} />
+      ) : (
+      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-[var(--card)]">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1600px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50/50 text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:border-gray-700 dark:bg-white/5 dark:text-white/50">
+                {visibleColumns.map((col) => (
+                  <th key={col.key} className="px-4 py-3 font-bold whitespace-nowrap">
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {conflicts.length === 0 ? (
+                <tr>
+                  <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
+                    {hasActive ? "No conflicts match the selected filters." : "No conflicts recorded."}
+                  </td>
+                </tr>
+              ) : (
+                conflicts.map((c) => (
+                  <tr key={c.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                    {visibleColumns.map((col) => renderConflictCell(c, col.key as (typeof COLUMNS)[number]["key"]))}
                   </tr>
-                </thead>
-                <tbody>
-                  {bookings.map((b) => (
-                    <tr key={b.id} className={tableRow}>
-                      <td className={`${tableCell} font-medium text-gray-900 dark:text-white`}>{b.application.name}</td>
-                      <td className={`${tableCell} text-gray-600 dark:text-gray-300`}>{b.environment?.name ?? "—"}</td>
-                      <td className={tableCell}>
-                        {b.release ? (
-                          <ProgressLink href={`/releases/${b.release.id}`} className="font-mono text-xs text-brand-600 dark:text-brand-400 hover:underline">
-                            {b.release.releaseCode}
-                          </ProgressLink>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </td>
-                      <td className={`${tableCell} text-gray-500 dark:text-gray-400`}>{formatDate(b.fromDate)}</td>
-                      <td className={`${tableCell} text-gray-500 dark:text-gray-400`}>{formatDate(b.toDate)}</td>
-                      <td className={`${tableCell} text-gray-600 dark:text-gray-300`}>{b.bookedBy}</td>
-                      <td className={`${tableCell} text-xs text-gray-500 dark:text-gray-400 max-w-[200px] truncate`}>{b.purpose ?? "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </DataTable>
-          )}
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+      </div>
       )}
     </div>
   );

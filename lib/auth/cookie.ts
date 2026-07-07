@@ -4,9 +4,14 @@ export function parseSession(raw: string | undefined): SessionUser | null {
   if (!raw) return null;
   try {
     const json = Buffer.from(raw, "base64url").toString("utf8");
-    const user = JSON.parse(json) as SessionUser;
+    const user = JSON.parse(json) as Partial<SessionUser>;
     if (!user.email || !user.role) return null;
-    return user;
+    return {
+      id: user.id ?? user.email,
+      email: user.email,
+      name: user.name ?? user.email,
+      role: user.role,
+    };
   } catch {
     return null;
   }

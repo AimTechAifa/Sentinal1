@@ -171,6 +171,7 @@ model ReleaseDependency {
 
 model EnvBooking {
   id              String       @id @default(cuid())
+  bookingCode     String?      @unique
   applicationId   String
   application     Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   environmentId   String?
@@ -181,6 +182,7 @@ model EnvBooking {
   fromDate        DateTime
   toDate          DateTime
   purpose         String?
+  dependencies    String?
   releaseId       String?
   release         Release?     @relation(fields: [releaseId], references: [id], onDelete: SetNull)
   status          String       @default("BOOKED")
@@ -631,4 +633,15 @@ model CalendarEvent {
   updatedAt      DateTime  @updatedAt
 
   @@index([releaseId])
+}
+
+model UserTablePreference {
+  id            String   @id @default(cuid())
+  clerkUserId   String
+  pageKey       String
+  hiddenColumns String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([clerkUserId, pageKey])
 }

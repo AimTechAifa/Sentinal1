@@ -408,4 +408,35 @@ body {
     background: linear-gradient(90deg, #2a3142 25%, #343b4f 50%, #2a3142 75%);
     background-size: 200% 100%;
   }
+
+  /* Default Tailwind red/amber utilities stay light in dark mode — remap for readability */
+  .theme-dark .bg-red-100,
+  .theme-dark .bg-red-50 {
+    background-color: rgba(186, 26, 26, 0.18) !important;
+  }
+
+  .theme-dark .text-red-700,
+  .theme-dark .text-red-600 {
+    color: #f87171 !important;
+  }
+
+  .theme-dark .bg-amber-100,
+  .theme-dark .bg-amber-50 {
+    background-color: rgba(250, 176, 5, 0.16) !important;
+  }
+
+  .theme-dark .text-amber-900,
+  .theme-dark .text-amber-800,
+  .theme-dark .text-amber-700 {
+    color: #fbbf24 !important;
+  }
+
+  .theme-dark .border-amber-200,
+  .theme-dark .border-amber-100 {
+    border-color: rgba(250, 176, 5, 0.28) !important;
+  }
+
+  .theme-dark .border-red-200 {
+    border-color: rgba(186, 26, 26, 0.28) !important;
+  }
 }

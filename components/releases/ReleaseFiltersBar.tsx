@@ -13,17 +13,30 @@ export function ReleaseFiltersBar({
   variant = "default",
   period,
   onPeriodChange,
+  showListFilters = false,
+  statusOptions = [],
+  priorityOptions = [],
+  impactOptions = [],
+  trailing,
 }: {
   className?: string;
   variant?: "default" | "large";
   period?: Period;
   onPeriodChange?: (period: Period) => void;
+  showListFilters?: boolean;
+  statusOptions?: string[];
+  priorityOptions?: string[];
+  impactOptions?: string[];
+  trailing?: React.ReactNode;
 }) {
   const {
     filters,
     setDepartmentId,
     setApplicationId,
     setEnvironmentId,
+    setStatus,
+    setPriority,
+    setImpact,
     clearFilters,
     hasRefinement,
     departments,
@@ -91,13 +104,30 @@ export function ReleaseFiltersBar({
         </select>
       )}
 
+      {showListFilters && (
+        <>
+          <select disabled={loading} value={filters.status} onChange={(e) => setStatus(e.target.value)} className={selectClass}>
+            <option value="">All statuses</option>
+            {statusOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+          </select>
+          <select disabled={loading} value={filters.priority} onChange={(e) => setPriority(e.target.value)} className={selectClass}>
+            <option value="">All priorities</option>
+            {priorityOptions.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+          <select disabled={loading} value={filters.impact} onChange={(e) => setImpact(e.target.value)} className={selectClass}>
+            <option value="">All impacts</option>
+            {impactOptions.map((i) => <option key={i} value={i}>{i}</option>)}
+          </select>
+        </>
+      )}
+
       {hasRefinement && (
         <button 
           type="button" 
           onClick={clearFilters} 
           className="h-9 px-3 text-sm font-medium text-gray-500 dark:text-white/65 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
-          Clear
+          Clear all filters
         </button>
       )}
     </div>
@@ -110,6 +140,7 @@ export function ReleaseFiltersBar({
         <span className="text-xs font-bold uppercase tracking-wider">Filter By</span>
       </div>
       {fields}
+      {trailing && <div className="ml-auto flex items-center gap-2">{trailing}</div>}
     </div>
   );
 }

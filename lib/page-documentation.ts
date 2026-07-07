@@ -1,0 +1,339 @@
+/**
+ * Per-page embedded documentation for Release Desk "orange tab" screens.
+ * Quick Reference summaries reuse / extend copy from lib/page-guide.ts where available.
+ */
+
+export type PageDocKey =
+  | "releases"
+  | "calendar"
+  | "env-booking"
+  | "dependencies"
+  | "conflicts"
+  | "system-mapping"
+  | "environments"
+  | "risks"
+  | "risk-factors"
+  | "drifts"
+  | "approvals"
+  | "leaves"
+  | "monitoring-alerts"
+  | "incidents"
+  | "application-status"
+  | "planned-maintenance";
+
+export type PageDocumentationEntry = {
+  pageKey: PageDocKey;
+  title: string;
+  quickReference: string[];
+  fullDocumentation: string[];
+};
+
+const CATEGORY_WEIGHTS_VERIFIED =
+  "Technical Complexity 18%, Testing Quality 26%, Security & Compliance 8%, Data Migration 4%, Resource & Schedule 14%, Env & Dependencies 9%, Operational Readiness 10%, Performance & Scalability 4%, Release History 5%, Business Criticality 2%.";
+
+export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
+  releases: {
+    pageKey: "releases",
+    title: "Releases",
+    quickReference: [
+      "Master list of database releases (editable) and demo command-center releases.",
+      "Filter by department, application, environment, status, priority, and impact.",
+      "Sort by Release ID, target date, readiness, or blockers.",
+      "DB rows are editable; open a release code to view its command center.",
+      "Use Needs attention to focus on blocked or at-risk releases.",
+    ],
+    fullDocumentation: [
+      "The Releases page is the central register for everything in flight. Database-backed releases (REL- codes) support create, edit, and delete for editors; each row links to a live release detail view with readiness, blockers, dependencies, and approvals.",
+      "The shared filter bar scopes the list to a department, application, or environment. Column visibility is saved per user — hide non-essential columns via the Columns picker without affecting other team members.",
+      "Readiness and blocker counts are computed from live desk data (bookings, dependencies, risks, approvals) rather than static spreadsheet fields. Sort by Readiness or Blockers to surface trouble spots before CAB.",
+    ],
+  },
+  calendar: {
+    pageKey: "calendar",
+    title: "Release Calendar",
+    quickReference: [
+      "Three views: Month grid, Timeline, and Table — same filtered event set.",
+      "Shows CAB meetings, release dates, freezes, and governance events.",
+      "Filter by dept/app/env and change Month / Quarter / Year period.",
+      "Click a release event to open its detail page.",
+      "Table view lists Month, Week, Date, Event Type, Release ID, and notes.",
+    ],
+    fullDocumentation: [
+      "The calendar reads CalendarEvent rows seeded from the source workbook — each CAB meeting and each release/deployment date is a separate event. The month grid colours events by type (RELEASE, CAB MEETING, CHANGE FREEZE, etc.).",
+      "Timeline view plots filtered releases on a horizontal axis by target date. Table view mirrors the Excel Calendar sheet columns including week-of-month (1–5) derived from the event date.",
+      "All three views honour the same ReleaseFiltersBar filters and period navigation. Environment Bookings tab is reserved for a future booking-centric calendar; release events live under Release Calendar.",
+    ],
+  },
+  "env-booking": {
+    pageKey: "env-booking",
+    title: "Environment Booking",
+    quickReference: [
+      "Book TEST and UAT windows for releases across applications.",
+      "Filter by department, application, environment, and conflict flag.",
+      "Conflict flag highlights overlapping bookings on shared environments.",
+      "Booking codes link to the underlying release where applicable.",
+      "Columns mirror the Env Booking sheet — use the picker to hide fields.",
+    ],
+    fullDocumentation: [
+      "Environment Booking is the operational schedule for shared infrastructure. Each row represents a reservation with test/UAT start and end dates, environment codes, and dependency notes from the seed workbook.",
+      "The conflict flag is set when two bookings overlap on the same environment window — resolve these before approving a release for that env. Filters align with the rest of Release Desk so you can isolate a single application train.",
+      "Editors manage bookings through the API; the table is read-only for readonly roles. Cross-check System Mapping before finalising dates that depend on downstream environments.",
+    ],
+  },
+  dependencies: {
+    pageKey: "dependencies",
+    title: "Release Dependencies",
+    quickReference: [
+      "Lists upstream/downstream release dependencies with status and impact.",
+      "Filter by status (Open, Blocked, At Risk, etc.), type, and impact.",
+      "Blocked or at-risk dependencies surface in the page subtitle count.",
+      "Release and depends-on codes link to their release detail pages.",
+      "Review before changing a release date — downstream releases may slip.",
+    ],
+    fullDocumentation: [
+      "Dependencies encode which releases must complete before another can proceed. Each row shows the dependent release, what it waits on, dependency type, current status, and the business impact if the link is blocked.",
+      "Status pills follow the same vocabulary as the source Dependencies sheet. Use filters to isolate Blocked or At Risk items during stand-up. The dependency graph on an individual release detail page shows the same relationships visually.",
+      "When a upstream release slips, open its downstream dependents from this list and reassess CAB dates and environment bookings in the same filter scope.",
+    ],
+  },
+  conflicts: {
+    pageKey: "conflicts",
+    title: "Conflict Resolution Queue",
+    quickReference: [
+      "Tracks environment and resource conflicts between concurrent releases.",
+      "Filter by department, application, status, and priority.",
+      "Open or Escalated conflicts are highlighted in the subtitle.",
+      "Each conflict links to the two affected releases.",
+      "Assignee and remediation notes drive resolution workflow.",
+    ],
+    fullDocumentation: [
+      "The Conflict Queue is the triage desk for overlapping release activity — shared test environments, competing CAB slots, or resource contention. Rows are seeded from the Conflicts sheet with priority, status, and assigned owner.",
+      "Use department and application filters to narrow to your train. High-priority open items should be cleared before env bookings are confirmed. Release ID columns navigate to each side of the conflict for context.",
+      "Conflict status is independent of release readiness; a release can show Ready while a conflict row remains Open until explicitly resolved.",
+    ],
+  },
+  "system-mapping": {
+    pageKey: "system-mapping",
+    title: "System Mapping",
+    quickReference: [
+      "Document environment dependencies (upstream/downstream edges).",
+      "Set an analysis period to match your planned test window.",
+      "Generate mapping from free-text notes (editors) or add edges manually.",
+      "Analyse booking conflicts for the selected date range.",
+      "Mapping risks appear when a required downstream env is already booked.",
+    ],
+    fullDocumentation: [
+      "System Mapping stores directed edges between environments — for example, when UAT for App A requires a healthy downstream integration env. The graph feeds conflict analysis when you book overlapping windows.",
+      "Editors can maintain edges manually or use AI-assisted generation from notes. The risk scan cross-references active env bookings in the analysis period and flags releases whose downstream prerequisites are unavailable.",
+      "Pair this page with Env Booking: confirm mapping is current before locking test dates, especially for multi-application end-to-end scenarios.",
+    ],
+  },
+  environments: {
+    pageKey: "environments",
+    title: "Versions & Config",
+    quickReference: [
+      "Environment desk: version matrix, booking timeline, and topology.",
+      "Compare PROD vs TEST/UAT versions before approving a release.",
+      "Filter by application to focus the version matrix.",
+      "Bookings panel reflects live env reservations in scope.",
+      "Use topology view for service dependency overview.",
+    ],
+    fullDocumentation: [
+      "Versions & Config (Environment Desk) answers \"what is deployed where?\" for each application and environment tier. The version matrix highlights drift between production and lower environments — a common gate for CAB approval.",
+      "Data is loaded from the environment-desk API and respects the same department/application filters as the rest of Release Desk. Promotion actions (where enabled) update tracked versions; bookings shown here align with the Env Booking register.",
+      "Before go-live, verify the target environment row shows the expected version and that no conflicting booking overlaps the deployment window.",
+    ],
+  },
+  risks: {
+    pageKey: "risks",
+    title: "Risk Register",
+    quickReference: [
+      "Qualitative risks per release: likelihood × impact = risk score (1–25).",
+      "Bands: Low ≤5, Medium ≤11, High ≤19, Critical ≥20.",
+      "5×5 heat map summarises likelihood vs impact for filtered risks.",
+      "Filter by status and category; sort by risk score descending.",
+      "Each risk links to its parent release.",
+    ],
+    fullDocumentation: [
+      "The Risk Register holds narrative risks from the source Risk sheet — resource gaps, schedule threats, technical concerns, and compliance items. Risk score is computed as likelihood × impact (each 1–5), matching the embedded scoring matrix in the workbook.",
+      "Risk level bands (LOW / MEDIUM / HIGH / CRITICAL) follow thresholds verified against all seeded scores in the Risk sheet summary — they are display-only and not stored as a separate column. Status tracks mitigation workflow: Open, Monitoring, Mitigating, Accepted, etc.",
+      "This register is separate from the Weighted Risk Score on the Risk Factors page. Use both: qualitative risks here for CAB discussion, weighted factor scoring for data-driven go/no-go.",
+    ],
+  },
+  "risk-factors": {
+    pageKey: "risk-factors",
+    title: "Risk Factors",
+    quickReference: [
+      "44 weighted factors across 10 categories (editable weights in master data).",
+      `Category weight budget: ${CATEGORY_WEIGHTS_VERIFIED}`,
+      "Per-factor weight is stored in DB; banding rules live in code (lib/risk-scoring/factors.ts).",
+      "Weighted score = Σ(bandScore × weight); bands: Low / Medium / High / Critical / Severe.",
+      "Do NOT use the Excel \"10 categories\" alternate percentages or worked example — they are stale.",
+    ],
+    fullDocumentation: [
+      "Risk Factors defines the Weighted Risk Score model (System 2) used on release detail. Each factor has a category, name, weight, and description. Raw inputs on a release are converted to a 1–5 band via factor-specific rules in code, then multiplied by the factor weight and summed.",
+      `Verified category weight budget (sums to ~99.2% by design, not normalized to 100%): ${CATEGORY_WEIGHTS_VERIFIED} Individual factor weights within a category are listed in the table and match lib/risk-scoring/factors.ts.`,
+      "DISCREPANCY NOTE: The source Excel contains an alternate \"10 Factor Categories\" prose block with different percentages and a worked example whose arithmetic does not reconcile (claims 1.45 but factors sum differently). The app uses the per-factor weights in factors.ts — they reproduce all 12 ground-truth release scores exactly. Documentation and UI must reference the verified breakdown above, not the stale prose.",
+    ],
+  },
+  drifts: {
+    pageKey: "drifts",
+    title: "Drift Dashboard",
+    quickReference: [
+      "Tracks environment/application drift found during release testing.",
+      "Drift Type values come from Reference Data (category drift_type).",
+      "Filter by drift type, severity, status, and release.",
+      "Severity drives triage: Critical drift can block UAT sign-off.",
+      "Each row links to the affected release.",
+    ],
+    fullDocumentation: [
+      "Drift records capture differences between environments — database versions, config timeouts, stale test data, memory allocation, etc. — discovered while validating a release. Data is seeded from the Drift sheet with remediation actions and ETAs.",
+      "Drift Type is a governed lookup (Reference Data → drift_type), not free text. Creating drift via API validates against active reference values. Severity and status columns match the source workbook vocabulary.",
+      "Resolve high-severity drift before promoting to pre-prod or prod; the drift list complements Versions & Config by describing qualitative gaps that version numbers alone may not show.",
+    ],
+  },
+  approvals: {
+    pageKey: "approvals",
+    title: "Approval Queue",
+    quickReference: [
+      "CAB and gate approvals across all in-scope releases.",
+      "Filter by decision (Pending, Approved, Rejected), type, and approver.",
+      "Pending items need action before go-live.",
+      "Each row links to the parent release.",
+      "Submitted and decision dates track SLA progress.",
+    ],
+    fullDocumentation: [
+      "The Approval Queue centralises sign-off records from the Approvals sheet — CAB, technical, security, and business gates. Decision status drives release readiness calculations on the Releases list.",
+      "Use approver filter to see your personal queue. Rejected approvals should carry comments explaining required remediation. Approved items still respect other blockers (conflicts, drift, open P1s).",
+      "Approval types and decisions are filterable via URL params so you can share a pending-CAB view with stakeholders.",
+    ],
+  },
+  leaves: {
+    pageKey: "leaves",
+    title: "Leave & Resource Availability",
+    quickReference: [
+      "Staff leave records that may affect release windows.",
+      "Risk level (Low / Medium / High) flags coverage gaps.",
+      "Filter by leave type, department, and risk level.",
+      "Cross-reference with Risk Register for resource-category risks.",
+      "High-risk leave overlapping a release window needs backup planning.",
+    ],
+    fullDocumentation: [
+      "Leave Calendar shows who is unavailable during the planning horizon and which releases are affected. Rows link leave records to impacted releases via the seed data relationships.",
+      "Risk level is a desk-assigned indicator for capacity planning — not the same as Risk Register scores. Filter High risk during sprint planning to ensure test and release manager coverage.",
+      "Mitigation typically appears as a Risk Register entry (resource category) referencing the leave code in notes.",
+    ],
+  },
+  "monitoring-alerts": {
+    pageKey: "monitoring-alerts",
+    title: "Monitoring Alerts",
+    quickReference: [
+      "Open monitoring alerts across applications and environments.",
+      "Filter by severity, status, application, alert type, and environment.",
+      "P1/P2 severities may block deployment depending on scope.",
+      "Alert type and environment columns help route to the right team.",
+      "Cross-check Application Status for current env health.",
+    ],
+    fullDocumentation: [
+      "Monitoring Alerts aggregates active signals from the monitoring sheet — threshold breaches, integration failures, and observability gaps. Each alert is tied to an application and environment.",
+      "Severity and status filters support war-room triage. Alerts in the same environment as a planned deployment should be reviewed in CAB even if the release itself is low impact.",
+      "This page is read-only for most roles; resolution happens in the incident or monitoring toolchain, with status updated when cleared.",
+    ],
+  },
+  incidents: {
+    pageKey: "incidents",
+    title: "Incidents",
+    quickReference: [
+      "Production and pre-prod incidents (P1–P3) across applications.",
+      "Filter by severity, status, application, department, and environment.",
+      "Open P1s surface on Dashboard and Morning Inbox.",
+      "Related release column links cross-release impact.",
+      "Status badges track active vs resolved incidents.",
+    ],
+    fullDocumentation: [
+      "Incidents is the system of record for live outages and degradations during the release horizon. P1 items block deployment to affected environments per Application Status rules.",
+      "Each incident includes impact narrative, assigned owner, and optional related release for change correlation. Department and environment filters align with the portfolio filter bar used elsewhere.",
+      "Morning Inbox and Dashboard pull open P1 counts from the same dataset — clearing an incident here updates those widgets on refresh.",
+    ],
+  },
+  "application-status": {
+    pageKey: "application-status",
+    title: "Application Status",
+    quickReference: [
+      "One row per application × environment health snapshot.",
+      "Status: Healthy ✅ | Degraded ⚠️ | Down 🛑 — target env must be Healthy before deploy.",
+      "Uptime below 95% signals instability; check Last Check freshness.",
+      "Filter by status, environment, and application.",
+      "Down or Degraded prod rows often correlate with open incidents.",
+    ],
+    fullDocumentation: [
+      "Application Status answers \"can we deploy here right now?\" with a point-in-time health row per application and environment tier. Status values match the Quick Reference legend embedded in the source Application Status sheet.",
+      "Uptime percentage and last-check timestamp indicate data freshness — stale checks may warrant a manual probe before go-live. Degraded or Down in the target environment should block deployment unless an explicit CAB exemption exists.",
+      "Use alongside Monitoring Alerts and Incidents: status is the summary view, incidents carry the narrative, alerts carry the triggering signal.",
+    ],
+  },
+  "planned-maintenance": {
+    pageKey: "planned-maintenance",
+    title: "Planned Maintenance",
+    quickReference: [
+      "Scheduled maintenance windows that may overlap release dates.",
+      "Filter by type, approval status, application, environment, and impact.",
+      "Approved maintenance in a release window requires rescheduling or exemption.",
+      "Impact column indicates user-facing blast radius.",
+      "Cross-check Calendar for freeze and maintenance events.",
+    ],
+    fullDocumentation: [
+      "Planned Maintenance lists vendor patches, infrastructure work, and scheduled outages from the seed workbook. Approval status tracks whether the window is confirmed or pending.",
+      "High-impact maintenance overlapping a release deployment window should trigger a schedule risk in the Risk Register. Calendar events may also reference vendor maintenance at the portfolio level.",
+      "Filter by environment to see if your target prod/test tier has upcoming work during the proposed go-live week.",
+    ],
+  },
+};
+
+const PATH_TO_DOC_KEY: Record<string, PageDocKey> = {
+  "/releases": "releases",
+  "/calendar": "calendar",
+  "/booking": "env-booking",
+  "/dependencies": "dependencies",
+  "/conflicts": "conflicts",
+  "/system-mapping": "system-mapping",
+  "/environments": "environments",
+  "/risks": "risks",
+  "/risk-factors": "risk-factors",
+  "/drifts": "drifts",
+  "/approvals": "approvals",
+  "/leaves": "leaves",
+  "/monitoring-alerts": "monitoring-alerts",
+  "/incidents": "incidents",
+  "/application-status": "application-status",
+  "/planned-maintenance": "planned-maintenance",
+};
+
+export function getPageDocumentation(pageKey: PageDocKey): PageDocumentationEntry {
+  return PAGE_DOCUMENTATION[pageKey];
+}
+
+export function resolvePageDocKey(pathname: string): PageDocKey | null {
+  return PATH_TO_DOC_KEY[pathname] ?? null;
+}
+
+/** Discrepancies between source sheets and verified app logic (for implementation reports). */
+export const DOCUMENTATION_DISCREPANCIES: { page: PageDocKey; issue: string }[] = [
+  {
+    page: "risk-factors",
+    issue:
+      "Excel alternate \"10 Factor Categories\" percentages and worked example do not match lib/risk-scoring/factors.ts. App uses per-factor weights (category budget 18/26/8/4/14/9/10/4/5/2%) which reproduce ground-truth scores.",
+  },
+  {
+    page: "releases",
+    issue: "page-guide.ts mentions \"Playbooks & clone\" on Releases — that UI was removed; documentation here omits it.",
+  },
+  {
+    page: "calendar",
+    issue: "page-guide.ts describes only timeline/heat; app now has Month, Timeline, and Table views sharing calendarEvents.",
+  },
+  {
+    page: "risks",
+    issue: "Risk sheet embeds a likelihood/impact legend in data rows; bands in app follow risk-level.ts thresholds verified against summary stats, not prose in row 6+.",
+  },
+];

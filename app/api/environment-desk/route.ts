@@ -2,14 +2,23 @@ import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { buildBookings, buildTimeline, buildVersionMatrix } from "@/lib/db-environment-desk";
 import { prisma } from "@/lib/prisma";
+import { sp, str } from "@/lib/list-api-filters";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
+  const params = sp(req);
+  const appId = str(params, "app");
+
+  const versionWhere = appId ? { applicationId: appId } : undefined;
+
   const [apps, versions, releases, bookings, edges, environments] = await Promise.all([
     prisma.application.findMany({ include: { department: true, environments: true } }),
-    prisma.environmentVersion.findMany({ include: { environment: true, application: { include: { department: true } } } }),
+    prisma.environmentVersion.findMany({
+      where: versionWhere,
+      include: { environment: true, application: { include: { department: true } } },
+    }),
     prisma.release.findMany({ include: { department: true }, orderBy: { releaseDate: "asc" } }),
     prisma.envBooking.findMany({ include: { application: true }, orderBy: { fromDate: "asc" } }),
     prisma.systemMappingEdge.findMany({

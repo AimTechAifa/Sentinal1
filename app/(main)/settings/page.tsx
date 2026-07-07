@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { TablePageSuspenseFallback } from "@/components/ui/TableSkeleton";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Users,
@@ -137,7 +138,7 @@ function SettingsPageInner() {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<p className="text-gray-500 p-6">Loading settings…</p>}>
+    <Suspense fallback={<TablePageSuspenseFallback />}>
       <SettingsPageInner />
     </Suspense>
   );

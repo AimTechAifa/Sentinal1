@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { prisma } from "@/lib/prisma";
+import { leaveWhere, sp } from "@/lib/list-api-filters";
 
-export async function GET() {
+export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
   const data = await prisma.leaveRecord.findMany({
+    where: leaveWhere(sp(req)),
     include: {
       user: { select: { id: true, userId: true, name: true, role: true, department: true } },
       affectedReleases: {

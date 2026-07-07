@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getSession } from "./session";
-import { canAdmin, canEdit } from "./roles";
 
 export async function requireSession() {
   const user = await getSession();
@@ -10,15 +9,7 @@ export async function requireSession() {
   return { user, error: null };
 }
 
-export async function requireRole(minRole: "readonly" | "editor" | "admin") {
-  const { user, error } = await requireSession();
-  if (error) return { user: null, error };
-
-  if (minRole === "admin" && !canAdmin(user)) {
-    return { user, error: NextResponse.json({ error: "Admin access required" }, { status: 403 }) };
-  }
-  if (minRole === "editor" && !canEdit(user)) {
-    return { user, error: NextResponse.json({ error: "Editor access required" }, { status: 403 }) };
-  }
-  return { user, error: null };
+/** Demo pass: any Clerk session passes; minRole kept for call-site compatibility. */
+export async function requireRole(_minRole: "readonly" | "editor" | "admin") {
+  return requireSession();
 }

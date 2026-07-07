@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 import type { DbReleasePrediction } from "@/lib/db-predictive";
 
 const SEVERITY_STYLES = {
-  low: "border-gray-200 bg-gray-50/80 text-gray-700",
-  medium: "border-amber-200 bg-amber-50/70 text-amber-900",
-  high: "border-error-200 bg-error-50/70 text-error-900",
+  low: "border-gray-200 bg-gray-50/80 text-gray-700 dark:border-[var(--border)] dark:bg-white/5 dark:text-white/80",
+  medium:
+    "border-warning-200 bg-warning-50/70 text-warning-900 dark:border-warning-500/30 dark:bg-warning-500/10 dark:text-warning-400",
+  high: "border-error-200 bg-error-50/70 text-error-900 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400",
 };
 
 export function DbPredictiveNudge({ prediction }: { prediction: DbReleasePrediction }) {
@@ -26,7 +27,7 @@ export function DbPredictiveNudge({ prediction }: { prediction: DbReleasePredict
       <div>
         <p className="font-medium">Predictive nudge</p>
         <p className="text-xs mt-0.5 opacity-90">{prediction.nudge}</p>
-        <p className="text-[10px] mt-1 opacity-70">
+        <p className="text-[10px] mt-1 opacity-70 dark:opacity-80">
           Ship {prediction.shipProbability}% · Slip risk {prediction.delayRisk}%
         </p>
       </div>

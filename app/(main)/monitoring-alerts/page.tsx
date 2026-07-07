@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
+import { TablePageSuspenseFallback } from "@/components/ui/TableSkeleton";
 import MonitoringAlertsContent from "./MonitoringAlertsContent";
 
 export default function MonitoringAlertsPage() {
   return (
-    <Suspense fallback={<p className="text-gray-500 p-6">Loading monitoring alerts…</p>}>
+    <Suspense fallback={<TablePageSuspenseFallback />}>
       <MonitoringAlertsContent />
     </Suspense>
   );

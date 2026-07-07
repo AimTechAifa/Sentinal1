@@ -7,9 +7,11 @@ import type { LucideIcon } from "lucide-react";
 type Variant = "default" | "ai" | "glass" | "plain";
 
 const GRADIENTS: Record<Exclude<Variant, "plain">, string> = {
-  default: "from-gray-200/80 via-white to-gray-200/80",
-  ai: "from-brand-300/30 via-brand-200/20 to-brand-100/30",
-  glass: "from-brand-100/30 via-white to-brand-50/40",
+  default:
+    "from-gray-200/80 via-white to-gray-200/80 dark:from-white/10 dark:via-[var(--card)] dark:to-white/5",
+  ai: "from-brand-300/30 via-brand-200/20 to-brand-100/30 dark:from-brand-500/20 dark:via-brand-500/10 dark:to-brand-500/5",
+  glass:
+    "from-brand-100/30 via-white to-brand-50/40 dark:from-brand-500/15 dark:via-[var(--card)] dark:to-brand-500/10",
 };
 
 interface AdvancedCardProps {

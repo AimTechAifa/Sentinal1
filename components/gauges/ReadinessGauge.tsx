@@ -1,11 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useThemeMode } from "@/context/ThemeModeContext";
 import { readinessColor } from "@/lib/palette";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 export function ReadinessGauge({ value, size = 160 }: { value: number; size?: number }) {
+  const { mode } = useThemeMode();
+  const isDark = mode === "dark";
   const color = readinessColor(value);
+  const trackColor = isDark ? "#3d4659" : "#E2E8F0";
   const data = [{ value }, { value: 100 - value }];
 
   return (
@@ -16,12 +20,12 @@ export function ReadinessGauge({ value, size = 160 }: { value: number; size?: nu
       className="relative"
       style={{ width: size, height: size }}
     >
-      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-50/50 to-brand-25/50 blur-sm" />
+      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-brand-50/50 to-brand-25/50 blur-sm dark:from-brand-500/10 dark:to-brand-500/5" />
       <ResponsiveContainer minWidth={0} minHeight={0} width="100%" height="100%">
         <PieChart>
           <Pie data={data} cx="50%" cy="50%" innerRadius={size * 0.35} outerRadius={size * 0.45} startAngle={90} endAngle={-270} dataKey="value" stroke="none">
             <Cell fill={color} />
-            <Cell fill="#E2E8F0" />
+            <Cell fill={trackColor} />
           </Pie>
         </PieChart>
       </ResponsiveContainer>
@@ -30,11 +34,11 @@ export function ReadinessGauge({ value, size = 160 }: { value: number; size?: nu
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="text-3xl font-bold text-gray-800 font-mono text-[10px] uppercase tracking-wider"
+          className="text-3xl font-bold text-gray-800 dark:text-white font-mono text-[10px] uppercase tracking-wider"
         >
           {value}%
         </motion.span>
-        <span className="text-xs text-gray-500">Ready</span>
+        <span className="text-xs text-gray-500 dark:text-white/55">Ready</span>
       </div>
     </motion.div>
   );

@@ -12,6 +12,7 @@ import {
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   EMPTY_RELEASE_FILTERS,
+  filtersFromSearchParams,
   filtersToSearchParams,
   hasActiveFilters,
   type BookingFilterRow,
@@ -30,10 +31,17 @@ type ReleaseFiltersContextValue = {
   envOptions: EnvFilterRow[];
   bookings: BookingFilterRow[];
   dbRows: DbReleaseFilterRow[];
-  calendarEvents: any[]; // We will type this properly below
+  calendarEvents: any[];
   setDepartmentId: (id: string) => void;
   setApplicationId: (id: string) => void;
   setEnvironmentId: (id: string) => void;
+  setStatus: (status: string) => void;
+  setPriority: (priority: string) => void;
+  setImpact: (impact: string) => void;
+  setSort: (sort: string, sortDir?: string) => void;
+  setPeriod: (period: string) => void;
+  setAnchor: (anchor: string) => void;
+  setTab: (tab: string) => void;
   clearFilters: () => void;
   filterQuery: string;
   refreshLookups: () => void;
@@ -42,11 +50,7 @@ type ReleaseFiltersContextValue = {
 const ReleaseFiltersContext = createContext<ReleaseFiltersContextValue | null>(null);
 
 function filtersFromParams(sp: URLSearchParams): ReleaseListFilters {
-  return {
-    departmentId: sp.get("dept") ?? "",
-    applicationId: sp.get("app") ?? "",
-    environmentId: sp.get("env") ?? "",
-  };
+  return filtersFromSearchParams(sp);
 }
 
 export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
@@ -66,39 +70,41 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
 
   const refreshLookups = useCallback(() => {
     setLoading(true);
-    const fetchJson = async (url: string) => {
-      const res = await fetch(url);
-      if (!res.ok) {
-        console.error(`ReleaseFilters: ${url} failed with ${res.status}`);
-        return [];
-      }
-      const text = await res.text();
-      if (!text) return [];
-      try {
-        return JSON.parse(text);
-      } catch {
-        console.error(`ReleaseFilters: ${url} returned invalid JSON`);
-        return [];
-      }
-    };
-    Promise.all([
-      fetchJson("/api/departments"),
-      fetchJson("/api/applications"),
-      fetchJson("/api/environments"),
-      fetchJson("/api/bookings"),
-      fetchJson("/api/releases"),
-      fetchJson("/api/calendar"),
-    ])
-      .then(([depts, apps, envs, bks, releases, calEvents]) => {
-        setDepartments(depts);
-        setApplications(apps);
-        setEnvironments(envs);
-        setBookings(bks);
-        setDbRows(releases);
-        setCalendarEvents(calEvents);
+    const listQs = filtersToSearchParams(filters).toString();
+    const url = `/api/release-lookups${listQs ? `?${listQs}` : ""}`;
+    fetch(url)
+      .then(async (res) => {
+        if (!res.ok) {
+          console.error(`ReleaseFilters: ${url} failed with ${res.status}`);
+          return null;
+        }
+        const text = await res.text();
+        if (!text) return null;
+        try {
+          return JSON.parse(text) as {
+            departments?: { id: string; name: string }[];
+            applications?: { id: string; name: string; departmentId: string }[];
+            environments?: EnvFilterRow[];
+            bookings?: BookingFilterRow[];
+            releases?: DbReleaseFilterRow[];
+            calendarEvents?: unknown[];
+          };
+        } catch {
+          console.error(`ReleaseFilters: ${url} returned invalid JSON`);
+          return null;
+        }
+      })
+      .then((data) => {
+        if (!data) return;
+        setDepartments(data.departments ?? []);
+        setApplications(data.applications ?? []);
+        setEnvironments(data.environments ?? []);
+        setBookings(data.bookings ?? []);
+        setDbRows(data.releases ?? []);
+        setCalendarEvents(data.calendarEvents ?? []);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     refreshLookups();
@@ -126,6 +132,42 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
 
   const setEnvironmentId = useCallback(
     (environmentId: string) => pushFilters({ ...filters, environmentId }),
+    [filters, pushFilters]
+  );
+
+  const setStatus = useCallback(
+    (status: string) => pushFilters({ ...filters, status }),
+    [filters, pushFilters]
+  );
+
+  const setPriority = useCallback(
+    (priority: string) => pushFilters({ ...filters, priority }),
+    [filters, pushFilters]
+  );
+
+  const setImpact = useCallback(
+    (impact: string) => pushFilters({ ...filters, impact }),
+    [filters, pushFilters]
+  );
+
+  const setSort = useCallback(
+    (sort: string, sortDir?: string) =>
+      pushFilters({ ...filters, sort, sortDir: sortDir ?? filters.sortDir }),
+    [filters, pushFilters]
+  );
+
+  const setPeriod = useCallback(
+    (period: string) => pushFilters({ ...filters, period }),
+    [filters, pushFilters]
+  );
+
+  const setAnchor = useCallback(
+    (anchor: string) => pushFilters({ ...filters, anchor }),
+    [filters, pushFilters]
+  );
+
+  const setTab = useCallback(
+    (tab: string) => pushFilters({ ...filters, tab }),
     [filters, pushFilters]
   );
 
@@ -157,6 +199,13 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       setDepartmentId,
       setApplicationId,
       setEnvironmentId,
+      setStatus,
+      setPriority,
+      setImpact,
+      setSort,
+      setPeriod,
+      setAnchor,
+      setTab,
       clearFilters,
       filterQuery,
       refreshLookups,
@@ -174,6 +223,13 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       setDepartmentId,
       setApplicationId,
       setEnvironmentId,
+      setStatus,
+      setPriority,
+      setImpact,
+      setSort,
+      setPeriod,
+      setAnchor,
+      setTab,
       clearFilters,
       filterQuery,
       refreshLookups,

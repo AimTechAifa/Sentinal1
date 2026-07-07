@@ -6,9 +6,11 @@ import { SESSION_COOKIE, type SessionUser, type UserRole } from "@/lib/auth/role
 export async function POST(req: Request) {
   const body = (await req.json()) as { email?: string; name?: string; role?: UserRole };
   const role = body.role ?? "readonly";
+  const email = body.email ?? "user@company.com";
   const user: SessionUser = {
-    email: body.email ?? "user@company.com",
-    name: resolveSessionName(body.email ?? "user@company.com", body.name),
+    id: email,
+    email,
+    name: resolveSessionName(email, body.name),
     role,
   };
 
