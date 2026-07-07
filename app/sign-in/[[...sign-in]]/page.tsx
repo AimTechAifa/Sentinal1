@@ -1,4 +1,4 @@
-import { SignIn } from "@clerk/nextjs";
+import { ClerkSignIn } from "@/components/auth/ClerkSignIn";
 import { SentinelLogo } from "@/components/brand/SentinelLogo";
 import { PRODUCT_TAGLINE } from "@/lib/brand";
 
@@ -12,7 +12,7 @@ export default function SignInPage() {
             <p className="mt-3 text-xs text-gray-500">{PRODUCT_TAGLINE}</p>
           </div>
           <div className="flex justify-center lg:justify-start">
-            <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" />
+            <ClerkSignIn />
           </div>
         </div>
       </div>
