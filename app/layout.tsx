@@ -1,19 +1,7 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Poppins, JetBrains_Mono } from "next/font/google";
-import { NavigationProgressProvider } from "@/components/layout/NavigationProgress";
 import "./globals.css";
-
-const MuiThemeProvider = dynamic(
-  () =>
-    import("@/components/providers/MuiThemeProvider").then((mod) => mod.MuiThemeProvider),
-  {
-    loading: () => (
-      <div className="min-h-screen bg-[var(--background,#f4f5fa)]" aria-busy="true" />
-    ),
-  }
-);
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,13 +25,16 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
-        <ClerkProvider afterSignOutUrl="/sign-in">
-          <MuiThemeProvider>
-            <NavigationProgressProvider>{children}</NavigationProgressProvider>
-          </MuiThemeProvider>
+        <ClerkProvider
+          {...(publishableKey ? { publishableKey } : {})}
+          afterSignOutUrl="/sign-in"
+        >
+          {children}
         </ClerkProvider>
       </body>
     </html>

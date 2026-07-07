@@ -439,4 +439,25 @@ body {
   .theme-dark .border-red-200 {
     border-color: rgba(186, 26, 26, 0.28) !important;
   }
+
+  /* Auth pages: keep Clerk sign-in readable (global dark overrides break Clerk widgets) */
+  .auth-shell .cl-rootBox,
+  .auth-shell .cl-signIn-root,
+  .auth-shell .cl-signUp-root,
+  .auth-shell .clerk-sign-in-host {
+    width: 100% !important;
+    min-height: 420px;
+  }
+
+  .auth-shell .cl-card,
+  .auth-shell [class*="cl-"] .cl-card {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  .auth-shell input,
+  .auth-shell button,
+  .auth-shell label {
+    color: inherit;
+  }
 }
