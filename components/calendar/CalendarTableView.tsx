@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { TableFilterBar } from "@/components/filters/TableFilterBar";
 import { DataTable, TableToolbar, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -60,14 +59,6 @@ export function CalendarTableView({
 
   return (
     <div className="space-y-4">
-      {!tablePending && (
-        <TableFilterBar hasActive={false}>
-          <span className="text-xs font-medium text-gray-500 dark:text-white/50">
-            {rows.length} event{rows.length === 1 ? "" : "s"}
-          </span>
-        </TableFilterBar>
-      )}
-
       {tablePending ? (
         <TableSkeleton columns={CALENDAR_TABLE_COLUMNS.length} rows={8} showFilterBar={false} />
       ) : rows.length === 0 ? (

@@ -110,6 +110,15 @@ export function ReleaseTimelineView({
 
   return (
     <div className="overflow-visible rounded-[24px] bg-white px-4 py-5 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.18)] dark:bg-[var(--card)]">
+      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-100 pb-4 dark:border-slate-700">
+        <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-white/50">Legend</span>
+        {TIMELINE_LEGEND.map(({ tone, label }) => (
+          <span key={tone} className="flex items-center gap-1.5 text-[11.5px] font-medium text-slate-600 dark:text-white/70">
+            <span className={`h-2.5 w-2.5 rounded-full ${TIMELINE_TONES[tone].chip}`} /> {label}
+          </span>
+        ))}
+      </div>
+
       <div className="overflow-x-auto overflow-y-visible py-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <div className="relative overflow-visible" style={{ width: trackWidth, height: TIMELINE_TRACK_HEIGHT }}>
           {/* Central timeline axis */}
@@ -150,14 +159,6 @@ export function ReleaseTimelineView({
             <MilestoneCard key={m.id} milestone={m} />
           ))}
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-4 border-t border-slate-100 pt-4 dark:border-slate-700">
-        {TIMELINE_LEGEND.map(({ tone, label }) => (
-          <span key={tone} className="flex items-center gap-1.5 text-[11.5px] text-slate-500 dark:text-white/55">
-            <span className={`h-2.5 w-2.5 rounded-full ${TIMELINE_TONES[tone].chip}`} /> {label}
-          </span>
-        ))}
       </div>
     </div>
   );

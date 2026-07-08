@@ -45,7 +45,7 @@ export function DataTable({ title, subtitle, icon: Icon, action, toolbar, childr
           )}
         </div>
       )}
-      <div className="overflow-x-auto">{children}</div>
+      <div className="max-h-[calc(100dvh-var(--header-height)-20rem)] overflow-auto">{children}</div>
     </MagicCard>
   );
 }
@@ -53,12 +53,14 @@ export function DataTable({ title, subtitle, icon: Icon, action, toolbar, childr
 export const tableHeadRow =
   "bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-[var(--border)]";
 
-/** Use only when the table scroll container supports sticky (no overflow-hidden ancestors). */
+/** Sticky within DataTable scroll container (top-0 of overflow-auto wrapper). */
 export const stickyHeadCell =
-  "sticky top-[var(--header-height)] z-20 bg-gray-50 dark:bg-gray-800/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/95 dark:supports-[backdrop-filter]:bg-gray-800/90";
+  "sticky top-0 z-20 bg-gray-50 shadow-[0_1px_0_0_rgb(229_231_235)] dark:bg-gray-800/95 dark:shadow-[0_1px_0_0_var(--border)]";
 
-export const tableHeadCell =
-  "px-3 py-3 min-w-[5.5rem] bg-gray-50 text-left align-middle text-[11px] font-semibold uppercase tracking-wide text-gray-600 dark:bg-gray-800/50 dark:text-gray-400 whitespace-nowrap";
+export const tableHeadCell = cn(
+  stickyHeadCell,
+  "px-3 py-3 min-w-[5.5rem] text-left align-middle text-[11px] font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 whitespace-nowrap"
+);
 
 export const tableRow =
   "border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200 group";

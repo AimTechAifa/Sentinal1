@@ -14,8 +14,9 @@ import { CalendarTableView } from "@/components/calendar/CalendarTableView";
 
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-
+import { useFilterPreferences } from "@/hooks/useFilterPreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
+import { RELEASE_FILTER_FIELDS } from "@/lib/table-page-columns";
 
 import {
 
@@ -80,6 +81,8 @@ export default function CalendarPage() {
     setTab,
 
   } = useReleaseFilters();
+
+  const { filterPicker, isFilterVisible } = useFilterPreferences("calendar", RELEASE_FILTER_FIELDS);
 
 
 
@@ -222,13 +225,11 @@ export default function CalendarPage() {
     <div className="space-y-6 max-w-7xl mx-auto">
 
       <ReleaseFiltersBar
-
         period={period}
-
         onPeriodChange={(p) => setPeriod(p)}
-
         showListFilters
-
+        manageFilters={filterPicker}
+        isFilterVisible={isFilterVisible}
       />
 
 
