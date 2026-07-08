@@ -6,11 +6,12 @@ import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterPills, FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { DEPENDENCY_COLUMNS, DEPENDENCY_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { DataTableHeadRow, TableToolbar } from "@/components/ui/data-table";
 import { cn } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { DEPENDENCIES_FILTER_SCHEMA } from "@/lib/table-filters";
 
@@ -29,17 +30,7 @@ type DepRow = {
   notes: string | null;
 };
 
-const COLUMNS = [
-  { key: "depCode", label: "Dep ID" },
-  { key: "releaseCode", label: "Release ID" },
-  { key: "releaseName", label: "Release Name" },
-  { key: "dependsOnCode", label: "Depends On Release" },
-  { key: "dependsOnName", label: "Depends On Name" },
-  { key: "dependencyType", label: "Dependency Type" },
-  { key: "status", label: "Status" },
-  { key: "impactIfBlocked", label: "Impact if Blocked" },
-  { key: "notes", label: "Notes" },
-] as const;
+type DepColumnKey = (typeof DEPENDENCY_COLUMNS)[number]["key"];
 
 const TYPE_CLASSES: Record<string, string> = {
   Hard: "bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300",
@@ -77,7 +68,7 @@ function ReleaseLink({ code, dbId, name }: { code: string; dbId: string | null; 
   );
 }
 
-function renderDepCell(d: DepRow, key: (typeof COLUMNS)[number]["key"]) {
+function renderDepCell(d: DepRow, key: DepColumnKey) {
   switch (key) {
     case "depCode":
       return (
@@ -129,31 +120,40 @@ function renderDepCell(d: DepRow, key: (typeof COLUMNS)[number]["key"]) {
 }
 
 export default function DependencyListContent() {
-  const { rows: deps, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<DepRow>(
-    "/api/dependencies",
-    DEPENDENCIES_FILTER_SCHEMA
-  );
-
   const {
-    visibleColumns,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("dependencies", [...COLUMNS], { lockedKeys: ["depCode"] });
+    rows: deps,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<DepRow>("/api/dependencies", DEPENDENCIES_FILTER_SCHEMA, {
+    defaultSortKey: "depCode",
+    defaultSortDir: "asc",
+    sortAccessors: {
+      depCode: (r) => r.depCode,
+      releaseCode: (r) => r.releaseCode,
+      releaseName: (r) => r.releaseName,
+      dependsOnCode: (r) => r.dependsOnCode,
+      dependsOnName: (r) => r.dependsOnName,
+      dependencyType: (r) => r.dependencyType,
+      status: (r) => r.status,
+      impactIfBlocked: (r) => r.impactIfBlocked,
+      notes: (r) => r.notes ?? "",
+    },
+  });
 
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { visibleColumns, isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "dependencies",
+    DEPENDENCY_COLUMNS,
+    DEPENDENCY_FILTER_FIELDS,
+    { lockedKeys: ["depCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const types = useMemo(
     () => [...new Set(deps.map((d) => d.dependencyType).filter(Boolean))].sort(),
@@ -169,44 +169,53 @@ export default function DependencyListContent() {
         subtitle={`${deps.length} dependencies${blockedCount > 0 ? ` · ${blockedCount} blocked or at risk` : ""}`}
       />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterPills
-            options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))}
-            value={(values.status as (typeof STATUS_OPTIONS)[number]) || ""}
-            onChange={(v) => setFilter("status", v)}
-          />
-          <FilterSelect value={values.dependencyType} onChange={(v) => setFilter("dependencyType", v)}>
-            <option value="">All types</option>
-            {types.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.impact} onChange={(v) => setFilter("impact", v)}>
-            <option value="">All impacts</option>
-            {IMPACT_OPTIONS.map((i) => (
-              <option key={i} value={i}>
-                {i}
-              </option>
-            ))}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("status") && (
+            <FilterPills
+              options={STATUS_OPTIONS.map((s) => ({ value: s, label: s }))}
+              value={(values.status as (typeof STATUS_OPTIONS)[number]) || ""}
+              onChange={(v) => setFilter("status", v)}
+            />
+          )}
+          {isFilterVisible("dependencyType") && (
+            <FilterSelect value={values.dependencyType} onChange={(v) => setFilter("dependencyType", v)}>
+              <option value="">All types</option>
+              {types.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("impact") && (
+            <FilterSelect value={values.impact} onChange={(v) => setFilter("impact", v)}>
+              <option value="">All impacts</option>
+              {IMPACT_OPTIONS.map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
       {tablePending ? (
-        <TableSkeleton showTitle={false} columns={COLUMNS.length} />
+        <TableSkeleton showTitle={false} columns={DEPENDENCY_COLUMNS.length} />
       ) : (
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-[var(--card)]">
+        <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
+          <TableToolbar>{columnPicker}</TableToolbar>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1400px] text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50 text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:border-gray-700 dark:bg-white/5 dark:text-white/50">
-                {visibleColumns.map((col) => (
-                  <th key={col.key} className="px-4 py-3 font-bold whitespace-nowrap">
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
+              <DataTableHeadRow
+                columns={DEPENDENCY_COLUMNS}
+                isColumnVisible={isColumnVisible}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={toggleSort}
+              />
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {deps.length === 0 ? (
@@ -218,7 +227,7 @@ export default function DependencyListContent() {
               ) : (
                 deps.map((d) => (
                   <tr key={d.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
-                    {visibleColumns.map((col) => renderDepCell(d, col.key as (typeof COLUMNS)[number]["key"]))}
+                    {visibleColumns.map((col) => renderDepCell(d, col.key as DepColumnKey))}
                   </tr>
                 ))
               )}

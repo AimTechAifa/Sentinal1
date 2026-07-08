@@ -640,6 +640,7 @@ model UserTablePreference {
   clerkUserId   String
   pageKey       String
   hiddenColumns String[]
+  hiddenFilters String[] @default([])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

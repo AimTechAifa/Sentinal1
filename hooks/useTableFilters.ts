@@ -10,6 +10,8 @@ import {
   type FilterSchema,
   type FilterValues,
 } from "@/lib/table-filters";
+import { readSortFromValues, sortRows, type SortAccessor, type SortDirection } from "@/lib/table-sort";
+import { useTableSort } from "@/hooks/useTableSort";
 
 export function useTableFilters(schema: FilterSchema) {
   const router = useRouter();
@@ -48,7 +50,10 @@ export function useTableFilters(schema: FilterSchema) {
 
   const clearAll = useCallback(() => {
     const cleared: FilterValues = {};
-    for (const field of schema) cleared[field.key] = "";
+    for (const field of schema) {
+      if (field.key === "sort" || field.key === "sortDir") continue;
+      cleared[field.key] = "";
+    }
     const params = valuesToSearchParams(cleared, schema, searchParams);
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
@@ -64,12 +69,24 @@ export function useTableFilters(schema: FilterSchema) {
   return { values, setFilter, setFilters, clearAll, hasActive, apiQuery, apiUrl };
 }
 
+type SortedFetchOptions<T> = {
+  defaultSortKey?: string;
+  defaultSortDir?: SortDirection;
+  sortAccessors?: Record<string, SortAccessor<T>>;
+};
+
 /** Fetch a list API whenever URL-driven filters change. */
-export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema) {
+export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema, options: SortedFetchOptions<T> = {}) {
   const { values, setFilter, setFilters, clearAll, hasActive, apiQuery, apiUrl } = useTableFilters(schema);
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { sortKey, sortDir, toggleSort } = useTableSort(
+    values,
+    setFilter,
+    options.defaultSortKey ?? "",
+    options.defaultSortDir ?? "asc"
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -85,5 +102,28 @@ export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema) {
     };
   }, [apiPath, apiUrl]);
 
-  return { rows, loading, error, values, setFilter, setFilters, clearAll, hasActive, apiQuery };
+  const sortedRows = useMemo(() => {
+    if (!options.sortAccessors) return rows;
+    const { sortKey: key, sortDir: dir } = readSortFromValues(
+      values,
+      options.defaultSortKey ?? "",
+      options.defaultSortDir ?? "asc"
+    );
+    return sortRows(rows, key, dir, options.sortAccessors);
+  }, [rows, values, options.defaultSortKey, options.defaultSortDir, options.sortAccessors]);
+
+  return {
+    rows: sortedRows,
+    loading,
+    error,
+    values,
+    setFilter,
+    setFilters,
+    clearAll,
+    hasActive,
+    apiQuery,
+    sortKey,
+    sortDir,
+    toggleSort,
+  };
 }

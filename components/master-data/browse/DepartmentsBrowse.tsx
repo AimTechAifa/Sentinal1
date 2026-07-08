@@ -5,11 +5,10 @@ import { TopBar } from "@/components/layout/TopBar";
 import { DEFAULT_PAGE_SIZE, pageCount, paginateRows, type SortDir } from "@/lib/master-data/table-utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { DEPARTMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { DEPARTMENT_COLUMNS } from "@/lib/table-page-columns";
+import { DEPARTMENT_COLUMNS, DEPARTMENT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { TableToolbar } from "@/components/ui/data-table";
 import {
   apiJson,
   BrowseToolbar,
@@ -71,26 +70,14 @@ export function DepartmentsBrowse() {
   const totalPages = pageCount(rows.length, DEFAULT_PAGE_SIZE);
   const pageRows = paginateRows(rows, page, DEFAULT_PAGE_SIZE);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("departments", DEPARTMENT_COLUMNS, { lockedKeys: ["name", "actions"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, prefsLoaded } = useTablePagePreferences(
+    "departments",
+    DEPARTMENT_COLUMNS,
+    DEPARTMENT_FILTER_FIELDS,
+    { lockedKeys: ["name", "actions"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const toggleSort = (key: "name" | "head") => {
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
@@ -170,11 +157,7 @@ export function DepartmentsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={load} />}
 
-      <TableFilterBar hasActive={false} trailing={columnPicker}>
-        <span className="sr-only">Column visibility</span>
-      </TableFilterBar>
-
-      <MasterDataTableShell>
+      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}

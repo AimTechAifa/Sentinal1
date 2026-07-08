@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { REFERENCE_DATA_FILTER_SCHEMA } from "@/lib/table-filters";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { REFERENCE_DATA_COLUMNS } from "@/lib/table-page-columns";
+import { REFERENCE_DATA_COLUMNS, REFERENCE_DATA_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { TableToolbar } from "@/components/ui/data-table";
 import {
   apiJson,
   FormField,
@@ -102,26 +102,14 @@ export function ReferenceDataManager() {
     [rows, selectedCategory]
   );
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("reference-data", REFERENCE_DATA_COLUMNS, { lockedKeys: ["value", "actions"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "reference-data",
+    REFERENCE_DATA_COLUMNS,
+    REFERENCE_DATA_FILTER_FIELDS,
+    { lockedKeys: ["value", "actions"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const openAddValue = () => {
     setEditingValue(null);
@@ -263,12 +251,14 @@ export function ReferenceDataManager() {
 
         {error && <MasterDataError message={error} onRetry={load} />}
 
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.active} onChange={(v) => setFilter("active", v)}>
-            <option value="">All values</option>
-            <option value="true">Active only</option>
-            <option value="false">Inactive only</option>
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("active") && (
+            <FilterSelect value={values.active} onChange={(v) => setFilter("active", v)}>
+              <option value="">All values</option>
+              <option value="true">Active only</option>
+              <option value="false">Inactive only</option>
+            </FilterSelect>
+          )}
         </TableFilterBar>
 
         {tablePending ? (
@@ -299,7 +289,7 @@ export function ReferenceDataManager() {
               </button>
             </div>
 
-            <MasterDataTableShell>
+            <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
               {categoryRows.length === 0 ? (
                 <MasterDataEmptyState entityLabel="values" addLabel="Add Value" onAdd={openAddValue} />
               ) : (

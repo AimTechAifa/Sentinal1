@@ -18,11 +18,13 @@ export function TableSkeleton({
   return (
     <div className={cn("animate-pulse space-y-4", className)} aria-label="Loading table" role="status">
       {showFilterBar && (
-        <div className="flex flex-wrap items-center gap-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-9 w-28 rounded-lg bg-slate-200 dark:bg-slate-700" />
-          ))}
-          <div className="ml-auto h-9 w-24 rounded-lg bg-slate-100 dark:bg-slate-800" />
+        <div className="mb-5 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-[var(--border)] dark:bg-[var(--card)]">
+          <div className="mb-3 h-4 w-16 rounded bg-slate-200 dark:bg-slate-700" />
+          <div className="flex flex-wrap gap-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-9 w-28 rounded-lg bg-slate-200 dark:bg-slate-700" />
+            ))}
+          </div>
         </div>
       )}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-[var(--card)]">

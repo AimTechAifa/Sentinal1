@@ -1,19 +1,32 @@
-const cache = new Map<string, string[]>();
-const inflight = new Map<string, Promise<string[]>>();
+import { EMPTY_TABLE_PREFERENCES, type TablePreferences } from "@/lib/table-preferences";
 
-export function getCachedHiddenColumns(pageKey: string): string[] | null {
+const cache = new Map<string, TablePreferences>();
+const inflight = new Map<string, Promise<TablePreferences>>();
+
+export function getCachedTablePreferences(pageKey: string): TablePreferences | null {
   return cache.get(pageKey) ?? null;
+}
+
+/** @deprecated use getCachedTablePreferences */
+export function getCachedHiddenColumns(pageKey: string): string[] | null {
+  return cache.get(pageKey)?.hiddenColumns ?? null;
 }
 
 export function isColumnPrefsCached(pageKey: string): boolean {
   return cache.has(pageKey);
 }
 
-export function setCachedHiddenColumns(pageKey: string, hiddenColumns: string[]) {
-  cache.set(pageKey, hiddenColumns);
+export function setCachedTablePreferences(pageKey: string, prefs: TablePreferences) {
+  cache.set(pageKey, prefs);
 }
 
-export function fetchColumnPreferences(pageKey: string): Promise<string[]> {
+/** @deprecated use setCachedTablePreferences */
+export function setCachedHiddenColumns(pageKey: string, hiddenColumns: string[]) {
+  const existing = cache.get(pageKey) ?? { ...EMPTY_TABLE_PREFERENCES };
+  cache.set(pageKey, { ...existing, hiddenColumns });
+}
+
+export function fetchTablePreferences(pageKey: string): Promise<TablePreferences> {
   const cached = cache.get(pageKey);
   if (cached) return Promise.resolve(cached);
 
@@ -21,24 +34,32 @@ export function fetchColumnPreferences(pageKey: string): Promise<string[]> {
   if (existing) return existing;
 
   const promise = fetch(`/api/table-preferences?pageKey=${encodeURIComponent(pageKey)}`)
-    .then((res) => (res.ok ? res.json() : { hiddenColumns: [] }))
-    .then((data: { hiddenColumns?: string[] }) => {
-      const cols = data.hiddenColumns ?? [];
-      setCachedHiddenColumns(pageKey, cols);
+    .then((res) => (res.ok ? res.json() : EMPTY_TABLE_PREFERENCES))
+    .then((data: Partial<TablePreferences>) => {
+      const prefs: TablePreferences = {
+        hiddenColumns: data.hiddenColumns ?? [],
+        hiddenFilters: data.hiddenFilters ?? [],
+      };
+      setCachedTablePreferences(pageKey, prefs);
       inflight.delete(pageKey);
-      return cols;
+      return prefs;
     })
     .catch(() => {
       inflight.delete(pageKey);
-      return [];
+      return { ...EMPTY_TABLE_PREFERENCES };
     });
 
   inflight.set(pageKey, promise);
   return promise;
 }
 
+/** @deprecated use fetchTablePreferences */
+export function fetchColumnPreferences(pageKey: string): Promise<string[]> {
+  return fetchTablePreferences(pageKey).then((p) => p.hiddenColumns);
+}
+
 export function prefetchColumnPreferences(pageKeys: readonly string[]) {
   for (const key of pageKeys) {
-    void fetchColumnPreferences(key);
+    void fetchTablePreferences(key);
   }
 }

@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { EnvironmentDetailsTable } from "@/components/environments/EnvironmentDetailsTable";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { ENVIRONMENT_COLUMNS } from "@/lib/table-page-columns";
+import { ENVIRONMENT_COLUMNS, ENVIRONMENT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { TableToolbar } from "@/components/ui/data-table";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ENVIRONMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -53,26 +53,14 @@ export function EnvironmentsContent() {
     return appOptions.find((a) => a.id === values.applicationId)?.name ?? null;
   }, [appOptions, values.applicationId]);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("environments", ENVIRONMENT_COLUMNS, { lockedKeys: ["application"] });
-
-  const tablePending = useTablePageLoading(deskLoading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "environments",
+    ENVIRONMENT_COLUMNS,
+    ENVIRONMENT_FILTER_FIELDS,
+    { lockedKeys: ["application"] }
   );
+
+  const tablePending = useTablePageLoading(deskLoading, prefsLoaded);
 
   if (tablePending) {
     return (
@@ -98,16 +86,18 @@ export function EnvironmentsContent() {
         <PageDocumentation pageKey="environments" />
       </div>
 
-      <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-        <FilterSelect
-          value={values.applicationId}
-          onChange={(v) => setFilter("applicationId", v)}
-        >
-          <option value="">All applications</option>
-          {appOptions.map((a) => (
-            <option key={a.id} value={a.id}>{a.name}</option>
-          ))}
-        </FilterSelect>
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+        {isFilterVisible("applicationId") && (
+          <FilterSelect
+            value={values.applicationId}
+            onChange={(v) => setFilter("applicationId", v)}
+          >
+            <option value="">All applications</option>
+            {appOptions.map((a) => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </FilterSelect>
+        )}
       </TableFilterBar>
 
       <div className="grid gap-6 min-w-0">
@@ -115,6 +105,7 @@ export function EnvironmentsContent() {
           versions={desk.versions}
           selectedApp={selectedAppName}
           isColumnVisible={isColumnVisible}
+          toolbar={<TableToolbar>{columnPicker}</TableToolbar>}
           onSelectApp={(name) => {
             const match = appOptions.find((a) => a.name === name);
             setFilter("applicationId", match?.id ?? "");

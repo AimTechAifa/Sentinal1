@@ -6,11 +6,12 @@ import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { CONFLICT_COLUMNS, CONFLICT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { DataTableHeadRow, TableToolbar } from "@/components/ui/data-table";
 import { cn } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { CONFLICTS_FILTER_SCHEMA } from "@/lib/table-filters";
 
@@ -31,22 +32,10 @@ type ConflictRow = {
   notes: string | null;
 };
 
-const COLUMNS = [
-  { key: "conflictCode", label: "Conflict ID" },
-  { key: "status", label: "Status" },
-  { key: "priority", label: "Priority" },
-  { key: "assignedTo", label: "Assigned To" },
-  { key: "release1Code", label: "Release 1" },
-  { key: "release2Code", label: "Release 2" },
-  { key: "application", label: "Application" },
-  { key: "department", label: "Department" },
-  { key: "conflictingEnvironment", label: "Conflicting Environment" },
-  { key: "environmentConflictType", label: "Environment Conflict Type" },
-  { key: "notes", label: "Notes" },
-] as const;
-
 const STATUS_OPTIONS = ["Open", "In Progress", "Pending Review", "Escalated", "Resolved"] as const;
 const PRIORITY_OPTIONS = ["P1 - Critical", "P2 - High", "P3 - Medium"] as const;
+
+type ConflictColumnKey = (typeof CONFLICT_COLUMNS)[number]["key"];
 
 const PRIORITY_CLASSES: Record<string, string> = {
   "P1 - Critical": "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300",
@@ -65,7 +54,7 @@ function ReleaseCode({ code, dbId }: { code: string; dbId: string | null }) {
   return <span className="font-mono text-xs text-gray-800 dark:text-white/80">{code}</span>;
 }
 
-function renderConflictCell(c: ConflictRow, key: (typeof COLUMNS)[number]["key"]) {
+function renderConflictCell(c: ConflictRow, key: ConflictColumnKey) {
   switch (key) {
     case "conflictCode":
       return (
@@ -121,10 +110,33 @@ function renderConflictCell(c: ConflictRow, key: (typeof COLUMNS)[number]["key"]
 }
 
 export default function ConflictQueueContent() {
-  const { rows: conflicts, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<ConflictRow>(
-    "/api/conflicts",
-    CONFLICTS_FILTER_SCHEMA
-  );
+  const {
+    rows: conflicts,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<ConflictRow>("/api/conflicts", CONFLICTS_FILTER_SCHEMA, {
+    defaultSortKey: "conflictCode",
+    defaultSortDir: "asc",
+    sortAccessors: {
+      conflictCode: (r) => r.conflictCode,
+      status: (r) => r.status,
+      priority: (r) => r.priority,
+      assignedTo: (r) => r.assignedTo,
+      release1Code: (r) => r.release1Code,
+      release2Code: (r) => r.release2Code,
+      application: (r) => r.application,
+      department: (r) => r.department,
+      conflictingEnvironment: (r) => r.conflictingEnvironment,
+      environmentConflictType: (r) => r.environmentConflictType,
+      notes: (r) => r.notes ?? "",
+    },
+  });
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [apps, setApps] = useState<{ id: string; name: string; departmentId: string }[]>([]);
 
@@ -145,26 +157,14 @@ export default function ConflictQueueContent() {
 
   const openCount = conflicts.filter((c) => c.status === "Open" || c.status === "Escalated").length;
 
-  const {
-    visibleColumns,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("conflicts", [...COLUMNS], { lockedKeys: ["conflictCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { visibleColumns, isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "conflicts",
+    CONFLICT_COLUMNS,
+    CONFLICT_FILTER_FIELDS,
+    { lockedKeys: ["conflictCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -179,56 +179,67 @@ export default function ConflictQueueContent() {
       />
 
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
-            <option value="">All departments</option>
-            {departments.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
-            <option value="">All applications</option>
-            {appOptions.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
-            <option value="">All statuses</option>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.priority} onChange={(v) => setFilter("priority", v)}>
-            <option value="">All priorities</option>
-            {PRIORITY_OPTIONS.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("departmentId") && (
+            <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
+              <option value="">All departments</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("applicationId") && (
+            <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+              <option value="">All applications</option>
+              {appOptions.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("status") && (
+            <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+              <option value="">All statuses</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("priority") && (
+            <FilterSelect value={values.priority} onChange={(v) => setFilter("priority", v)}>
+              <option value="">All priorities</option>
+              {PRIORITY_OPTIONS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
 
       {tablePending ? (
-        <TableSkeleton showTitle={false} columns={COLUMNS.length} />
+        <TableSkeleton showTitle={false} columns={CONFLICT_COLUMNS.length} />
       ) : (
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-[var(--card)]">
+        <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
+          <TableToolbar>{columnPicker}</TableToolbar>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1600px] text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50/50 text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:border-gray-700 dark:bg-white/5 dark:text-white/50">
-                {visibleColumns.map((col) => (
-                  <th key={col.key} className="px-4 py-3 font-bold whitespace-nowrap">
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
+              <DataTableHeadRow
+                columns={CONFLICT_COLUMNS}
+                isColumnVisible={isColumnVisible}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={toggleSort}
+              />
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
               {conflicts.length === 0 ? (
@@ -240,7 +251,7 @@ export default function ConflictQueueContent() {
               ) : (
                 conflicts.map((c) => (
                   <tr key={c.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
-                    {visibleColumns.map((col) => renderConflictCell(c, col.key as (typeof COLUMNS)[number]["key"]))}
+                    {visibleColumns.map((col) => renderConflictCell(c, col.key as ConflictColumnKey))}
                   </tr>
                 ))
               )}

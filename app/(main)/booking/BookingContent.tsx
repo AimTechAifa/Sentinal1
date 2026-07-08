@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { BOOKING_COLUMNS, BOOKING_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { DataTableHeadRow, TableToolbar } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { BOOKING_FILTER_SCHEMA } from "@/lib/table-filters";
 
@@ -36,37 +37,14 @@ type BookingRow = {
   purpose?: string | null;
 };
 
-const COLUMNS = [
-  { key: "bookingCode", label: "Booking ID" },
-  { key: "releaseId", label: "Release ID" },
-  { key: "application", label: "Application" },
-  { key: "department", label: "Department" },
-  { key: "dependencies", label: "Dependencies" },
-  { key: "releaseSize", label: "Release Size" },
-  { key: "prodReleaseDate", label: "Prod Release Date" },
-  { key: "cabDate", label: "CAB Date" },
-  { key: "testEnvCode", label: "Test Env" },
-  { key: "testStart", label: "Test Start" },
-  { key: "testEnd", label: "Test End" },
-  { key: "testDays", label: "Test Days" },
-  { key: "uatEnvCode", label: "UAT Env" },
-  { key: "uatStart", label: "UAT Start" },
-  { key: "uatEnd", label: "UAT End" },
-  { key: "uatDays", label: "UAT Days" },
-  { key: "preProdEnvCode", label: "Pre-Prod Env" },
-  { key: "preProdStart", label: "Pre-Prod Start" },
-  { key: "preProdEnd", label: "Pre-Prod End" },
-  { key: "preProdDays", label: "Pre-Prod Days" },
-  { key: "conflictFlag", label: "Conflict Flag" },
-  { key: "notes", label: "Notes" },
-] as const;
+type BookingColumnKey = (typeof BOOKING_COLUMNS)[number]["key"];
 
 function fmtDate(v?: string | null) {
   if (!v) return "";
   return new Date(v).toISOString().slice(0, 10);
 }
 
-function cellValue(row: BookingRow, key: (typeof COLUMNS)[number]["key"]) {
+function cellValue(row: BookingRow, key: BookingColumnKey) {
   switch (key) {
     case "bookingCode":
       return row.bookingCode ?? "";
@@ -118,10 +96,44 @@ function cellValue(row: BookingRow, key: (typeof COLUMNS)[number]["key"]) {
 }
 
 export default function BookingContent() {
-  const { rows: bookings, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<BookingRow>(
-    "/api/bookings",
-    BOOKING_FILTER_SCHEMA
-  );
+  const {
+    rows: bookings,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<BookingRow>("/api/bookings", BOOKING_FILTER_SCHEMA, {
+    defaultSortKey: "bookingCode",
+    defaultSortDir: "asc",
+    sortAccessors: {
+      bookingCode: (r) => r.bookingCode ?? "",
+      releaseId: (r) => r.release?.releaseCode ?? "",
+      application: (r) => r.application?.name ?? "",
+      department: (r) => r.departmentName ?? r.application?.department?.name ?? "",
+      dependencies: (r) => r.dependencies ?? "",
+      releaseSize: (r) => r.releaseSize ?? "",
+      prodReleaseDate: (r) => (r.prodReleaseDate ? new Date(r.prodReleaseDate).getTime() : 0),
+      cabDate: (r) => (r.cabDate ? new Date(r.cabDate).getTime() : 0),
+      testEnvCode: (r) => r.testEnvCode ?? "",
+      testStart: (r) => (r.testStart ? new Date(r.testStart).getTime() : 0),
+      testEnd: (r) => (r.testEnd ? new Date(r.testEnd).getTime() : 0),
+      testDays: (r) => r.testDays ?? 0,
+      uatEnvCode: (r) => r.uatEnvCode ?? "",
+      uatStart: (r) => (r.uatStart ? new Date(r.uatStart).getTime() : 0),
+      uatEnd: (r) => (r.uatEnd ? new Date(r.uatEnd).getTime() : 0),
+      uatDays: (r) => r.uatDays ?? 0,
+      preProdEnvCode: (r) => r.preProdEnvCode ?? "",
+      preProdStart: (r) => (r.preProdStart ? new Date(r.preProdStart).getTime() : 0),
+      preProdEnd: (r) => (r.preProdEnd ? new Date(r.preProdEnd).getTime() : 0),
+      preProdDays: (r) => r.preProdDays ?? 0,
+      conflictFlag: (r) => (r.conflictFlag ? 1 : 0),
+      notes: (r) => r.purpose ?? "",
+    },
+  });
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [apps, setApps] = useState<{ id: string; name: string; departmentId: string }[]>([]);
   const [envs, setEnvs] = useState<{ id: string; name: string; application: { name: string } }[]>([]);
@@ -143,37 +155,14 @@ export default function BookingContent() {
     [apps, values.departmentId]
   );
 
-  const sorted = useMemo(
-    () =>
-      [...bookings].sort((a, b) => {
-        const ac = a.bookingCode ?? "";
-        const bc = b.bookingCode ?? "";
-        if (ac && bc) return ac.localeCompare(bc, undefined, { numeric: true });
-        return ac ? -1 : bc ? 1 : 0;
-      }),
-    [bookings]
+  const { visibleColumns, isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "env-booking",
+    BOOKING_COLUMNS,
+    BOOKING_FILTER_FIELDS,
+    { lockedKeys: ["bookingCode"] }
   );
 
-  const {
-    visibleColumns,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("env-booking", [...COLUMNS], { lockedKeys: ["bookingCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
-  );
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div className="space-y-6 pb-12 font-sans">
@@ -181,73 +170,84 @@ export default function BookingContent() {
         <div>
           <h1 className="text-[28px] font-bold text-[#111827] dark:text-white tracking-tight">Environment Booking</h1>
           <p className="mt-1 text-[15px] text-gray-600 dark:text-white/60 font-medium">
-            {sorted.length} booking{sorted.length === 1 ? "" : "s"} — manage and schedule deployments across all infrastructure layers.
+            {bookings.length} booking{bookings.length === 1 ? "" : "s"} — manage and schedule deployments across all infrastructure layers.
           </p>
         </div>
         <PageDocumentation pageKey="env-booking" />
       </div>
 
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
-            <option value="">All departments</option>
-            {departments.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
-            <option value="">All applications</option>
-            {appOptions.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.environmentId} onChange={(v) => setFilter("environmentId", v)}>
-            <option value="">All environments</option>
-            {envs.map((e) => (
-              <option key={e.id} value={e.id}>
-                {e.application.name} — {e.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect value={values.conflictFlag} onChange={(v) => setFilter("conflictFlag", v)}>
-            <option value="">All bookings</option>
-            <option value="1">Conflicts only</option>
-            <option value="0">No conflicts</option>
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("departmentId") && (
+            <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
+              <option value="">All departments</option>
+              {departments.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("applicationId") && (
+            <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+              <option value="">All applications</option>
+              {appOptions.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("environmentId") && (
+            <FilterSelect value={values.environmentId} onChange={(v) => setFilter("environmentId", v)}>
+              <option value="">All environments</option>
+              {envs.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.application.name} — {e.name}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("conflictFlag") && (
+            <FilterSelect value={values.conflictFlag} onChange={(v) => setFilter("conflictFlag", v)}>
+              <option value="">All bookings</option>
+              <option value="1">Conflicts only</option>
+              <option value="0">No conflicts</option>
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
 
       {tablePending ? (
-        <TableSkeleton showTitle={false} columns={COLUMNS.length} />
+        <TableSkeleton showTitle={false} columns={BOOKING_COLUMNS.length} />
       ) : (
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[var(--card)] shadow-sm overflow-hidden">
+        <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
+          <TableToolbar>{columnPicker}</TableToolbar>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[2200px] text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-white/5 text-[11px] font-bold uppercase tracking-widest text-gray-500 dark:text-white/50">
-                {visibleColumns.map((col) => (
-                  <th key={col.key} className="px-4 py-3 font-bold whitespace-nowrap">
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
+              <DataTableHeadRow
+                columns={BOOKING_COLUMNS}
+                isColumnVisible={isColumnVisible}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={toggleSort}
+              />
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {sorted.length === 0 ? (
+              {bookings.length === 0 ? (
                 <tr>
                   <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
                     {hasActive ? "No bookings match filters." : "No data found."}
                   </td>
                 </tr>
               ) : (
-                sorted.map((row) => (
+                bookings.map((row) => (
                   <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
                     {visibleColumns.map((col) => {
-                      const key = col.key as (typeof COLUMNS)[number]["key"];
+                      const key = col.key as BookingColumnKey;
                       const value = cellValue(row, key);
                       const isConflict = col.key === "conflictFlag" && row.conflictFlag;
                       const isNotes = col.key === "notes";

@@ -5,13 +5,12 @@ import { Bell } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { MONITORING_ALERT_COLUMNS } from "@/lib/table-page-columns";
+import { MONITORING_ALERT_COLUMNS, MONITORING_ALERTS_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { MONITORING_ALERTS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -39,10 +38,31 @@ const SEVERITY_CLASSES: Record<string, string> = {
 };
 
 export default function MonitoringAlertsContent() {
-  const { rows: alerts, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<AlertRow>(
-    "/api/monitoring-alerts",
-    MONITORING_ALERTS_FILTER_SCHEMA
-  );
+  const {
+    rows: alerts,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<AlertRow>("/api/monitoring-alerts", MONITORING_ALERTS_FILTER_SCHEMA, {
+    defaultSortKey: "timestamp",
+    defaultSortDir: "desc",
+    sortAccessors: {
+      alertCode: (r) => r.alertCode,
+      application: (r) => r.application.name,
+      severity: (r) => r.severity,
+      metric: (r) => r.metric,
+      thresholdVsCurrent: (r) => r.currentValue ?? "",
+      status: (r) => r.status,
+      assignedTo: (r) => r.assignedTo ?? "",
+      environment: (r) => r.environmentName,
+      timestamp: (r) => new Date(r.timestamp).getTime(),
+    },
+  });
   const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
   const [allAlerts, setAllAlerts] = useState<AlertRow[]>([]);
 
@@ -56,26 +76,14 @@ export default function MonitoringAlertsContent() {
   const alertTypes = useMemo(() => [...new Set(allAlerts.map((a) => a.alertType))].sort(), [allAlerts]);
   const envs = useMemo(() => [...new Set(allAlerts.map((a) => a.environmentName))].sort(), [allAlerts]);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("monitoring-alerts", MONITORING_ALERT_COLUMNS, { lockedKeys: ["alertCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "monitoring-alerts",
+    MONITORING_ALERT_COLUMNS,
+    MONITORING_ALERTS_FILTER_FIELDS,
+    { lockedKeys: ["alertCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -83,27 +91,37 @@ export default function MonitoringAlertsContent() {
         trailing={<PageDocumentation pageKey="monitoring-alerts" />}
         title="Monitoring Alerts" subtitle={`${alerts.length} alert${alerts.length === 1 ? "" : "s"} across all applications`} />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.severity} onChange={(v) => setFilter("severity", v)}>
-            <option value="">All severities</option>
-            {severities.map((s) => <option key={s} value={s}>{s}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
-            <option value="">All statuses</option>
-            {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
-            <option value="">All applications</option>
-            {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.alertType} onChange={(v) => setFilter("alertType", v)}>
-            <option value="">All alert types</option>
-            {alertTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
-            <option value="">All environments</option>
-            {envs.map((e) => <option key={e} value={e}>{e}</option>)}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("severity") && (
+            <FilterSelect value={values.severity} onChange={(v) => setFilter("severity", v)}>
+              <option value="">All severities</option>
+              {severities.map((s) => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("status") && (
+            <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+              <option value="">All statuses</option>
+              {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("applicationId") && (
+            <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+              <option value="">All applications</option>
+              {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("alertType") && (
+            <FilterSelect value={values.alertType} onChange={(v) => setFilter("alertType", v)}>
+              <option value="">All alert types</option>
+              {alertTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("environmentName") && (
+            <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
+              <option value="">All environments</option>
+              {envs.map((e) => <option key={e} value={e}>{e}</option>)}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
       {tablePending ? (
@@ -114,21 +132,17 @@ export default function MonitoringAlertsContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No alerts match the selected filters." : "No monitoring alerts recorded."}</p>
         </div>
       ) : (
-        <DataTable title="All Monitoring Alerts" subtitle="Sorted by most recent" icon={Bell}>
+        <DataTable title="All Monitoring Alerts" subtitle="Click column headers to sort" icon={Bell} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("alertCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Alert</th>}
-                  {isColumnVisible("application") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>}
-                  {isColumnVisible("severity") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Severity</th>}
-                  {isColumnVisible("metric") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Metric</th>}
-                  {isColumnVisible("thresholdVsCurrent") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Threshold vs Current</th>}
-                  {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
-                  {isColumnVisible("assignedTo") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Assigned To</th>}
-                  {isColumnVisible("environment") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Env</th>}
-                  {isColumnVisible("timestamp") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Timestamp</th>}
-                </tr>
+              <thead>
+                <DataTableHeadRow
+                  columns={MONITORING_ALERT_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {alerts.map((a) => (

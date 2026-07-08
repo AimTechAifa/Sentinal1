@@ -20,6 +20,10 @@ export function valuesFromSearchParams(sp: URLSearchParams, schema: FilterSchema
   for (const field of schema) {
     values[field.key] = sp.get(field.param) ?? "";
   }
+  // Support both ?dir= and legacy ?sortDir=
+  if (!values.sortDir && sp.get("sortDir")) {
+    values.sortDir = sp.get("sortDir") ?? "";
+  }
   return values;
 }
 
@@ -39,7 +43,21 @@ export function valuesToSearchParams(
 }
 
 export function hasActiveFilterValues(values: FilterValues): boolean {
-  return Object.values(values).some((v) => v.trim() !== "");
+  return Object.entries(values).some(([k, v]) => v.trim() !== "" && k !== "sort" && k !== "sortDir" && k !== "dir");
+}
+
+export const TABLE_SORT_SCHEMA: FilterSchema = [
+  { key: "sort", param: "sort" },
+  { key: "sortDir", param: "dir" },
+];
+
+export function withTableSort(schema: FilterSchema): FilterSchema {
+  const keys = new Set(schema.map((f) => f.key));
+  const merged = [...schema];
+  for (const field of TABLE_SORT_SCHEMA) {
+    if (!keys.has(field.key)) merged.push(field);
+  }
+  return merged;
 }
 
 export function buildFilterQueryString(values: FilterValues, schema: FilterSchema): string {
@@ -65,87 +83,87 @@ export const SELECT_CLASS =
 
 // --- Per-page filter schemas (param names are the URL contract) ---
 
-export const DEPENDENCIES_FILTER_SCHEMA: FilterSchema = [
+export const DEPENDENCIES_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "dependencyType", param: "type" },
   { key: "impact", param: "impact" },
-];
+]);
 
-export const CONFLICTS_FILTER_SCHEMA: FilterSchema = [
+export const CONFLICTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "departmentId", param: "dept" },
   { key: "applicationId", param: "app" },
   { key: "status", param: "status" },
   { key: "priority", param: "priority" },
-];
+]);
 
-export const BOOKING_FILTER_SCHEMA: FilterSchema = [
+export const BOOKING_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "departmentId", param: "dept" },
   { key: "applicationId", param: "app" },
   { key: "environmentId", param: "env" },
   { key: "releaseId", param: "release" },
   { key: "conflictFlag", param: "conflict" },
-];
+]);
 
-export const APPROVALS_FILTER_SCHEMA: FilterSchema = [
+export const APPROVALS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "decision", param: "decision" },
   { key: "approvalType", param: "type" },
   { key: "approverId", param: "approver" },
   { key: "releaseId", param: "release" },
-];
+]);
 
-export const LEAVES_FILTER_SCHEMA: FilterSchema = [
+export const LEAVES_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "leaveType", param: "type" },
   { key: "department", param: "dept" },
   { key: "riskLevel", param: "risk" },
-];
+]);
 
-export const INCIDENTS_FILTER_SCHEMA: FilterSchema = [
+export const INCIDENTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "severity", param: "severity" },
   { key: "status", param: "status" },
   { key: "applicationId", param: "app" },
   { key: "departmentName", param: "dept" },
   { key: "environmentName", param: "env" },
-];
+]);
 
-export const MONITORING_ALERTS_FILTER_SCHEMA: FilterSchema = [
+export const MONITORING_ALERTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "severity", param: "severity" },
   { key: "status", param: "status" },
   { key: "applicationId", param: "app" },
   { key: "departmentName", param: "dept" },
   { key: "environmentName", param: "env" },
   { key: "alertType", param: "alertType" },
-];
+]);
 
-export const APPLICATION_STATUS_FILTER_SCHEMA: FilterSchema = [
+export const APPLICATION_STATUS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "environmentName", param: "env" },
   { key: "applicationId", param: "app" },
   { key: "departmentName", param: "dept" },
-];
+]);
 
-export const PLANNED_MAINTENANCE_FILTER_SCHEMA: FilterSchema = [
+export const PLANNED_MAINTENANCE_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "type", param: "type" },
   { key: "approvalStatus", param: "approvalStatus" },
   { key: "applicationId", param: "app" },
   { key: "departmentName", param: "dept" },
   { key: "environmentName", param: "env" },
   { key: "impact", param: "impact" },
-];
+]);
 
-export const RISKS_FILTER_SCHEMA: FilterSchema = [
+export const RISKS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "category", param: "category" },
   { key: "riskOwnerId", param: "owner" },
   { key: "releaseId", param: "release" },
-];
+]);
 
-export const DRIFTS_FILTER_SCHEMA: FilterSchema = [
+export const DRIFTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "driftType", param: "driftType" },
   { key: "severity", param: "severity" },
   { key: "status", param: "status" },
   { key: "applicationId", param: "app" },
   { key: "releaseId", param: "release" },
-];
+]);
 
 export const RISK_FACTORS_FILTER_SCHEMA: FilterSchema = [
   { key: "q", param: "q" },
@@ -185,9 +203,9 @@ export const USERS_FILTER_SCHEMA: FilterSchema = [
   { key: "page", param: "page" },
 ];
 
-export const ENVIRONMENTS_FILTER_SCHEMA: FilterSchema = [
+export const ENVIRONMENTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "applicationId", param: "app" },
-];
+]);
 
 export const REFERENCE_DATA_FILTER_SCHEMA: FilterSchema = [
   { key: "category", param: "cat" },

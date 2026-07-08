@@ -37,9 +37,14 @@ export function MasterDataSectionHeader({
   );
 }
 
-export function MasterDataTableShell({ children }: { children: ReactNode }) {
+export function MasterDataTableShell({ children, toolbar }: { children: ReactNode; toolbar?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-[var(--border)] dark:bg-[var(--card)]">
+      {toolbar && (
+        <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-[var(--border)] dark:bg-white/[0.03]">
+          {toolbar}
+        </div>
+      )}
       <div className="overflow-x-auto">{children}</div>
     </div>
   );
@@ -334,8 +339,8 @@ export function SortableTh({
   className?: string;
 }) {
   return (
-    <th className={cn(thClass, className)}>
-      <button type="button" onClick={onClick} className="flex items-center gap-1 hover:text-gray-800">
+    <th className={cn(thClass, "sticky top-[var(--header-height)] z-20 bg-gray-50 dark:bg-gray-800/95", className)}>
+      <button type="button" onClick={onClick} className="flex items-center gap-1 hover:text-gray-800 dark:hover:text-white">
         {label}
         {active && <span className="text-[10px]">{dir === "asc" ? "▲" : "▼"}</span>}
       </button>

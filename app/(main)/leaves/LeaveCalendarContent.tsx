@@ -3,16 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarOff } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
-import { StatusBadge } from "@/components/badges/StatusBadge";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { LEAVE_COLUMNS } from "@/lib/table-page-columns";
+import { LEAVE_COLUMNS, LEAVE_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { LEAVES_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -45,10 +43,30 @@ function riskLevel(score: number): string {
 }
 
 export default function LeaveCalendarContent() {
-  const { rows: leaves, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<LeaveRow>(
-    "/api/leaves",
-    LEAVES_FILTER_SCHEMA
-  );
+  const {
+    rows: leaves,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<LeaveRow>("/api/leaves", LEAVES_FILTER_SCHEMA, {
+    defaultSortKey: "dates",
+    defaultSortDir: "asc",
+    sortAccessors: {
+      leaveCode: (r) => r.leaveCode,
+      staffMember: (r) => r.user.name,
+      department: (r) => r.user.department,
+      type: (r) => r.leaveType,
+      dates: (r) => new Date(r.leaveStart).getTime(),
+      days: (r) => r.days,
+      risk: (r) => r.riskScore,
+      affectedReleases: (r) => r.affectedReleases.length,
+    },
+  });
   const [allLeaves, setAllLeaves] = useState<LeaveRow[]>([]);
 
   useEffect(() => {
@@ -59,26 +77,14 @@ export default function LeaveCalendarContent() {
   const departments = useMemo(() => [...new Set(allLeaves.map((l) => l.user.department))].sort(), [allLeaves]);
   const highRiskCount = leaves.filter((l) => l.riskScore >= 7).length;
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("leaves", LEAVE_COLUMNS, { lockedKeys: ["leaveCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "leaves",
+    LEAVE_COLUMNS,
+    LEAVE_FILTER_FIELDS,
+    { lockedKeys: ["leaveCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -88,21 +94,27 @@ export default function LeaveCalendarContent() {
         subtitle={`${leaves.length} leave record${leaves.length === 1 ? "" : "s"}${highRiskCount > 0 ? ` · ${highRiskCount} high-risk` : ""}`}
       />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.leaveType} onChange={(v) => setFilter("leaveType", v)}>
-            <option value="">All leave types</option>
-            {leaveTypes.map((t) => <option key={t} value={t}>{t}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.department} onChange={(v) => setFilter("department", v)}>
-            <option value="">All departments</option>
-            {departments.map((d) => <option key={d} value={d}>{d}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.riskLevel} onChange={(v) => setFilter("riskLevel", v)}>
-            <option value="">All risk levels</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("leaveType") && (
+            <FilterSelect value={values.leaveType} onChange={(v) => setFilter("leaveType", v)}>
+              <option value="">All leave types</option>
+              {leaveTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("department") && (
+            <FilterSelect value={values.department} onChange={(v) => setFilter("department", v)}>
+              <option value="">All departments</option>
+              {departments.map((d) => <option key={d} value={d}>{d}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("riskLevel") && (
+            <FilterSelect value={values.riskLevel} onChange={(v) => setFilter("riskLevel", v)}>
+              <option value="">All risk levels</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
       {tablePending ? (
@@ -113,20 +125,17 @@ export default function LeaveCalendarContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No leave records match the selected filters." : "No leave records found."}</p>
         </div>
       ) : (
-        <DataTable title="Leave Records" subtitle="Staff availability and release impact" icon={CalendarOff}>
+        <DataTable title="Leave Records" subtitle="Click column headers to sort" icon={CalendarOff} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("leaveCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Leave ID</th>}
-                  {isColumnVisible("staffMember") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Staff Member</th>}
-                  {isColumnVisible("department") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Department</th>}
-                  {isColumnVisible("type") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Type</th>}
-                  {isColumnVisible("dates") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Dates</th>}
-                  {isColumnVisible("days") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Days</th>}
-                  {isColumnVisible("risk") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk</th>}
-                  {isColumnVisible("affectedReleases") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Affected Releases</th>}
-                </tr>
+              <thead>
+                <DataTableHeadRow
+                  columns={LEAVE_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {leaves.map((l) => (

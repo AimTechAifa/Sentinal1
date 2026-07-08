@@ -2,11 +2,10 @@
 
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import { Filter } from "lucide-react";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
 import { PERIOD_OPTIONS } from "@/lib/period-labels";
 import type { Period } from "@/lib/period-range";
-import { cn } from "@/lib/utils";
+import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 
 export function ReleaseFiltersBar({
   className,
@@ -17,7 +16,9 @@ export function ReleaseFiltersBar({
   statusOptions = [],
   priorityOptions = [],
   impactOptions = [],
-  trailing,
+  manageFilters,
+  children,
+  isFilterVisible = () => true,
 }: {
   className?: string;
   variant?: "default" | "large";
@@ -27,7 +28,9 @@ export function ReleaseFiltersBar({
   statusOptions?: string[];
   priorityOptions?: string[];
   impactOptions?: string[];
-  trailing?: React.ReactNode;
+  manageFilters?: React.ReactNode;
+  children?: React.ReactNode;
+  isFilterVisible?: (key: string) => boolean;
 }) {
   const {
     filters,
@@ -49,98 +52,73 @@ export function ReleaseFiltersBar({
     ? applications.filter((a) => a.departmentId === filters.departmentId)
     : applications;
 
-  const selectClass =
-    "h-9 rounded-lg border border-gray-300 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] px-3 py-1 text-sm text-gray-700 dark:text-white shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 disabled:opacity-50";
+  return (
+    <TableFilterBar className={className} hasActive={hasRefinement} onClear={clearFilters} manageFilters={manageFilters}>
+      {children}
 
-  const fields = (
-    <div className="flex flex-wrap items-center gap-3">
-      <select
-        disabled={loading}
-        value={filters.departmentId}
-        onChange={(e) => setDepartmentId(e.target.value)}
-        className={selectClass}
-      >
-        <option value="">All departments</option>
-        {departments.map((d) => (
-          <option key={d.id} value={d.id}>{d.name}</option>
-        ))}
-      </select>
+      {isFilterVisible("departmentId") && (
+        <FilterSelect disabled={loading} value={filters.departmentId} onChange={setDepartmentId}>
+          <option value="">All departments</option>
+          {departments.map((d) => (
+            <option key={d.id} value={d.id}>{d.name}</option>
+          ))}
+        </FilterSelect>
+      )}
 
-      <select
-        disabled={loading}
-        value={filters.applicationId}
-        onChange={(e) => setApplicationId(e.target.value)}
-        className={selectClass}
-      >
-        <option value="">All applications</option>
-        {appOptions.map((a) => (
-          <option key={a.id} value={a.id}>{a.name}</option>
-        ))}
-      </select>
+      {isFilterVisible("applicationId") && (
+        <FilterSelect disabled={loading} value={filters.applicationId} onChange={setApplicationId}>
+          <option value="">All applications</option>
+          {appOptions.map((a) => (
+            <option key={a.id} value={a.id}>{a.name}</option>
+          ))}
+        </FilterSelect>
+      )}
 
-      <select
-        disabled={loading || !envOptions.length}
-        value={filters.environmentId}
-        onChange={(e) => setEnvironmentId(e.target.value)}
-        className={selectClass}
-      >
-        <option value="">All environments</option>
-        {envOptions.map((e) => (
-          <option key={e.id} value={e.id}>
-            {e.application.name} — {e.name}
-          </option>
-        ))}
-      </select>
+      {isFilterVisible("environmentId") && (
+        <FilterSelect disabled={loading || !envOptions.length} value={filters.environmentId} onChange={setEnvironmentId}>
+          <option value="">All environments</option>
+          {envOptions.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.application.name} — {e.name}
+            </option>
+          ))}
+        </FilterSelect>
+      )}
 
       {period !== undefined && onPeriodChange && (
-        <select
-          value={period}
-          onChange={(e) => onPeriodChange(e.target.value as Period)}
-          className={selectClass}
-        >
+        <FilterSelect value={period} onChange={(v) => onPeriodChange(v as Period)}>
           {PERIOD_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
           ))}
-        </select>
+        </FilterSelect>
       )}
 
-      {showListFilters && (
-        <>
-          <select disabled={loading} value={filters.status} onChange={(e) => setStatus(e.target.value)} className={selectClass}>
-            <option value="">All statuses</option>
-            {statusOptions.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <select disabled={loading} value={filters.priority} onChange={(e) => setPriority(e.target.value)} className={selectClass}>
-            <option value="">All priorities</option>
-            {priorityOptions.map((p) => <option key={p} value={p}>{p}</option>)}
-          </select>
-          <select disabled={loading} value={filters.impact} onChange={(e) => setImpact(e.target.value)} className={selectClass}>
-            <option value="">All impacts</option>
-            {impactOptions.map((i) => <option key={i} value={i}>{i}</option>)}
-          </select>
-        </>
+      {showListFilters && isFilterVisible("status") && (
+        <FilterSelect disabled={loading} value={filters.status} onChange={setStatus}>
+          <option value="">All statuses</option>
+          {statusOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("priority") && (
+        <FilterSelect disabled={loading} value={filters.priority} onChange={setPriority}>
+          <option value="">All priorities</option>
+          {priorityOptions.map((p) => <option key={p} value={p}>{p}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("impact") && (
+        <FilterSelect disabled={loading} value={filters.impact} onChange={setImpact}>
+          <option value="">All impacts</option>
+          {impactOptions.map((i) => <option key={i} value={i}>{i}</option>)}
+        </FilterSelect>
       )}
 
-      {hasRefinement && (
-        <button 
-          type="button" 
-          onClick={clearFilters} 
-          className="h-9 px-3 text-sm font-medium text-gray-500 dark:text-white/65 hover:text-gray-900 dark:hover:text-white transition-colors"
-        >
-          Clear all filters
-        </button>
+      {variant === "large" && (
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          {filters.departmentId && (
+            <Chip size="small" label={`Dept: ${departments.find((d) => d.id === filters.departmentId)?.name ?? filters.departmentId}`} />
+          )}
+        </Box>
       )}
-    </div>
-  );
-
-  return (
-    <div className={cn("flex flex-wrap items-center gap-4 mb-6", className)}>
-      <div className="flex items-center gap-2 text-gray-500 dark:text-white/65">
-        <Filter className="h-4 w-4" />
-        <span className="text-xs font-bold uppercase tracking-wider">Filter By</span>
-      </div>
-      {fields}
-      {trailing && <div className="ml-auto flex items-center gap-2">{trailing}</div>}
-    </div>
+    </TableFilterBar>
   );
 }

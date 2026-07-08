@@ -3,17 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { cn } from "@/lib/utils";
 import { getRiskLevel, RISK_LEVEL_COLOR } from "@/lib/risk-level";
 import { FilterPills, FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { RISK_COLUMNS } from "@/lib/table-page-columns";
+import { RISK_COLUMNS, RISK_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { RISKS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -92,10 +91,34 @@ function RiskHeatMap({ risks }: { risks: RiskRow[] }) {
 }
 
 export default function RiskRegisterContent() {
-  const { rows: risks, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<RiskRow>(
-    "/api/risks",
-    RISKS_FILTER_SCHEMA
-  );
+  const {
+    rows: risks,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<RiskRow>("/api/risks", RISKS_FILTER_SCHEMA, {
+    defaultSortKey: "riskScore",
+    defaultSortDir: "desc",
+    sortAccessors: {
+      riskCode: (r) => r.riskCode,
+      release: (r) => r.release.releaseCode,
+      category: (r) => r.category,
+      description: (r) => r.description,
+      likelihood: (r) => r.likelihood,
+      impact: (r) => r.impact,
+      riskScore: (r) => r.riskScore,
+      affectedArea: (r) => r.affectedArea ?? "",
+      mitigationStrategy: (r) => r.mitigationStrategy ?? "",
+      riskOwner: (r) => r.riskOwner?.name ?? r.riskOwner?.userId ?? "",
+      status: (r) => r.status,
+      notes: (r) => r.notes ?? "",
+    },
+  });
   const [allRisks, setAllRisks] = useState<RiskRow[]>([]);
 
   useEffect(() => {
@@ -105,26 +128,14 @@ export default function RiskRegisterContent() {
   const categories = useMemo(() => [...new Set(allRisks.map((r) => r.category))].sort(), [allRisks]);
   const statuses: StatusFilter[] = ["Open", "Monitoring", "Mitigating", "In Progress", "Escalated", "Accepted"];
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("risks", RISK_COLUMNS, { lockedKeys: ["riskCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "risks",
+    RISK_COLUMNS,
+    RISK_FILTER_FIELDS,
+    { lockedKeys: ["riskCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const visibleColCount = RISK_COLUMNS.filter((c) => isColumnVisible(c.key)).length;
 
@@ -134,16 +145,20 @@ export default function RiskRegisterContent() {
         trailing={<PageDocumentation pageKey="risks" />}
         title="Risk Register" subtitle={`${risks.length} risk${risks.length === 1 ? "" : "s"} across all releases`} />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterPills
-            options={statuses.map((s) => ({ value: s, label: s }))}
-            value={(values.status as StatusFilter) || ""}
-            onChange={(v) => setFilter("status", v)}
-          />
-          <FilterSelect value={values.category} onChange={(v) => setFilter("category", v)}>
-            <option value="">All categories</option>
-            {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("status") && (
+            <FilterPills
+              options={statuses.map((s) => ({ value: s, label: s }))}
+              value={(values.status as StatusFilter) || ""}
+              onChange={(v) => setFilter("status", v)}
+            />
+          )}
+          {isFilterVisible("category") && (
+            <FilterSelect value={values.category} onChange={(v) => setFilter("category", v)}>
+              <option value="">All categories</option>
+              {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
 
@@ -152,24 +167,17 @@ export default function RiskRegisterContent() {
       {tablePending ? (
         <TableSkeleton columns={RISK_COLUMNS.length} />
       ) : (
-        <DataTable title="All Risks" subtitle="Sorted by risk score (highest first)" icon={AlertTriangle}>
+        <DataTable title="All Risks" subtitle="Click column headers to sort" icon={AlertTriangle} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className={tableHeadRow}>
-              <tr>
-                {isColumnVisible("riskCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk ID</th>}
-                {isColumnVisible("release") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release</th>}
-                {isColumnVisible("category") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Category</th>}
-                {isColumnVisible("description") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Description</th>}
-                {isColumnVisible("likelihood") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Likelihood</th>}
-                {isColumnVisible("impact") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>}
-                {isColumnVisible("riskScore") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk Score</th>}
-                {isColumnVisible("affectedArea") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Affected Area</th>}
-                {isColumnVisible("mitigationStrategy") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Mitigation Strategy</th>}
-                {isColumnVisible("riskOwner") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Risk Owner</th>}
-                {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
-                {isColumnVisible("notes") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>}
-              </tr>
+            <thead>
+              <DataTableHeadRow
+                columns={RISK_COLUMNS}
+                isColumnVisible={isColumnVisible}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={toggleSort}
+              />
             </thead>
             <tbody>
               {risks.length === 0 ? (

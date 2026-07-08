@@ -48,17 +48,24 @@ export function ClerkSignIn() {
   }
 
   if (loadFailed) {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://sentinal1-phi.vercel.app";
     return (
       <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-950">
         <p className="font-semibold">Clerk sign-in failed to load</p>
         <p className="mt-2 text-rose-900/90">
-          In{" "}
-          <a href="https://dashboard.clerk.com" className="underline font-medium" target="_blank" rel="noreferrer">
-            Clerk Dashboard
-          </a>{" "}
-          → Configure → Domains, add{" "}
-          <code className="rounded bg-rose-100 px-1">{typeof window !== "undefined" ? window.location.origin : "your Vercel URL"}</code>
-          , then hard-refresh this page.
+          <strong>On Vercel with test keys (`pk_test_…`):</strong> open Clerk Dashboard →{" "}
+          <strong>Configure → Paths</strong> and confirm sign-in is <code className="rounded bg-rose-100 px-1">/sign-in</code>.
+          Then run this once (replace with your secret key):
+        </p>
+        <pre className="mt-2 overflow-x-auto rounded bg-rose-100/80 p-2 text-[11px] text-rose-950">
+{`curl -X PATCH https://api.clerk.com/v1/instance \\
+  -H "Authorization: Bearer YOUR_CLERK_SECRET_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"allowed_origins":["${origin}"]}'`}
+        </pre>
+        <p className="mt-2 text-rose-900/90">
+          <strong>For real production:</strong> click <strong>Go to prod</strong> in Clerk, use <code className="rounded bg-rose-100 px-1">pk_live_</code> keys,
+          and add a <strong>custom domain you own</strong> (Clerk does not support <code className="rounded bg-rose-100 px-1">*.vercel.app</code> on production instances).
         </p>
       </div>
     );

@@ -13,10 +13,10 @@ import {
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { APPLICATIONS_FILTER_SCHEMA } from "@/lib/table-filters";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { APPLICATION_COLUMNS } from "@/lib/table-page-columns";
+import { APPLICATION_COLUMNS, APPLICATION_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { TableToolbar } from "@/components/ui/data-table";
 import {
   apiJson,
   BrowseToolbar,
@@ -178,26 +178,14 @@ export function ApplicationsBrowse() {
   const envTotalPages = pageCount(filteredEnvs.length, DEFAULT_PAGE_SIZE);
   const envPageRows = paginateRows(filteredEnvs, envPage, DEFAULT_PAGE_SIZE);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("applications", APPLICATION_COLUMNS, { lockedKeys: ["name", "actions"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "applications",
+    APPLICATION_COLUMNS,
+    APPLICATION_FILTER_FIELDS,
+    { lockedKeys: ["name", "actions"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const toggleSort = (key: AppSortKey) => {
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
@@ -441,28 +429,34 @@ export function ApplicationsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={loadApps} />}
 
-      <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-        <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
-          <option value="">All departments</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.id}>{d.name}</option>
-          ))}
-        </FilterSelect>
-        <FilterSelect value={values.criticality} onChange={(v) => setFilter("criticality", v)}>
-          <option value="">All criticality</option>
-          {["Low", "Medium", "High", "Critical"].map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </FilterSelect>
-        <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
-          <option value="">All types</option>
-          {[...new Set(apps.map((a) => a.type).filter(Boolean))].sort().map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </FilterSelect>
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+        {isFilterVisible("departmentId") && (
+          <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
+            <option value="">All departments</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("criticality") && (
+          <FilterSelect value={values.criticality} onChange={(v) => setFilter("criticality", v)}>
+            <option value="">All criticality</option>
+            {["Low", "Medium", "High", "Critical"].map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("type") && (
+          <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
+            <option value="">All types</option>
+            {[...new Set(apps.map((a) => a.type).filter(Boolean))].sort().map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </FilterSelect>
+        )}
       </TableFilterBar>
 
-      <MasterDataTableShell>
+      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}

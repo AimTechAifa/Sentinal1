@@ -6,14 +6,13 @@ import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { DRIFT_COLUMNS } from "@/lib/table-page-columns";
+import { DRIFT_COLUMNS, DRIFT_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { DRIFTS_FILTER_SCHEMA } from "@/lib/table-filters";
 
@@ -44,10 +43,30 @@ const SEVERITY_CLASSES: Record<string, string> = {
 };
 
 export default function DriftDashboardContent() {
-  const { rows: drifts, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<DriftRow>(
-    "/api/drifts",
-    DRIFTS_FILTER_SCHEMA
-  );
+  const {
+    rows: drifts,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<DriftRow>("/api/drifts", DRIFTS_FILTER_SCHEMA, {
+    defaultSortKey: "detected",
+    defaultSortDir: "desc",
+    sortAccessors: {
+      driftCode: (r) => r.driftCode,
+      release: (r) => r.release.releaseCode,
+      application: (r) => r.application.name,
+      environment: (r) => r.environmentName,
+      type: (r) => r.driftType,
+      severity: (r) => r.severity,
+      status: (r) => r.status,
+      detected: (r) => new Date(r.detectedDate).getTime(),
+    },
+  });
   const [driftTypes, setDriftTypes] = useState<ReferenceDataRow[]>([]);
   const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
   const [allDrifts, setAllDrifts] = useState<DriftRow[]>([]);
@@ -67,26 +86,14 @@ export default function DriftDashboardContent() {
   const severities = useMemo(() => [...new Set(allDrifts.map((d) => d.severity))].sort(), [allDrifts]);
   const statuses = useMemo(() => [...new Set(allDrifts.map((d) => d.status))].sort(), [allDrifts]);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("drifts", DRIFT_COLUMNS, { lockedKeys: ["driftCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "drifts",
+    DRIFT_COLUMNS,
+    DRIFT_FILTER_FIELDS,
+    { lockedKeys: ["driftCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -96,23 +103,31 @@ export default function DriftDashboardContent() {
         subtitle={`${drifts.length} drift${drifts.length === 1 ? "" : "s"} detected across environments`}
       />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.driftType} onChange={(v) => setFilter("driftType", v)}>
-            <option value="">All drift types</option>
-            {driftTypes.map((t) => <option key={t.id} value={t.value}>{t.value}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.severity} onChange={(v) => setFilter("severity", v)}>
-            <option value="">All severities</option>
-            {severities.map((s) => <option key={s} value={s}>{s}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
-            <option value="">All statuses</option>
-            {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
-            <option value="">All applications</option>
-            {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("driftType") && (
+            <FilterSelect value={values.driftType} onChange={(v) => setFilter("driftType", v)}>
+              <option value="">All drift types</option>
+              {driftTypes.map((t) => <option key={t.id} value={t.value}>{t.value}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("severity") && (
+            <FilterSelect value={values.severity} onChange={(v) => setFilter("severity", v)}>
+              <option value="">All severities</option>
+              {severities.map((s) => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("status") && (
+            <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+              <option value="">All statuses</option>
+              {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("applicationId") && (
+            <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+              <option value="">All applications</option>
+              {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
       {tablePending ? (
@@ -123,20 +138,17 @@ export default function DriftDashboardContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No drifts match the selected filters." : "No configuration drifts detected."}</p>
         </div>
       ) : (
-        <DataTable title="All Drifts" subtitle="Sorted by most recently detected" icon={GitCompareArrows}>
+        <DataTable title="All Drifts" subtitle="Click column headers to sort" icon={GitCompareArrows} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("driftCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Drift</th>}
-                  {isColumnVisible("release") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release</th>}
-                  {isColumnVisible("application") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>}
-                  {isColumnVisible("environment") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Env</th>}
-                  {isColumnVisible("type") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Type</th>}
-                  {isColumnVisible("severity") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Severity</th>}
-                  {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
-                  {isColumnVisible("detected") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Detected</th>}
-                </tr>
+              <thead>
+                <DataTableHeadRow
+                  columns={DRIFT_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {drifts.map((d) => (

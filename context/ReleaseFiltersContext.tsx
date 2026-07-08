@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import {
   createContext,
   useCallback,
@@ -39,6 +40,7 @@ type ReleaseFiltersContextValue = {
   setPriority: (priority: string) => void;
   setImpact: (impact: string) => void;
   setSort: (sort: string, sortDir?: string) => void;
+  toggleSort: (key: string) => void;
   setPeriod: (period: string) => void;
   setAnchor: (anchor: string) => void;
   setTab: (tab: string) => void;
@@ -57,6 +59,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { isLoaded, isSignedIn } = useAuth();
 
   const filters = useMemo(() => filtersFromParams(searchParams), [searchParams]);
 
@@ -69,6 +72,11 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshLookups = useCallback(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const listQs = filtersToSearchParams(filters).toString();
     const url = `/api/release-lookups${listQs ? `?${listQs}` : ""}`;
@@ -104,7 +112,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
         setCalendarEvents(data.calendarEvents ?? []);
       })
       .finally(() => setLoading(false));
-  }, [filters]);
+  }, [filters, isLoaded, isSignedIn]);
 
   useEffect(() => {
     refreshLookups();
@@ -156,6 +164,18 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
     [filters, pushFilters]
   );
 
+  const toggleSort = useCallback(
+    (key: string) => {
+      if (!key) return;
+      if (filters.sort === key) {
+        pushFilters({ ...filters, sortDir: filters.sortDir === "asc" ? "desc" : "asc" });
+        return;
+      }
+      pushFilters({ ...filters, sort: key, sortDir: "asc" });
+    },
+    [filters, pushFilters]
+  );
+
   const setPeriod = useCallback(
     (period: string) => pushFilters({ ...filters, period }),
     [filters, pushFilters]
@@ -203,6 +223,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       setPriority,
       setImpact,
       setSort,
+      toggleSort,
       setPeriod,
       setAnchor,
       setTab,
@@ -227,6 +248,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       setPriority,
       setImpact,
       setSort,
+      toggleSort,
       setPeriod,
       setAnchor,
       setTab,

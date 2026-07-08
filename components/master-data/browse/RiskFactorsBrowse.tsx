@@ -11,10 +11,10 @@ import {
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { RISK_FACTORS_FILTER_SCHEMA } from "@/lib/table-filters";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { RISK_FACTOR_COLUMNS } from "@/lib/table-page-columns";
+import { RISK_FACTOR_COLUMNS, RISK_FACTOR_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { TableToolbar } from "@/components/ui/data-table";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import {
   apiJson,
@@ -87,26 +87,14 @@ export function RiskFactorsBrowse() {
   const totalPages = pageCount(rows.length, DEFAULT_PAGE_SIZE);
   const pageRows = paginateRows(rows, page, DEFAULT_PAGE_SIZE);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("risk-factors", RISK_FACTOR_COLUMNS, { lockedKeys: ["factorName", "actions"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "risk-factors",
+    RISK_FACTOR_COLUMNS,
+    RISK_FACTOR_FILTER_FIELDS,
+    { lockedKeys: ["factorName", "actions"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const toggleSort = (key: SortKey) => {
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
@@ -219,21 +207,25 @@ export function RiskFactorsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={load} />}
 
-      <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-        <FilterSelect value={values.category} onChange={(v) => setFilter("category", v)}>
-          <option value="">All categories</option>
-          {[...new Set(rows.map((r) => r.category).filter(Boolean))].sort().map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </FilterSelect>
-        <FilterSelect value={values.active} onChange={(v) => setFilter("active", v)}>
-          <option value="">All</option>
-          <option value="true">Active only</option>
-          <option value="false">Inactive only</option>
-        </FilterSelect>
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+        {isFilterVisible("category") && (
+          <FilterSelect value={values.category} onChange={(v) => setFilter("category", v)}>
+            <option value="">All categories</option>
+            {[...new Set(rows.map((r) => r.category).filter(Boolean))].sort().map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("active") && (
+          <FilterSelect value={values.active} onChange={(v) => setFilter("active", v)}>
+            <option value="">All</option>
+            <option value="true">Active only</option>
+            <option value="false">Inactive only</option>
+          </FilterSelect>
+        )}
       </TableFilterBar>
 
-      <MasterDataTableShell>
+      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}

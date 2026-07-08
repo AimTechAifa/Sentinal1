@@ -14,10 +14,10 @@ import {
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { USERS_FILTER_SCHEMA } from "@/lib/table-filters";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { USER_COLUMNS } from "@/lib/table-page-columns";
+import { USER_COLUMNS, USER_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { TableToolbar } from "@/components/ui/data-table";
 import {
   apiJson,
   BrowseToolbar,
@@ -112,26 +112,14 @@ export function UsersBrowse() {
   const totalPages = pageCount(rows.length, DEFAULT_PAGE_SIZE);
   const pageRows = paginateRows(rows, page, DEFAULT_PAGE_SIZE);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("users", USER_COLUMNS, { lockedKeys: ["name", "actions"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "users",
+    USER_COLUMNS,
+    USER_FILTER_FIELDS,
+    { lockedKeys: ["name", "actions"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   const toggleSort = (key: UserSortKey) => {
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
@@ -223,33 +211,41 @@ export function UsersBrowse() {
 
       {error && <MasterDataError message={error} onRetry={load} />}
 
-      <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-        <FilterSelect value={values.department} onChange={(v) => setFilter("department", v)}>
-          <option value="">All departments</option>
-          {departments.map((d) => (
-            <option key={d.id} value={d.name}>{d.name}</option>
-          ))}
-        </FilterSelect>
-        <FilterSelect value={values.role} onChange={(v) => setFilter("role", v)}>
-          <option value="">All roles</option>
-          {[...new Set(rows.map((r) => r.role).filter(Boolean))].sort().map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-        </FilterSelect>
-        <FilterSelect value={values.accessLevel} onChange={(v) => setFilter("accessLevel", v)}>
-          <option value="">All access levels</option>
-          {["Standard", "Elevated", "Admin"].map((a) => (
-            <option key={a} value={a}>{a}</option>
-          ))}
-        </FilterSelect>
-        <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
-          <option value="">All statuses</option>
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
-        </FilterSelect>
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+        {isFilterVisible("department") && (
+          <FilterSelect value={values.department} onChange={(v) => setFilter("department", v)}>
+            <option value="">All departments</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.name}>{d.name}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("role") && (
+          <FilterSelect value={values.role} onChange={(v) => setFilter("role", v)}>
+            <option value="">All roles</option>
+            {[...new Set(rows.map((r) => r.role).filter(Boolean))].sort().map((r) => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("accessLevel") && (
+          <FilterSelect value={values.accessLevel} onChange={(v) => setFilter("accessLevel", v)}>
+            <option value="">All access levels</option>
+            {["Standard", "Elevated", "Admin"].map((a) => (
+              <option key={a} value={a}>{a}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("status") && (
+          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+            <option value="">All statuses</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </FilterSelect>
+        )}
       </TableFilterBar>
 
-      <MasterDataTableShell>
+      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}

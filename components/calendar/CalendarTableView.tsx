@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
 import { TableFilterBar } from "@/components/filters/TableFilterBar";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, TableToolbar, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import {
   mapCalendarEventToTableRow,
@@ -15,7 +14,7 @@ import {
   type CalendarEventApi,
 } from "@/lib/calendar-table";
 import { DEFAULT_PAGE_SIZE, pageCount, paginateRows } from "@/lib/master-data/table-utils";
-import { CALENDAR_TABLE_COLUMNS } from "@/lib/table-page-columns";
+import { CALENDAR_TABLE_COLUMNS, CALENDAR_TABLE_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -30,16 +29,14 @@ export function CalendarTableView({
   const [page, setPage] = useState(1);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("calendar-table", CALENDAR_TABLE_COLUMNS, { lockedKeys: ["date"] });
+  const { isColumnVisible, columnPicker, prefsLoaded } = useTablePagePreferences(
+    "calendar-table",
+    CALENDAR_TABLE_COLUMNS,
+    CALENDAR_TABLE_FILTER_FIELDS,
+    { lockedKeys: ["date"] }
+  );
 
-  const tablePending = useTablePageLoading(dataLoading, columnsLoaded);
+  const tablePending = useTablePageLoading(dataLoading, prefsLoaded);
 
   useEffect(() => {
     setPage(1);
@@ -56,16 +53,6 @@ export function CalendarTableView({
   const from = rows.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
   const to = Math.min(safePage * PAGE_SIZE, rows.length);
 
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
-  );
-
   const toggleDateSort = () => {
     setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     setPage(1);
@@ -74,7 +61,7 @@ export function CalendarTableView({
   return (
     <div className="space-y-4">
       {!tablePending && (
-        <TableFilterBar hasActive={false} trailing={columnPicker}>
+        <TableFilterBar hasActive={false}>
           <span className="text-xs font-medium text-gray-500 dark:text-white/50">
             {rows.length} event{rows.length === 1 ? "" : "s"}
           </span>
@@ -93,6 +80,7 @@ export function CalendarTableView({
           title="Calendar Events"
           subtitle="CAB meetings, releases, and governance dates — sorted by date"
           icon={CalendarDays}
+          toolbar={<TableToolbar>{columnPicker}</TableToolbar>}
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 px-6 py-3 text-[13px] text-gray-600 dark:border-gray-700 dark:text-white/55">
             <span>

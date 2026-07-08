@@ -5,13 +5,12 @@ import { CalendarClock } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { PLANNED_MAINTENANCE_COLUMNS } from "@/lib/table-page-columns";
+import { PLANNED_MAINTENANCE_COLUMNS, PLANNED_MAINTENANCE_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { formatDate } from "@/lib/utils";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { PLANNED_MAINTENANCE_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -33,10 +32,30 @@ type MaintenanceRow = {
 };
 
 export default function PlannedMaintenanceContent() {
-  const { rows, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<MaintenanceRow>(
-    "/api/planned-maintenance",
-    PLANNED_MAINTENANCE_FILTER_SCHEMA
-  );
+  const {
+    rows,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<MaintenanceRow>("/api/planned-maintenance", PLANNED_MAINTENANCE_FILTER_SCHEMA, {
+    defaultSortKey: "scheduled",
+    defaultSortDir: "asc",
+    sortAccessors: {
+      scheduled: (r) => new Date(r.scheduledDate).getTime(),
+      type: (r) => r.type,
+      application: (r) => r.application?.name ?? "",
+      environment: (r) => r.environmentName,
+      impact: (r) => r.impact,
+      approval: (r) => r.approvalStatus,
+      requestor: (r) => r.requestor ?? "",
+      notes: (r) => r.notes ?? "",
+    },
+  });
   const [allRows, setAllRows] = useState<MaintenanceRow[]>([]);
   const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
 
@@ -50,26 +69,14 @@ export default function PlannedMaintenanceContent() {
   const impacts = useMemo(() => [...new Set(allRows.map((r) => r.impact))].sort(), [allRows]);
   const envs = useMemo(() => [...new Set(allRows.map((r) => r.environmentName))].sort(), [allRows]);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("planned-maintenance", PLANNED_MAINTENANCE_COLUMNS, { lockedKeys: ["scheduled"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "planned-maintenance",
+    PLANNED_MAINTENANCE_COLUMNS,
+    PLANNED_MAINTENANCE_FILTER_FIELDS,
+    { lockedKeys: ["scheduled"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -77,27 +84,37 @@ export default function PlannedMaintenanceContent() {
         trailing={<PageDocumentation pageKey="planned-maintenance" />}
         title="Planned Maintenance" subtitle={`${rows.length} maintenance window${rows.length === 1 ? "" : "s"} scheduled`} />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
-            <option value="">All types</option>
-            {types.map((t) => <option key={t} value={t}>{t}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.approvalStatus} onChange={(v) => setFilter("approvalStatus", v)}>
-            <option value="">All approval statuses</option>
-            {approvals.map((a) => <option key={a} value={a}>{a}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
-            <option value="">All applications</option>
-            {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
-            <option value="">All environments</option>
-            {envs.map((e) => <option key={e} value={e}>{e}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.impact} onChange={(v) => setFilter("impact", v)}>
-            <option value="">All impacts</option>
-            {impacts.map((i) => <option key={i} value={i}>{i}</option>)}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("type") && (
+            <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
+              <option value="">All types</option>
+              {types.map((t) => <option key={t} value={t}>{t}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("approvalStatus") && (
+            <FilterSelect value={values.approvalStatus} onChange={(v) => setFilter("approvalStatus", v)}>
+              <option value="">All approval statuses</option>
+              {approvals.map((a) => <option key={a} value={a}>{a}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("applicationId") && (
+            <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+              <option value="">All applications</option>
+              {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("environmentName") && (
+            <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
+              <option value="">All environments</option>
+              {envs.map((e) => <option key={e} value={e}>{e}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("impact") && (
+            <FilterSelect value={values.impact} onChange={(v) => setFilter("impact", v)}>
+              <option value="">All impacts</option>
+              {impacts.map((i) => <option key={i} value={i}>{i}</option>)}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
       {tablePending ? (
@@ -108,20 +125,17 @@ export default function PlannedMaintenanceContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No windows match the selected filters." : "No planned maintenance recorded."}</p>
         </div>
       ) : (
-        <DataTable title="Maintenance Calendar" subtitle="Sorted by scheduled date" icon={CalendarClock}>
+        <DataTable title="Maintenance Calendar" subtitle="Click column headers to sort" icon={CalendarClock} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("scheduled") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Scheduled</th>}
-                  {isColumnVisible("type") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Type</th>}
-                  {isColumnVisible("application") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>}
-                  {isColumnVisible("environment") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Env</th>}
-                  {isColumnVisible("impact") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Impact</th>}
-                  {isColumnVisible("approval") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approval</th>}
-                  {isColumnVisible("requestor") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Requestor</th>}
-                  {isColumnVisible("notes") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>}
-                </tr>
+              <thead>
+                <DataTableHeadRow
+                  columns={PLANNED_MAINTENANCE_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {rows.map((r) => (

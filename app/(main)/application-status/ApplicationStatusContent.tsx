@@ -4,13 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { HeartPulse } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { APPLICATION_STATUS_COLUMNS } from "@/lib/table-page-columns";
+import { APPLICATION_STATUS_COLUMNS, APPLICATION_STATUS_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { APPLICATION_STATUS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -33,10 +32,28 @@ const STATUS_CLASSES: Record<string, string> = {
 };
 
 export default function ApplicationStatusContent() {
-  const { rows, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<StatusRow>(
-    "/api/application-status",
-    APPLICATION_STATUS_FILTER_SCHEMA
-  );
+  const {
+    rows,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<StatusRow>("/api/application-status", APPLICATION_STATUS_FILTER_SCHEMA, {
+    defaultSortKey: "application",
+    defaultSortDir: "asc",
+    sortAccessors: {
+      application: (r) => r.application.name,
+      environment: (r) => r.environmentName,
+      status: (r) => r.status,
+      uptimePercent: (r) => r.uptimePercent ?? -1,
+      lastCheck: (r) => new Date(r.lastCheck).getTime(),
+      notes: (r) => r.notes ?? "",
+    },
+  });
   const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
   const [allRows, setAllRows] = useState<StatusRow[]>([]);
 
@@ -48,26 +65,14 @@ export default function ApplicationStatusContent() {
   const statuses = useMemo(() => [...new Set(allRows.map((r) => r.status))].sort(), [allRows]);
   const envs = useMemo(() => [...new Set(allRows.map((r) => r.environmentName))].sort(), [allRows]);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("application-status", APPLICATION_STATUS_COLUMNS, { lockedKeys: ["application"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "application-status",
+    APPLICATION_STATUS_COLUMNS,
+    APPLICATION_STATUS_FILTER_FIELDS,
+    { lockedKeys: ["application"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -75,19 +80,25 @@ export default function ApplicationStatusContent() {
         trailing={<PageDocumentation pageKey="application-status" />}
         title="Application Status" subtitle={`${rows.length} application × environment record${rows.length === 1 ? "" : "s"} — current state snapshot`} />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
-            <option value="">All statuses</option>
-            {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
-            <option value="">All environments</option>
-            {envs.map((e) => <option key={e} value={e}>{e}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
-            <option value="">All applications</option>
-            {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("status") && (
+            <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+              <option value="">All statuses</option>
+              {statuses.map((s) => <option key={s} value={s}>{s}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("environmentName") && (
+            <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
+              <option value="">All environments</option>
+              {envs.map((e) => <option key={e} value={e}>{e}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("applicationId") && (
+            <FilterSelect value={values.applicationId} onChange={(v) => setFilter("applicationId", v)}>
+              <option value="">All applications</option>
+              {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
       {tablePending ? (
@@ -98,18 +109,17 @@ export default function ApplicationStatusContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No records match the selected filters." : "No application status data recorded."}</p>
         </div>
       ) : (
-        <DataTable title="Application Health" subtitle="One row per application × environment" icon={HeartPulse}>
+        <DataTable title="Application Health" subtitle="Click column headers to sort" icon={HeartPulse} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("application") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Application</th>}
-                  {isColumnVisible("environment") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Environment</th>}
-                  {isColumnVisible("status") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Status</th>}
-                  {isColumnVisible("uptimePercent") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Uptime %</th>}
-                  {isColumnVisible("lastCheck") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Last Check</th>}
-                  {isColumnVisible("notes") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>}
-                </tr>
+              <thead>
+                <DataTableHeadRow
+                  columns={APPLICATION_STATUS_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {rows.map((r) => (

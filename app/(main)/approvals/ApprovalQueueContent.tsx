@@ -3,15 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { ClipboardCheck, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { APPROVAL_COLUMNS } from "@/lib/table-page-columns";
+import { APPROVAL_COLUMNS, APPROVALS_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { formatDate } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { APPROVALS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -30,10 +29,6 @@ type ApprovalRow = {
   cabMeetingId: string | null;
 };
 
-type ViewMode = "all" | "pending" | "approved" | "rejected";
-
-const GATE_ORDER = ["Tech Review", "Security Review", "Business Review", "Change Manager", "CAB Final"];
-
 const DECISION_ICON: Record<string, React.ReactNode> = {
   Approved: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
   "Approved with Conditions": <AlertCircle className="h-4 w-4 text-amber-500" />,
@@ -41,18 +36,35 @@ const DECISION_ICON: Record<string, React.ReactNode> = {
   Rejected: <XCircle className="h-4 w-4 text-red-500" />,
 };
 
-const DECISION_BG: Record<string, string> = {
-  Approved: "bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/30",
-  "Approved with Conditions": "bg-amber-50 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/30",
-  Pending: "bg-gray-50 border-gray-200 dark:bg-gray-800 dark:border-gray-700",
-  Rejected: "bg-red-50 border-red-200 dark:bg-red-500/10 dark:border-red-500/30",
-};
-
 export default function ApprovalQueueContent() {
-  const { rows: approvals, loading, values, setFilter, clearAll, hasActive } = useFilteredFetch<ApprovalRow>(
-    "/api/approvals",
-    APPROVALS_FILTER_SCHEMA
-  );
+  const {
+    rows: approvals,
+    loading,
+    values,
+    setFilter,
+    clearAll,
+    hasActive,
+    sortKey,
+    sortDir,
+    toggleSort,
+  } = useFilteredFetch<ApprovalRow>("/api/approvals", APPROVALS_FILTER_SCHEMA, {
+    defaultSortKey: "submittedDate",
+    defaultSortDir: "desc",
+    sortAccessors: {
+      approvalCode: (r) => r.approvalCode,
+      releaseId: (r) => r.release.releaseCode,
+      releaseName: (r) => r.release.name,
+      approvalType: (r) => r.approvalType,
+      approverId: (r) => r.approver.userId,
+      approverName: (r) => r.approver.name,
+      approverRole: (r) => r.approver.role,
+      submittedDate: (r) => new Date(r.submittedDate).getTime(),
+      decisionDate: (r) => (r.decisionDate ? new Date(r.decisionDate).getTime() : 0),
+      decision: (r) => r.decision,
+      comments: (r) => r.comments ?? "",
+      cabMeetingId: (r) => r.cabMeetingId ?? "",
+    },
+  });
   const [allApprovals, setAllApprovals] = useState<ApprovalRow[]>([]);
   const [users, setUsers] = useState<{ id: string; name: string }[]>([]);
 
@@ -64,26 +76,14 @@ export default function ApprovalQueueContent() {
   const decisions = useMemo(() => [...new Set(allApprovals.map((a) => a.decision))].sort(), [allApprovals]);
   const types = useMemo(() => [...new Set(allApprovals.map((a) => a.approvalType))].sort(), [allApprovals]);
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("approvals", APPROVAL_COLUMNS, { lockedKeys: ["approvalCode"] });
-
-  const tablePending = useTablePageLoading(loading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "approvals",
+    APPROVAL_COLUMNS,
+    APPROVALS_FILTER_FIELDS,
+    { lockedKeys: ["approvalCode"] }
   );
+
+  const tablePending = useTablePageLoading(loading, prefsLoaded);
 
   return (
     <div>
@@ -91,19 +91,25 @@ export default function ApprovalQueueContent() {
         trailing={<PageDocumentation pageKey="approvals" />}
         title="Approval Queue" subtitle={`${approvals.length} approval${approvals.length === 1 ? "" : "s"} across all releases`} />
       {!tablePending && (
-        <TableFilterBar hasActive={hasActive} onClear={clearAll} trailing={columnPicker}>
-          <FilterSelect value={values.decision} onChange={(v) => setFilter("decision", v)}>
-            <option value="">All decisions</option>
-            {decisions.map((d) => <option key={d} value={d}>{d}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.approvalType} onChange={(v) => setFilter("approvalType", v)}>
-            <option value="">All approval types</option>
-            {types.map((t) => <option key={t} value={t}>{t}</option>)}
-          </FilterSelect>
-          <FilterSelect value={values.approverId} onChange={(v) => setFilter("approverId", v)}>
-            <option value="">All approvers</option>
-            {users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
-          </FilterSelect>
+        <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+          {isFilterVisible("decision") && (
+            <FilterSelect value={values.decision} onChange={(v) => setFilter("decision", v)}>
+              <option value="">All decisions</option>
+              {decisions.map((d) => <option key={d} value={d}>{d}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("approvalType") && (
+            <FilterSelect value={values.approvalType} onChange={(v) => setFilter("approvalType", v)}>
+              <option value="">All approval types</option>
+              {types.map((t) => <option key={t} value={t}>{t}</option>)}
+            </FilterSelect>
+          )}
+          {isFilterVisible("approverId") && (
+            <FilterSelect value={values.approverId} onChange={(v) => setFilter("approverId", v)}>
+              <option value="">All approvers</option>
+              {users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
+            </FilterSelect>
+          )}
         </TableFilterBar>
       )}
 
@@ -115,24 +121,17 @@ export default function ApprovalQueueContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No approvals match the selected filters." : "No approvals found."}</p>
         </div>
       ) : (
-        <DataTable title="All Approvals" subtitle="Approval gates for releases" icon={ClipboardCheck}>
+        <DataTable title="All Approvals" subtitle="Click column headers to sort" icon={ClipboardCheck} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("approvalCode") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approval ID</th>}
-                  {isColumnVisible("releaseId") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release ID</th>}
-                  {isColumnVisible("releaseName") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release Name</th>}
-                  {isColumnVisible("approvalType") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approval Type</th>}
-                  {isColumnVisible("approverId") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approver ID</th>}
-                  {isColumnVisible("approverName") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approver Name</th>}
-                  {isColumnVisible("approverRole") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Approver Role</th>}
-                  {isColumnVisible("submittedDate") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Submitted Date</th>}
-                  {isColumnVisible("decisionDate") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Decision Date</th>}
-                  {isColumnVisible("decision") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Decision</th>}
-                  {isColumnVisible("comments") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Comments</th>}
-                  {isColumnVisible("cabMeetingId") && <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>CAB Meeting ID</th>}
-                </tr>
+              <thead>
+                <DataTableHeadRow
+                  columns={APPROVAL_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {approvals.map((a) => (

@@ -1,4 +1,4 @@
-import type { ColumnDef } from "@/hooks/useColumnPreferences";
+import type { ColumnDef, FilterFieldDef } from "@/lib/table-column-types";
 
 /** Stable page keys and column definitions for per-user column visibility. */
 
@@ -196,6 +196,57 @@ export const CALENDAR_TABLE_COLUMNS: ColumnDef[] = [
   { key: "notes", label: "Notes" },
 ];
 
+export const CONFLICT_COLUMNS: ColumnDef[] = [
+  { key: "conflictCode", label: "Conflict ID" },
+  { key: "status", label: "Status" },
+  { key: "priority", label: "Priority" },
+  { key: "assignedTo", label: "Assigned To" },
+  { key: "release1Code", label: "Release 1" },
+  { key: "release2Code", label: "Release 2" },
+  { key: "application", label: "Application" },
+  { key: "department", label: "Department" },
+  { key: "conflictingEnvironment", label: "Conflicting Environment" },
+  { key: "environmentConflictType", label: "Environment Conflict Type" },
+  { key: "notes", label: "Notes" },
+];
+
+export const DEPENDENCY_COLUMNS: ColumnDef[] = [
+  { key: "depCode", label: "Dep ID" },
+  { key: "releaseCode", label: "Release ID" },
+  { key: "releaseName", label: "Release Name" },
+  { key: "dependsOnCode", label: "Depends On Release" },
+  { key: "dependsOnName", label: "Depends On Name" },
+  { key: "dependencyType", label: "Dependency Type" },
+  { key: "status", label: "Status" },
+  { key: "impactIfBlocked", label: "Impact if Blocked" },
+  { key: "notes", label: "Notes" },
+];
+
+export const BOOKING_COLUMNS: ColumnDef[] = [
+  { key: "bookingCode", label: "Booking ID" },
+  { key: "releaseId", label: "Release ID" },
+  { key: "application", label: "Application" },
+  { key: "department", label: "Department" },
+  { key: "dependencies", label: "Dependencies" },
+  { key: "releaseSize", label: "Release Size" },
+  { key: "prodReleaseDate", label: "Prod Release Date" },
+  { key: "cabDate", label: "CAB Date" },
+  { key: "testEnvCode", label: "Test Env" },
+  { key: "testStart", label: "Test Start" },
+  { key: "testEnd", label: "Test End" },
+  { key: "testDays", label: "Test Days" },
+  { key: "uatEnvCode", label: "UAT Env" },
+  { key: "uatStart", label: "UAT Start" },
+  { key: "uatEnd", label: "UAT End" },
+  { key: "uatDays", label: "UAT Days" },
+  { key: "preProdEnvCode", label: "Pre-Prod Env" },
+  { key: "preProdStart", label: "Pre-Prod Start" },
+  { key: "preProdEnd", label: "Pre-Prod End" },
+  { key: "preProdDays", label: "Pre-Prod Days" },
+  { key: "conflictFlag", label: "Conflict Flag" },
+  { key: "notes", label: "Notes" },
+];
+
 /** All page keys that support per-user column visibility (used for prefetch). */
 export const TABLE_PAGE_KEYS = [
   "releases",
@@ -218,3 +269,120 @@ export const TABLE_PAGE_KEYS = [
   "reference-data",
   "calendar-table",
 ] as const;
+
+export const INCIDENT_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "severity", label: "Severity" },
+  { key: "status", label: "Status" },
+  { key: "applicationId", label: "Application" },
+  { key: "departmentName", label: "Department" },
+  { key: "environmentName", label: "Environment" },
+];
+
+export const DRIFT_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "driftType", label: "Drift type" },
+  { key: "severity", label: "Severity" },
+  { key: "status", label: "Status" },
+  { key: "applicationId", label: "Application" },
+  { key: "releaseId", label: "Release" },
+];
+
+export const MONITORING_ALERTS_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "severity", label: "Severity" },
+  { key: "status", label: "Status" },
+  { key: "applicationId", label: "Application" },
+  { key: "departmentName", label: "Department" },
+  { key: "environmentName", label: "Environment" },
+  { key: "alertType", label: "Alert type" },
+];
+
+export const APPLICATION_STATUS_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "status", label: "Status" },
+  { key: "environmentName", label: "Environment" },
+  { key: "applicationId", label: "Application" },
+  { key: "departmentName", label: "Department" },
+];
+
+export const APPROVALS_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "decision", label: "Decision" },
+  { key: "approvalType", label: "Approval type" },
+  { key: "approverId", label: "Approver" },
+  { key: "releaseId", label: "Release" },
+];
+
+export const RELEASE_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "departmentId", label: "Department" },
+  { key: "applicationId", label: "Application" },
+  { key: "environmentId", label: "Environment" },
+  { key: "status", label: "Status" },
+  { key: "priority", label: "Priority" },
+  { key: "impact", label: "Impact" },
+];
+
+export const LEAVE_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "leaveType", label: "Leave type" },
+  { key: "department", label: "Department" },
+  { key: "riskLevel", label: "Risk level" },
+];
+
+export const RISK_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "status", label: "Status" },
+  { key: "category", label: "Category" },
+];
+
+export const CONFLICT_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "departmentId", label: "Department" },
+  { key: "applicationId", label: "Application" },
+  { key: "status", label: "Status" },
+  { key: "priority", label: "Priority" },
+];
+
+export const DEPENDENCY_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "status", label: "Status" },
+  { key: "dependencyType", label: "Dependency type" },
+  { key: "impact", label: "Impact" },
+];
+
+export const BOOKING_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "departmentId", label: "Department" },
+  { key: "applicationId", label: "Application" },
+  { key: "environmentId", label: "Environment" },
+  { key: "conflictFlag", label: "Conflict flag" },
+];
+
+export const ENVIRONMENT_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "applicationId", label: "Application" },
+];
+
+export const PLANNED_MAINTENANCE_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "type", label: "Type" },
+  { key: "approvalStatus", label: "Approval status" },
+  { key: "applicationId", label: "Application" },
+  { key: "environmentName", label: "Environment" },
+  { key: "impact", label: "Impact" },
+];
+
+export const APPLICATION_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "departmentId", label: "Department" },
+  { key: "criticality", label: "Criticality" },
+  { key: "type", label: "Type" },
+];
+
+export const USER_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "department", label: "Department" },
+  { key: "role", label: "Role" },
+  { key: "accessLevel", label: "Access level" },
+  { key: "status", label: "Status" },
+];
+
+export const RISK_FACTOR_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "category", label: "Category" },
+  { key: "active", label: "Active" },
+];
+
+export const REFERENCE_DATA_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "active", label: "Active" },
+];
+
+export const DEPARTMENT_FILTER_FIELDS: FilterFieldDef[] = [];
+
+export const CALENDAR_TABLE_FILTER_FIELDS: FilterFieldDef[] = [];

@@ -43,14 +43,14 @@ export function filtersFromSearchParams(sp: URLSearchParams): ReleaseListFilters
     priority: sp.get("priority") ?? "",
     impact: sp.get("impact") ?? "",
     sort: sp.get("sort") ?? "",
-    sortDir: sp.get("sortDir") ?? "",
+    sortDir: sp.get("dir") ?? sp.get("sortDir") ?? "",
     period: sp.get("period") ?? "",
     anchor: sp.get("anchor") ?? "",
     tab: sp.get("tab") ?? "",
   };
 }
 
-const RELEASE_FILTER_PARAMS = ["dept", "app", "env", "status", "priority", "impact", "sort", "sortDir", "period", "anchor", "tab"] as const;
+const RELEASE_FILTER_PARAMS = ["dept", "app", "env", "status", "priority", "impact", "sort", "dir", "sortDir", "period", "anchor", "tab"] as const;
 
 export function filtersToSearchParams(
   filters: ReleaseListFilters,
@@ -67,7 +67,7 @@ export function filtersToSearchParams(
   if (filters.priority) params.set("priority", filters.priority);
   if (filters.impact) params.set("impact", filters.impact);
   if (filters.sort) params.set("sort", filters.sort);
-  if (filters.sortDir) params.set("sortDir", filters.sortDir);
+  if (filters.sortDir) params.set("dir", filters.sortDir);
   if (filters.period) params.set("period", filters.period);
   if (filters.anchor) params.set("anchor", filters.anchor);
   if (filters.tab) params.set("tab", filters.tab);

@@ -10,11 +10,10 @@ import { NeedsAttentionPanel } from "@/components/dashboard/NeedsAttentionPanel"
 import { ReleaseFormModal, type ReleaseFormData } from "@/components/releases/ReleaseFormModal";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
-import { ColumnPicker } from "@/components/filters/ColumnPicker";
-import { useColumnPreferences } from "@/hooks/useColumnPreferences";
-import { RELEASE_COLUMNS } from "@/lib/table-page-columns";
-import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { RELEASE_COLUMNS, RELEASE_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableHeadCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { filterLabel } from "@/lib/release-filters";
@@ -26,6 +25,7 @@ import {
 } from "@/lib/unified-releases";
 import { formatDate, cn } from "@/lib/utils";
 import { readinessKey } from "@/lib/release-readiness-batch";
+import { readSortFromValues, sortRows } from "@/lib/table-sort";
 import { taBtnPrimary } from "@/lib/styles";
 import type { SessionUser } from "@/lib/auth/roles";
 
@@ -47,8 +47,6 @@ type ReleaseRow = {
   dependsOn: { dependsOnRelease: { id: string; releaseCode: string; name: string } }[];
 };
 
-type SortMode = "releaseId" | "date" | "readiness" | "blockers";
-
 export default function ReleasesPageContent() {
   const searchParams = useSearchParams();
 
@@ -62,7 +60,7 @@ export default function ReleasesPageContent() {
     bookings,
     dbRows,
     refreshLookups,
-    setSort,
+    toggleSort,
     loading: filtersLoading,
   } = useReleaseFilters();
 
@@ -82,8 +80,6 @@ export default function ReleasesPageContent() {
     priorities: [],
     impacts: [],
   });
-
-  const sortMode = (filters.sort || "releaseId") as SortMode;
 
   useEffect(() => {
     fetch("/api/releases")
@@ -134,50 +130,44 @@ export default function ReleasesPageContent() {
     return db;
   }, [dbRows, attentionMode]);
 
-  const sorted = useMemo(() => {
-    const list = [...unified];
-    if (sortMode === "releaseId") {
-      return list.sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true }));
-    }
-    if (sortMode === "readiness") {
-      return list.sort((a, b) => {
-        const ra = readinessByKey[readinessKey(a.source, a.id)]?.readiness ?? 999;
-        const rb = readinessByKey[readinessKey(b.source, b.id)]?.readiness ?? 999;
-        return ra - rb;
-      });
-    }
-    if (sortMode === "blockers") {
-      return list.sort((a, b) => {
-        const ba = readinessByKey[readinessKey(a.source, a.id)]?.blockerCount ?? 0;
-        const bb = readinessByKey[readinessKey(b.source, b.id)]?.blockerCount ?? 0;
-        return bb - ba;
-      });
-    }
-    return list;
-  }, [unified, sortMode, readinessByKey]);
+  const { sortKey, sortDir } = readSortFromValues(
+    {
+      sort: filters.sort === "releaseId" ? "releaseCode" : filters.sort === "date" ? "endDate" : filters.sort,
+      sortDir: filters.sortDir,
+    },
+    "releaseCode",
+    "asc"
+  );
+
+  const sorted = useMemo(
+    () =>
+      sortRows(unified, sortKey, sortDir, {
+        releaseCode: (r) => r.code,
+        name: (r) => r.name,
+        department: (r) => r.departmentName ?? r.group ?? "",
+        application: (r) => r.applicationName ?? "",
+        priority: (r) => r.priority ?? "",
+        impact: (r) => r.impact ?? "",
+        endDate: (r) => new Date(r.date).getTime(),
+        status: (r) => r.status,
+        readinessPercent: (r) => readinessByKey[readinessKey(r.source, r.id)]?.readiness ?? 999,
+        blockers: (r) => readinessByKey[readinessKey(r.source, r.id)]?.blockerCount ?? 0,
+        cabDate: (r) => (r.cabDate ? new Date(r.cabDate as string).getTime() : 0),
+        goLiveChecklistPercent: (r) => r.goLiveChecklistPercent ?? 0,
+      }),
+    [unified, sortKey, sortDir, readinessByKey]
+  );
 
   const canEdit = user?.role === "editor" || user?.role === "admin";
 
-  const {
-    isColumnVisible,
-    hideableColumns,
-    hiddenColumns,
-    toggleColumn,
-    saveNow,
-    loaded: columnsLoaded,
-  } = useColumnPreferences("releases", RELEASE_COLUMNS, { lockedKeys: ["releaseCode", "actions"] });
-
-  const tablePending = useTablePageLoading(filtersLoading, columnsLoaded);
-
-  const columnPicker = (
-    <ColumnPicker
-      hideableColumns={hideableColumns}
-      hiddenColumns={hiddenColumns}
-      toggleColumn={toggleColumn}
-      saveNow={saveNow}
-      loaded={columnsLoaded}
-    />
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
+    "releases",
+    RELEASE_COLUMNS,
+    RELEASE_FILTER_FIELDS,
+    { lockedKeys: ["releaseCode", "actions"] }
   );
+
+  const tablePending = useTablePageLoading(filtersLoading, prefsLoaded);
 
   const remove = async (id: string) => {
     if (!confirm("Delete this release?")) return;
@@ -195,7 +185,24 @@ export default function ReleasesPageContent() {
   return (
     <div>
       <TopBar
-        trailing={<PageDocumentation pageKey="releases" />}
+        trailing={
+          <div className="flex items-center gap-2">
+            {canEdit && !attentionMode && (
+              <button
+                type="button"
+                className={cn(taBtnPrimary, "text-sm")}
+                onClick={() => {
+                  setEditRow(null);
+                  setFormPrefill(null);
+                  setModalOpen(true);
+                }}
+              >
+                <Plus className="mr-1 inline h-4 w-4" /> Add New Release
+              </button>
+            )}
+            <PageDocumentation pageKey="releases" />
+          </div>
+        }
         title={attentionMode ? "Needs attention" : "Releases"}
         subtitle={
           attentionMode
@@ -207,20 +214,28 @@ export default function ReleasesPageContent() {
         highlight
       />
 
-      <div className="flex flex-wrap gap-2 mb-3">
+      <ReleaseFiltersBar
+        className="mb-4"
+        showListFilters={!attentionMode}
+        statusOptions={filterOptions.statuses}
+        priorityOptions={filterOptions.priorities}
+        impactOptions={filterOptions.impacts}
+        manageFilters={!attentionMode ? filterPicker : undefined}
+        isFilterVisible={isFilterVisible}
+      >
         {attentionMode ? (
           <>
             <ProgressLink
               href="/releases"
-              className="rounded-lg px-3 py-1.5 text-xs font-medium border border-gray-200 text-gray-600 hover:border-brand-300"
+              className="inline-flex h-9 items-center rounded-lg border border-gray-200 px-3 text-xs font-medium text-gray-600 hover:border-brand-300"
             >
               ← All releases
             </ProgressLink>
             <ProgressLink
               href={`/releases?attention=1${filterQuery}`}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                !attentionStatusFilter ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
+                "inline-flex h-9 items-center rounded-lg border px-3 text-xs font-medium transition-colors",
+                !attentionStatusFilter ? "border-brand-500 bg-brand-500 text-white" : "border-gray-200 text-gray-600"
               )}
             >
               All stuck
@@ -228,8 +243,8 @@ export default function ReleasesPageContent() {
             <ProgressLink
               href={`/releases?attention=1&status=Blocked${filterQuery}`}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                attentionStatusFilter === "Blocked" ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
+                "inline-flex h-9 items-center rounded-lg border px-3 text-xs font-medium transition-colors",
+                attentionStatusFilter === "Blocked" ? "border-brand-500 bg-brand-500 text-white" : "border-gray-200 text-gray-600"
               )}
             >
               Blocked
@@ -237,61 +252,22 @@ export default function ReleasesPageContent() {
             <ProgressLink
               href={`/releases?attention=1&status=At%20Risk${filterQuery}`}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                attentionStatusFilter === "At Risk" ? "bg-brand-500 text-white border-brand-500" : "border-gray-200 text-gray-600"
+                "inline-flex h-9 items-center rounded-lg border px-3 text-xs font-medium transition-colors",
+                attentionStatusFilter === "At Risk" ? "border-brand-500 bg-brand-500 text-white" : "border-gray-200 text-gray-600"
               )}
             >
               At risk
             </ProgressLink>
           </>
         ) : (
-          <>
-            <ProgressLink
-              href={`/releases?attention=1${filterQuery}`}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium border border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300"
-            >
-              Needs attention
-            </ProgressLink>
-          </>
+          <ProgressLink
+            href={`/releases?attention=1${filterQuery}`}
+            className="inline-flex h-9 items-center rounded-lg border border-amber-200 bg-amber-50 px-3 text-xs font-medium text-amber-800 hover:border-amber-300"
+          >
+            Needs attention
+          </ProgressLink>
         )}
-      </div>
-
-      <ReleaseFiltersBar
-        className="mb-4"
-        showListFilters={!attentionMode}
-        statusOptions={filterOptions.statuses}
-        priorityOptions={filterOptions.priorities}
-        impactOptions={filterOptions.impacts}
-        trailing={!attentionMode ? columnPicker : undefined}
-      />
-
-      {!attentionMode && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="text-xs text-gray-500 self-center mr-1">Sort by</span>
-          {(
-            [
-              { id: "releaseId", label: "Release ID" },
-              { id: "date", label: "Target date" },
-              { id: "readiness", label: "Readiness ↑" },
-              { id: "blockers", label: "Blockers" },
-            ] as { id: SortMode; label: string }[]
-          ).map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => setSort(s.id, s.id === "blockers" ? "desc" : "asc")}
-              className={cn(
-                "rounded-lg px-3 py-1.5 text-xs font-medium border transition-colors",
-                sortMode === s.id
-                  ? "bg-brand-500 text-white border-brand-500"
-                  : "border-gray-200 text-gray-600 hover:border-brand-300"
-              )}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      )}
+      </ReleaseFiltersBar>
 
       {attentionMode && (
         <NeedsAttentionPanel items={attentionItems} showViewAll={false} />
@@ -304,24 +280,20 @@ export default function ReleasesPageContent() {
       {!attentionMode && !tablePending && (
       <DataTable
         title="All Releases"
-        subtitle="Manage releases in the central database"
+        subtitle="Click column headers to sort"
         icon={Package}
-        action={
-          canEdit ? (
-            <button type="button" className={cn(taBtnPrimary, "text-xs py-1.5 px-2.5")} onClick={() => { setEditRow(null); setFormPrefill(null); setModalOpen(true); }}>
-              <Plus className="h-3.5 w-3.5 inline mr-1" /> New release (DB)
-            </button>
-          ) : undefined
-        }
+        toolbar={!attentionMode ? <TableToolbar>{columnPicker}</TableToolbar> : undefined}
       >
-        <table className="w-full text-sm">
+        <table className="w-full min-w-max border-collapse text-sm">
           <thead className={tableHeadRow}>
-            <tr>
-              {RELEASE_COLUMNS.filter((c) => isColumnVisible(c.key)).map((c) => (
-                <th key={c.key} className={`${tableCell} text-left font-medium whitespace-nowrap`}>{c.label}</th>
-              ))}
-              {canEdit && <th className={`${tableCell} text-left font-medium`} />}
-            </tr>
+            <DataTableHeadRow
+              columns={RELEASE_COLUMNS}
+              isColumnVisible={isColumnVisible}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={toggleSort}
+              extraHeaders={canEdit ? <th className={tableHeadCell} aria-label="Actions" /> : undefined}
+            />
           </thead>
           <tbody>
             {sorted.length === 0 ? (

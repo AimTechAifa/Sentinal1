@@ -418,10 +418,10 @@ export async function GET(req: Request) {
   const riskBandCounts: Record<RiskLevel, number> = { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 };
   for (const r of risks) riskBandCounts[getRiskLevel(r.riskScore)]++;
   const riskDistribution = [
-    { name: "Low", value: riskBandCounts.LOW, color: "#10b981" },
-    { name: "Medium", value: riskBandCounts.MEDIUM, color: "#f59e0b" },
-    { name: "High", value: riskBandCounts.HIGH, color: "#fb923c" },
-    { name: "Critical", value: riskBandCounts.CRITICAL, color: "#f43f5e" },
+    { name: "Low", value: riskBandCounts.LOW, color: "#10b981", href: "/risks?band=Low" },
+    { name: "Medium", value: riskBandCounts.MEDIUM, color: "#f59e0b", href: "/risks?band=Medium" },
+    { name: "High", value: riskBandCounts.HIGH, color: "#fb923c", href: "/risks?band=High" },
+    { name: "Critical", value: riskBandCounts.CRITICAL, color: "#f43f5e", href: "/risks?band=Critical" },
   ];
 
   // --- Release Trend ---
@@ -486,6 +486,190 @@ export async function GET(req: Request) {
     { label: "Vendor windows", value: vendorMaint, href: "/planned-maintenance?type=Vendor+Maintenance" },
     { label: "Full outages", value: fullOutage, href: "/planned-maintenance" },
   ];
+  const maintenanceTotal = scheduledToday + dbRefresh + vendorMaint + fullOutage;
+  const maintenanceChart = [
+    { name: period === "today" ? "Today" : "Scheduled", value: scheduledToday, color: "#6366f1", href: "/planned-maintenance" },
+    { name: "DB refresh", value: dbRefresh, color: "#0ea5e9", href: "/planned-maintenance?type=DB+Refresh" },
+    { name: "Vendor", value: vendorMaint, color: "#8b5cf6", href: "/planned-maintenance?type=Vendor+Maintenance" },
+    { name: "Outages", value: fullOutage, color: "#f43f5e", href: "/planned-maintenance" },
+  ];
+
+  // --- Extended dashboard sections ---
+  const activeConflicts = await prisma.release.count({
+    where: { conflictFlag: true, ...releaseWhere },
+  });
+
+  const [priorityCounts, alertSeverityCounts, alertAcknowledged, alertResolved24h, incidentStatusInvestigating, incidentResolved24h] =
+    await Promise.all([
+      prisma.release.groupBy({ by: ["priority"], where: releaseWhere, _count: true }),
+      prisma.monitoringAlert.groupBy({
+        by: ["severity"],
+        where: { status: "Active" },
+        _count: true,
+      }),
+      prisma.monitoringAlert.count({ where: { status: "Acknowledged" } }),
+      prisma.monitoringAlert.count({
+        where: { status: "Resolved", timestamp: { gte: new Date(now.getTime() - DAY_MS) } },
+      }),
+      prisma.incident.count({
+        where: { status: "Investigating" },
+      }),
+      prisma.incident.count({
+        where: { status: "Resolved", timestamp: { gte: new Date(now.getTime() - DAY_MS) } },
+      }),
+    ]);
+
+  const priorityBucket = (prefix: string) =>
+    priorityCounts
+      .filter((p) => p.priority.startsWith(prefix))
+      .reduce((sum, p) => sum + p._count, 0);
+
+  const pipelineDetail = {
+    total: totalReleases,
+    byStatus: [
+      { name: "Blocked", value: countByStatus("Blocked"), color: "#f43f5e", href: "/releases?status=Blocked" },
+      { name: "Pending CAB", value: countByStatus("Pending CAB"), color: "#8b5cf6", href: "/releases?status=Pending+CAB" },
+      { name: "Testing", value: countByStatus("Testing"), color: "#0ea5e9", href: "/releases?status=Testing" },
+      { name: "Approved", value: countByStatus("Approved"), color: "#10b981", href: "/releases?status=Approved" },
+      { name: "Planning", value: countByStatus("Planning"), color: "#f59e0b", href: "/releases?status=Planning" },
+      { name: "Draft", value: countByStatus("Draft"), color: "#94a3b8", href: "/releases?status=Draft" },
+    ],
+    byPriority: [
+      { name: "P1", value: priorityBucket("P1"), color: "#f43f5e", href: "/releases?priority=P1" },
+      { name: "P2", value: priorityBucket("P2"), color: "#f59e0b", href: "/releases?priority=P2" },
+      { name: "P3", value: priorityBucket("P3"), color: "#6366f1", href: "/releases?priority=P3" },
+      { name: "P4", value: priorityBucket("P4"), color: "#94a3b8", href: "/releases?priority=P4" },
+    ],
+  };
+
+  const warningAlerts =
+    alertSeverityCounts.find((a) => a.severity === "Warning")?._count ?? 0;
+  const infoAlerts = alertSeverityCounts.find((a) => a.severity === "Info")?._count ?? 0;
+
+  const cabWeekEnd = new Date(now.getTime() + 7 * DAY_MS);
+  const leaveTodayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const leaveTodayEnd = new Date(leaveTodayStart.getTime() + DAY_MS);
+  const leaveWeekEnd = new Date(now.getTime() + 7 * DAY_MS);
+
+  const [
+    cabMeetingsNext7,
+    staffOnLeaveToday,
+    staffOnLeaveWeek,
+    releasesThisWeek,
+    rollbackReady,
+    rollbackAtRisk,
+    checklistAgg,
+    freezeQuarter,
+    freezeYear,
+    freezeAudit,
+    freezeHoliday,
+    totalFrozenReleases,
+    releasesThisMonth,
+  ] = await Promise.all([
+    prisma.release.count({ where: { cabDate: { gte: now, lte: cabWeekEnd } } }),
+    prisma.leaveRecord.count({
+      where: { leaveStart: { lte: leaveTodayEnd }, leaveEnd: { gte: leaveTodayStart } },
+    }),
+    prisma.leaveRecord.count({
+      where: { leaveStart: { lte: leaveWeekEnd }, leaveEnd: { gte: now } },
+    }),
+    prisma.release.count({
+      where: {
+        releaseDate: {
+          gte: new Date(now.getTime() - 6 * DAY_MS),
+          lte: new Date(now.getTime() + DAY_MS),
+        },
+      },
+    }),
+    prisma.release.count({ where: { rollbackPlan: "Ready", ...releaseWhere } }),
+    prisma.release.count({ where: { rollbackPlan: "At Risk", ...releaseWhere } }),
+    prisma.release.aggregate({
+      where: { goLiveChecklistPercent: { not: null }, ...releaseWhere },
+      _avg: { goLiveChecklistPercent: true },
+    }),
+    prisma.release.count({ where: { changeFreeze: "Quarter-End Freeze", ...releaseWhere } }),
+    prisma.release.count({ where: { changeFreeze: "Year-End Freeze", ...releaseWhere } }),
+    prisma.release.count({ where: { changeFreeze: "Audit Freeze", ...releaseWhere } }),
+    prisma.release.count({ where: { changeFreeze: "Holiday Freeze", ...releaseWhere } }),
+    prisma.release.count({ where: { changeFreeze: { not: null }, ...releaseWhere } }),
+    prisma.release.count({
+      where: {
+        releaseDate: {
+          gte: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)),
+          lte: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999)),
+        },
+      },
+    }),
+  ]);
+
+  const weekRangeStart = new Date(now);
+  weekRangeStart.setUTCDate(weekRangeStart.getUTCDate() - 6);
+  weekRangeStart.setUTCHours(0, 0, 0, 0);
+
+  const summary = {
+    totalReleases,
+    activeIncidents: activeIncidentsTotal,
+    activeAlerts: totalAlertsActive,
+    appsDownProd,
+  };
+
+  const conflictsRisks = {
+    activeConflicts,
+    riskDistribution,
+  };
+
+  const envBookings = {
+    conflicts: envConflictBookings,
+    activeBookings: totalBookings,
+  };
+
+  const dependencies = { blocked: blockedDeps, total: totalDeps };
+
+  const cabApprovals = {
+    cabMeetingsNext7,
+    pendingApprovals,
+  };
+
+  const resourceAvailability = {
+    leaveToday: staffOnLeaveToday,
+    leaveNext7Days: staffOnLeaveWeek,
+  };
+
+  const alertsDetail = {
+    critical: criticalAlertsActive,
+    warning: warningAlerts,
+    info: infoAlerts,
+    acknowledged: alertAcknowledged,
+    resolved24h: alertResolved24h,
+    total: totalAlertsActive,
+  };
+
+  const incidentsDetail = {
+    p1: p1Active,
+    p2: p2Active,
+    p3: p3Active,
+    investigating: incidentStatusInvestigating,
+    resolved24h: incidentResolved24h,
+    total: activeIncidentsTotal,
+  };
+
+  const changeFreeze = {
+    types: [
+      { name: "Quarter-End", value: freezeQuarter, href: "/releases?freeze=Quarter-End+Freeze" },
+      { name: "Year-End", value: freezeYear, href: "/releases?freeze=Year-End+Freeze" },
+      { name: "Audit", value: freezeAudit, href: "/releases?freeze=Audit+Freeze" },
+      { name: "Holiday", value: freezeHoliday, href: "/releases?freeze=Holiday+Freeze" },
+    ],
+    totalFrozenReleases,
+  };
+
+  const quickStats = {
+    releasesThisWeek,
+    releasesThisMonth,
+    rollbackReady,
+    rollbackAtRisk,
+    avgGoLiveChecklistPct: Math.round(checklistAgg._avg.goLiveChecklistPercent ?? 0),
+  };
 
   // --- Overall Health ---
   const health = [
@@ -500,15 +684,28 @@ export async function GET(req: Request) {
     range: range ? { start: range.start.toISOString(), end: range.end.toISOString() } : null,
     generatedAt: now.toISOString(),
     hero: { blockedReleases, activeP1Incidents, appsDownProd },
+    summary,
     briefing,
     topIssues,
     pipeline,
+    pipelineDetail,
     ops,
+    conflictsRisks,
+    envBookings,
+    dependencies,
+    cabApprovals,
+    resourceAvailability,
+    alertsDetail,
+    incidentsDetail,
     availability,
     incidentTrend,
     riskDistribution,
     releaseTrend,
     maintenance,
+    maintenanceTotal,
+    maintenanceChart,
+    changeFreeze,
+    quickStats,
     health,
   });
 }

@@ -15,11 +15,13 @@ export function EnvironmentDetailsTable({
   selectedApp,
   onSelectApp,
   isColumnVisible,
+  toolbar,
 }: {
   versions: any[];
   selectedApp?: string | null;
   onSelectApp?: (app: string | null) => void;
   isColumnVisible: (key: string) => boolean;
+  toolbar?: React.ReactNode;
 }) {
   const rows = useMemo(() => {
     let list = versions;
@@ -75,6 +77,7 @@ export function EnvironmentDetailsTable({
       title="Environment Deployments"
       subtitle={selectedApp ? `Detailed configuration for ${selectedApp}` : "Detailed deployment configurations across all applications"}
       icon={Server}
+      toolbar={toolbar}
       action={
         <div className="flex items-center gap-2">
           <label htmlFor="app-filter" className="text-xs font-medium text-gray-500">Filter:</label>
