@@ -25,9 +25,7 @@ export function ClerkSignIn() {
     if (!publishableKey) return;
     const timer = window.setTimeout(() => {
       const mounted = Boolean(
-        document.querySelector(
-          ".cl-rootBox, .cl-signIn-root, [data-clerk-component], .cl-card, iframe[src*='clerk']"
-        )
+        document.querySelector("[data-clerk-component], iframe[src*='clerk']")
       );
       if (!mounted) setLoadFailed(true);
     }, 5000);

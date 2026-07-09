@@ -7,7 +7,9 @@ import { StatusBadge } from "@/components/badges/StatusBadge";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { MONITORING_ALERT_COLUMNS, MONITORING_ALERTS_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { ALERT_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -43,6 +45,7 @@ export default function MonitoringAlertsContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -132,7 +135,7 @@ export default function MonitoringAlertsContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No alerts match the selected filters." : "No monitoring alerts recorded."}</p>
         </div>
       ) : (
-        <DataTable title="All Monitoring Alerts" subtitle="Click column headers to sort" icon={Bell} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+        <DataTable title="All Monitoring Alerts" icon={Bell} toolbar={<TablePageToolbar columnPicker={columnPicker} presets={ALERT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

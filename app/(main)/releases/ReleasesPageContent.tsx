@@ -8,10 +8,11 @@ import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { NeedsAttentionPanel } from "@/components/dashboard/NeedsAttentionPanel";
 import { ReleaseFormModal, type ReleaseFormData } from "@/components/releases/ReleaseFormModal";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
 import { RELEASE_COLUMNS, RELEASE_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableHeadCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, dataTableTableClass, tableCell, tableHeadCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
@@ -25,6 +26,7 @@ import {
 } from "@/lib/unified-releases";
 import { formatDate, cn } from "@/lib/utils";
 import { readinessKey } from "@/lib/release-readiness-batch";
+import { RELEASE_TABLE_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { readSortFromValues, sortRows } from "@/lib/table-sort";
 import { taBtnPrimary } from "@/lib/styles";
 import type { SessionUser } from "@/lib/auth/roles";
@@ -60,6 +62,7 @@ export default function ReleasesPageContent() {
     bookings,
     dbRows,
     refreshLookups,
+    setSort,
     toggleSort,
     loading: filtersLoading,
   } = useReleaseFilters();
@@ -280,12 +283,21 @@ export default function ReleasesPageContent() {
       {!attentionMode && !tablePending && (
       <DataTable
         title="All Releases"
-        subtitle="Click column headers to sort"
         icon={Package}
-        toolbar={!attentionMode ? <TableToolbar>{columnPicker}</TableToolbar> : undefined}
+        toolbar={
+          !attentionMode ? (
+            <TablePageToolbar
+              columnPicker={columnPicker}
+              presets={RELEASE_TABLE_SORT_PRESETS}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSelectSort={setSort}
+            />
+          ) : undefined
+        }
       >
-        <table className="w-full min-w-max border-collapse text-sm">
-          <thead className={tableHeadRow}>
+        <table className={dataTableTableClass}>
+          <thead>
             <DataTableHeadRow
               columns={RELEASE_COLUMNS}
               isColumnVisible={isColumnVisible}
@@ -394,6 +406,11 @@ function UnifiedRow({
       )}
       {isColumnVisible("department") && <td className={`${tableCell} whitespace-nowrap`}>{department}</td>}
       {isColumnVisible("application") && <td className={`${tableCell} text-xs text-gray-600 max-w-[140px] truncate`}>{applications}</td>}
+      {isColumnVisible("dependencies") && (
+        <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600`}>
+          {row.dependencies ?? "NA"}
+        </td>
+      )}
       {isColumnVisible("releaseSize") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.releaseSize ?? "—"}</td>}
       {isColumnVisible("impact") && <td className={`${tableCell} whitespace-nowrap`}>{impact}</td>}
       {isColumnVisible("priority") && <td className={`${tableCell} whitespace-nowrap`}>{priority}</td>}

@@ -21,6 +21,8 @@ export type UnifiedRelease = {
   environmentName?: string;
   programProject?: string;
   dependsOnLabel?: string;
+  /** Sheet "Dependencies" (e.g. NA) — not the same as dependsOnLabel / External Dependencies. */
+  dependencies?: string | null;
   releaseSize?: string | null;
   cabDate?: string | Date | null;
   startDate?: string | Date | null;
@@ -56,6 +58,7 @@ type DbRelease = {
   bookings?: { environment?: { name: string } | null; application?: { name: string } }[];
   dependsOn?: { dependsOnRelease: { releaseCode: string; name: string } }[];
   stakeholders?: { user: { userId: string } }[];
+  dependencies?: string | null;
   releaseSize?: string | null;
   cabDate?: string | Date | null;
   startDate?: string | Date | null;
@@ -147,6 +150,7 @@ export function dbToUnified(r: DbRelease): UnifiedRelease {
     applicationName: appNames.length ? appNames.join(", ") : "—",
     environmentName: bookingEnv ?? "—",
     dependsOnLabel: deps.length ? deps.join(", ") : "—",
+    dependencies: r.dependencies ?? null,
     releaseSize: r.releaseSize,
     cabDate: r.cabDate,
     startDate: r.startDate,

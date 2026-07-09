@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarOff } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { LEAVE_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { LEAVE_COLUMNS, LEAVE_FILTER_FIELDS } from "@/lib/table-page-columns";
@@ -48,6 +50,7 @@ export default function LeaveCalendarContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -125,7 +128,7 @@ export default function LeaveCalendarContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No leave records match the selected filters." : "No leave records found."}</p>
         </div>
       ) : (
-        <DataTable title="Leave Records" subtitle="Click column headers to sort" icon={CalendarOff} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+        <DataTable title="Leave Records" icon={CalendarOff} toolbar={<TablePageToolbar columnPicker={columnPicker} presets={LEAVE_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

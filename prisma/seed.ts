@@ -166,6 +166,12 @@ async function main() {
         testEnvRequired: r["Test Env Required"],
         uatEnvRequired: r["UAT Env Required"],
         conflictFlag: isConflict(r["Conflict Flag"]),
+        conflictId: r["Conflict ID"] || null,
+        conflictingRelease: r["Conflicting Release"] || null,
+        conflictType: r["Conflict Type"] || null,
+        conflictNotes: r["Conflict Notes"] || null,
+        dependencies: r["Dependencies"] ? String(r["Dependencies"]) : "NA",
+        externalDependencies: r["External Dependencies"] || null,
         readinessPercent: r["Readiness %"],
         blockers: r["Blockers"],
         vendorMaintenance: r["Vendor Maintenance"],
@@ -176,6 +182,16 @@ async function main() {
         goLiveChecklistPercent: r["Go-Live Checklist %"],
         deploymentWindow: r["Deployment Window"],
         releaseOwnerId: ownerDbId,
+        devSignoff: r["Dev Signoff"] || null,
+        testSignoff: r["Test Sign-off"] || null,
+        uatSignoff: r["UAT Sign-off"] || null,
+        securityClearance: r["Security Clearance"] || null,
+        dressRehearsal: r["Dress Rehearsal"] || null,
+        hypercarePlan: r["Hypercare Plan"] || null,
+        commsPlan: r["Comms Plan"] || null,
+        trainingStatus: r["Training Status"] || null,
+        supportBriefed: r["Support Briefed"] || null,
+        releaseHealth: r["Release Health"] || null,
       },
     });
     releaseIdByCode.set(r["Release ID"], release.id);
@@ -268,6 +284,7 @@ async function main() {
       preProdEnd: toDate(b["Pre-Prod End"]),
       preProdDays: toInt(b["Pre-Prod Days"]),
       conflictFlag: isConflict(b["Conflict Flag"]),
+      environmentConflictId: b["Environment Conflict ID"] ? String(b["Environment Conflict ID"]) : null,
     };
 
     await prisma.envBooking.upsert({
@@ -391,6 +408,7 @@ async function main() {
         eventType: c["Event Type"],
         releaseId,
         title: c["Release Name"] ?? c["Event Type"],
+        applicationName: c["Application"] || null,
         departmentName: c["Department"],
         sizeImpact: c["Size/Impact"],
         notes: c["Notes"],

@@ -5,13 +5,13 @@
     "User Name": "Sam Anderson",
     "Department": "QA Lead",
     "Role": "QA",
-    "Leave Start": "2026-06-30T00:00:00",
-    "Leave End": "2026-07-04T00:00:00",
+    "Leave Start": "2026-06-30",
+    "Leave End": "2026-07-04",
     "Leave Type": "Annual Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0001, REL-0002",
     "Risk Impact": "High - QA Lead unavailable",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-002",
@@ -19,13 +19,13 @@
     "User Name": "Emma Roberts",
     "Department": "Finance",
     "Role": "Finance",
-    "Leave Start": "2026-07-02T00:00:00",
-    "Leave End": "2026-07-06T00:00:00",
+    "Leave Start": "2026-07-02",
+    "Leave End": "2026-07-06",
     "Leave Type": "Personal Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0003",
     "Risk Impact": "Medium - SME unavailable",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-003",
@@ -33,13 +33,13 @@
     "User Name": "Jack Wilson",
     "Department": "HR",
     "Role": "HR",
-    "Leave Start": "2026-07-18T00:00:00",
-    "Leave End": "2026-07-22T00:00:00",
+    "Leave Start": "2026-07-18",
+    "Leave End": "2026-07-22",
     "Leave Type": "Sick Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0006",
     "Risk Impact": "High - Primary owner on leave",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-004",
@@ -47,13 +47,13 @@
     "User Name": "Alex Rivera",
     "Department": "Development Manager",
     "Role": "IT",
-    "Leave Start": "2026-07-12T00:00:00",
-    "Leave End": "2026-07-15T00:00:00",
+    "Leave Start": "2026-07-12",
+    "Leave End": "2026-07-15",
     "Leave Type": "Annual Leave",
-    "Days": 4,
+    "Days": "4",
     "Affected Release": "REL-0004, REL-0005",
     "Risk Impact": "Critical - Dev Manager unavailable",
-    "Risk Score": 5
+    "Risk Score": "5"
   },
   {
     "Leave ID": "LV-005",
@@ -61,13 +61,13 @@
     "User Name": "Oliver Wright",
     "Department": "Manufacturing",
     "Role": "Manufacturing",
-    "Leave Start": "2026-08-04T00:00:00",
-    "Leave End": "2026-08-11T00:00:00",
+    "Leave Start": "2026-08-04",
+    "Leave End": "2026-08-11",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0009, REL-0010",
     "Risk Impact": "Medium - Extended absence",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-006",
@@ -75,13 +75,13 @@
     "User Name": "Chris Park",
     "Department": "QA Lead",
     "Role": "QA",
-    "Leave Start": "2026-08-11T00:00:00",
-    "Leave End": "2026-08-15T00:00:00",
+    "Leave Start": "2026-08-11",
+    "Leave End": "2026-08-15",
     "Leave Type": "Personal Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0011",
     "Risk Impact": "High - Testing lead absent",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-007",
@@ -89,13 +89,13 @@
     "User Name": "Ava Brown",
     "Department": "Security",
     "Role": "Security",
-    "Leave Start": "2026-07-31T00:00:00",
-    "Leave End": "2026-08-02T00:00:00",
+    "Leave Start": "2026-07-31",
+    "Leave End": "2026-08-02",
     "Leave Type": "Sick Leave",
-    "Days": 3,
+    "Days": "3",
     "Affected Release": "REL-0008",
     "Risk Impact": "Medium - Security reviewer absent",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-008",
@@ -103,13 +103,13 @@
     "User Name": "Ethan Clark",
     "Department": "Legal",
     "Role": "Legal",
-    "Leave Start": "2026-09-04T00:00:00",
-    "Leave End": "2026-09-11T00:00:00",
+    "Leave Start": "2026-09-04",
+    "Leave End": "2026-09-11",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0016, REL-0017",
     "Risk Impact": "High - Legal compliance reviewer absent",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-009",
@@ -117,13 +117,13 @@
     "User Name": "Jordan Lee",
     "Department": "Development Manager",
     "Role": "IT",
-    "Leave Start": "2026-09-12T00:00:00",
-    "Leave End": "2026-09-16T00:00:00",
+    "Leave Start": "2026-09-12",
+    "Leave End": "2026-09-16",
     "Leave Type": "Conference",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0018",
     "Risk Impact": "Medium - Manager at conference",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-010",
@@ -131,13 +131,13 @@
     "User Name": "Mia Thompson",
     "Department": "CRM",
     "Role": "CRM",
-    "Leave Start": "2026-09-20T00:00:00",
-    "Leave End": "2026-09-25T00:00:00",
+    "Leave Start": "2026-09-20",
+    "Leave End": "2026-09-25",
     "Leave Type": "Annual Leave",
-    "Days": 6,
+    "Days": "6",
     "Affected Release": "REL-0020",
     "Risk Impact": "Low - Backup available",
-    "Risk Score": 2
+    "Risk Score": "2"
   },
   {
     "Leave ID": "LV-011",
@@ -145,13 +145,13 @@
     "User Name": "Pat Murphy",
     "Department": "QA Lead",
     "Role": "QA",
-    "Leave Start": "2026-10-12T00:00:00",
-    "Leave End": "2026-10-19T00:00:00",
+    "Leave Start": "2026-10-12",
+    "Leave End": "2026-10-19",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0024, REL-0025",
     "Risk Impact": "Critical - No QA coverage",
-    "Risk Score": 5
+    "Risk Score": "5"
   },
   {
     "Leave ID": "LV-012",
@@ -159,13 +159,13 @@
     "User Name": "Casey Chen",
     "Department": "Development Manager",
     "Role": "IT",
-    "Leave Start": "2026-10-24T00:00:00",
-    "Leave End": "2026-10-28T00:00:00",
+    "Leave Start": "2026-10-24",
+    "Leave End": "2026-10-28",
     "Leave Type": "Personal Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0028",
     "Risk Impact": "High - Key resource unavailable",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-013",
@@ -173,13 +173,13 @@
     "User Name": "Liam Jackson",
     "Department": "Finance",
     "Role": "Finance",
-    "Leave Start": "2026-11-05T00:00:00",
-    "Leave End": "2026-11-12T00:00:00",
+    "Leave Start": "2026-11-05",
+    "Leave End": "2026-11-12",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0031, REL-0032",
     "Risk Impact": "Medium - Finance SME absent",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-014",
@@ -187,13 +187,13 @@
     "User Name": "Sophia Lee",
     "Department": "HR",
     "Role": "HR",
-    "Leave Start": "2026-11-19T00:00:00",
-    "Leave End": "2026-11-23T00:00:00",
+    "Leave Start": "2026-11-19",
+    "Leave End": "2026-11-23",
     "Leave Type": "Sick Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0035",
     "Risk Impact": "Low - Short-term absence",
-    "Risk Score": 2
+    "Risk Score": "2"
   },
   {
     "Leave ID": "LV-015",
@@ -201,13 +201,13 @@
     "User Name": "Noah Martin",
     "Department": "Manufacturing",
     "Role": "Manufacturing",
-    "Leave Start": "2026-12-03T00:00:00",
-    "Leave End": "2026-12-10T00:00:00",
+    "Leave Start": "2026-12-03",
+    "Leave End": "2026-12-10",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0038, REL-0039",
     "Risk Impact": "High - Year-end absence",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-016",
@@ -215,13 +215,13 @@
     "User Name": "Morgan Taylor",
     "Department": "Development Manager",
     "Role": "IT",
-    "Leave Start": "2026-12-17T00:00:00",
-    "Leave End": "2026-12-31T00:00:00",
+    "Leave Start": "2026-12-17",
+    "Leave End": "2026-12-31",
     "Leave Type": "Annual Leave",
-    "Days": 15,
+    "Days": "15",
     "Affected Release": "REL-0040 to REL-0044",
     "Risk Impact": "Critical - Extended holiday leave",
-    "Risk Score": 5
+    "Risk Score": "5"
   },
   {
     "Leave ID": "LV-017",
@@ -229,13 +229,13 @@
     "User Name": "Tracy Adams",
     "Department": "QA Lead",
     "Role": "QA",
-    "Leave Start": "2026-12-24T00:00:00",
-    "Leave End": "2027-01-03T00:00:00",
+    "Leave Start": "2026-12-24",
+    "Leave End": "2027-01-03",
     "Leave Type": "Annual Leave",
-    "Days": 11,
+    "Days": "11",
     "Affected Release": "REL-0043, REL-0044",
     "Risk Impact": "Critical - No QA during freeze",
-    "Risk Score": 5
+    "Risk Score": "5"
   },
   {
     "Leave ID": "LV-018",
@@ -243,13 +243,13 @@
     "User Name": "Isabella White",
     "Department": "Security",
     "Role": "Security",
-    "Leave Start": "2026-12-19T00:00:00",
-    "Leave End": "2026-12-26T00:00:00",
+    "Leave Start": "2026-12-19",
+    "Leave End": "2026-12-26",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0041",
     "Risk Impact": "High - Security gap",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-019",
@@ -257,13 +257,13 @@
     "User Name": "Lucas Harris",
     "Department": "Legal",
     "Role": "Legal",
-    "Leave Start": "2027-01-16T00:00:00",
-    "Leave End": "2027-01-23T00:00:00",
+    "Leave Start": "2027-01-16",
+    "Leave End": "2027-01-23",
     "Leave Type": "Conference",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0048, REL-0049",
     "Risk Impact": "Medium - Legal at conference",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-020",
@@ -271,13 +271,13 @@
     "User Name": "Jamie Patel",
     "Department": "Development Manager",
     "Role": "IT",
-    "Leave Start": "2027-01-31T00:00:00",
-    "Leave End": "2027-02-04T00:00:00",
+    "Leave Start": "2027-01-31",
+    "Leave End": "2027-02-04",
     "Leave Type": "Personal Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0052",
     "Risk Impact": "Low - Short absence",
-    "Risk Score": 2
+    "Risk Score": "2"
   },
   {
     "Leave ID": "LV-021",
@@ -285,13 +285,13 @@
     "User Name": "Charlotte King",
     "Department": "Finance",
     "Role": "Finance",
-    "Leave Start": "2027-02-14T00:00:00",
-    "Leave End": "2027-02-21T00:00:00",
+    "Leave Start": "2027-02-14",
+    "Leave End": "2027-02-21",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0055, REL-0056",
     "Risk Impact": "High - Quarter-end absence",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-022",
@@ -299,13 +299,13 @@
     "User Name": "Benjamin Scott",
     "Department": "CRM",
     "Role": "CRM",
-    "Leave Start": "2027-02-27T00:00:00",
-    "Leave End": "2027-03-03T00:00:00",
+    "Leave Start": "2027-02-27",
+    "Leave End": "2027-03-03",
     "Leave Type": "Sick Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0058",
     "Risk Impact": "Medium - Unexpected sick leave",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-023",
@@ -313,13 +313,13 @@
     "User Name": "Jordan Fisher",
     "Department": "QA Lead",
     "Role": "QA",
-    "Leave Start": "2027-03-26T00:00:00",
-    "Leave End": "2027-04-02T00:00:00",
+    "Leave Start": "2027-03-26",
+    "Leave End": "2027-04-02",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0062, REL-0063",
     "Risk Impact": "Critical - Key tester absent",
-    "Risk Score": 5
+    "Risk Score": "5"
   },
   {
     "Leave ID": "LV-024",
@@ -327,13 +327,13 @@
     "User Name": "Amelia Garcia",
     "Department": "HR",
     "Role": "HR",
-    "Leave Start": "2027-04-09T00:00:00",
-    "Leave End": "2027-04-13T00:00:00",
+    "Leave Start": "2027-04-09",
+    "Leave End": "2027-04-13",
     "Leave Type": "Personal Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0064",
     "Risk Impact": "Low - Coverage available",
-    "Risk Score": 2
+    "Risk Score": "2"
   },
   {
     "Leave ID": "LV-025",
@@ -341,13 +341,13 @@
     "User Name": "William Moore",
     "Department": "Manufacturing",
     "Role": "Manufacturing",
-    "Leave Start": "2027-04-23T00:00:00",
-    "Leave End": "2027-05-03T00:00:00",
+    "Leave Start": "2027-04-23",
+    "Leave End": "2027-05-03",
     "Leave Type": "Annual Leave",
-    "Days": 11,
+    "Days": "11",
     "Affected Release": "REL-0067, REL-0068",
     "Risk Impact": "High - Extended leave",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-026",
@@ -355,13 +355,13 @@
     "User Name": "Riley Kim",
     "Department": "Development Manager",
     "Role": "IT",
-    "Leave Start": "2027-05-07T00:00:00",
-    "Leave End": "2027-05-11T00:00:00",
+    "Leave Start": "2027-05-07",
+    "Leave End": "2027-05-11",
     "Leave Type": "Conference",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0070",
     "Risk Impact": "Medium - Tech conference",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-027",
@@ -369,13 +369,13 @@
     "User Name": "Harper Robinson",
     "Department": "Security",
     "Role": "Security",
-    "Leave Start": "2027-05-21T00:00:00",
-    "Leave End": "2027-05-28T00:00:00",
+    "Leave Start": "2027-05-21",
+    "Leave End": "2027-05-28",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0073, REL-0074",
     "Risk Impact": "High - Security lead absent",
-    "Risk Score": 4
+    "Risk Score": "4"
   },
   {
     "Leave ID": "LV-028",
@@ -383,13 +383,13 @@
     "User Name": "James Lewis",
     "Department": "Legal",
     "Role": "Legal",
-    "Leave Start": "2027-06-04T00:00:00",
-    "Leave End": "2027-06-11T00:00:00",
+    "Leave Start": "2027-06-04",
+    "Leave End": "2027-06-11",
     "Leave Type": "Annual Leave",
-    "Days": 8,
+    "Days": "8",
     "Affected Release": "REL-0076",
     "Risk Impact": "Medium - Legal review delayed",
-    "Risk Score": 3
+    "Risk Score": "3"
   },
   {
     "Leave ID": "LV-029",
@@ -397,13 +397,13 @@
     "User Name": "Evelyn Walker",
     "Department": "Finance",
     "Role": "Finance",
-    "Leave Start": "2026-08-22T00:00:00",
-    "Leave End": "2026-08-26T00:00:00",
+    "Leave Start": "2026-08-22",
+    "Leave End": "2026-08-26",
     "Leave Type": "Personal Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0013",
     "Risk Impact": "Low - Backup SME available",
-    "Risk Score": 2
+    "Risk Score": "2"
   },
   {
     "Leave ID": "LV-030",
@@ -411,12 +411,12 @@
     "User Name": "Alexander Hall",
     "Department": "HR",
     "Role": "HR",
-    "Leave Start": "2026-10-03T00:00:00",
-    "Leave End": "2026-10-07T00:00:00",
+    "Leave Start": "2026-10-03",
+    "Leave End": "2026-10-07",
     "Leave Type": "Annual Leave",
-    "Days": 5,
+    "Days": "5",
     "Affected Release": "REL-0022",
     "Risk Impact": "Medium - Training delayed",
-    "Risk Score": 3
+    "Risk Score": "3"
   }
 ]

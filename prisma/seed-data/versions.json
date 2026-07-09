@@ -6,7 +6,7 @@
     "Environment": "Dev",
     "Version": "2026.3.0-beta",
     "Build Number": "Build-45892",
-    "Deploy Date": "2026-06-20T00:00:00",
+    "Deploy Date": "2026-06-20",
     "Deployed By": "Alex Rivera",
     "Status": "Active",
     "Notes": "Latest features in testing"
@@ -18,7 +18,7 @@
     "Environment": "Test",
     "Version": "2026.2.5",
     "Build Number": "Build-45721",
-    "Deploy Date": "2026-06-15T00:00:00",
+    "Deploy Date": "2026-06-15",
     "Deployed By": "Sam Anderson",
     "Status": "Active",
     "Notes": "QA validation in progress"
@@ -30,7 +30,7 @@
     "Environment": "UAT",
     "Version": "2026.2.3",
     "Build Number": "Build-45650",
-    "Deploy Date": "2026-06-10T00:00:00",
+    "Deploy Date": "2026-06-10",
     "Deployed By": "Rachel Green",
     "Status": "Active",
     "Notes": "Business sign-off pending"
@@ -42,7 +42,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.2.1",
     "Build Number": "Build-45580",
-    "Deploy Date": "2026-06-05T00:00:00",
+    "Deploy Date": "2026-06-05",
     "Deployed By": "Nathan Cole",
     "Status": "Active",
     "Notes": "Ready for production"
@@ -54,7 +54,7 @@
     "Environment": "Prod",
     "Version": "2026.2.0-GA",
     "Build Number": "Build-45500",
-    "Deploy Date": "2026-05-28T00:00:00",
+    "Deploy Date": "2026-05-28",
     "Deployed By": "Victoria Sterling",
     "Status": "Active",
     "Notes": "Current production version"
@@ -66,7 +66,7 @@
     "Environment": "DR",
     "Version": "2026.2.0-GA",
     "Build Number": "Build-45500",
-    "Deploy Date": "2026-05-29T00:00:00",
+    "Deploy Date": "2026-05-29",
     "Deployed By": "Robert Shield",
     "Status": "Active",
     "Notes": "Mirrors production"
@@ -78,7 +78,7 @@
     "Environment": "Dev",
     "Version": "5.8.2-alpha",
     "Build Number": "Build-12340",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Jordan Lee",
     "Status": "Active",
     "Notes": "New planning module"
@@ -90,7 +90,7 @@
     "Environment": "Test",
     "Version": "5.8.1",
     "Build Number": "Build-12280",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Chris Park",
     "Status": "Active",
     "Notes": "Regression testing"
@@ -102,7 +102,7 @@
     "Environment": "UAT",
     "Version": "5.7.5",
     "Build Number": "Build-12150",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Monica Geller",
     "Status": "Active",
     "Notes": "User acceptance"
@@ -114,7 +114,7 @@
     "Environment": "Pre-prod",
     "Version": "5.7.4",
     "Build Number": "Build-12100",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Ethan Black",
     "Status": "Active",
     "Notes": "Performance verified"
@@ -126,7 +126,7 @@
     "Environment": "Prod",
     "Version": "5.7.3-GA",
     "Build Number": "Build-12050",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Elizabeth Crown",
     "Status": "Active",
     "Notes": "Stable release"
@@ -138,7 +138,7 @@
     "Environment": "DR",
     "Version": "5.7.3-GA",
     "Build Number": "Build-12050",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "William Guard",
     "Status": "Active",
     "Notes": "DR sync complete"
@@ -150,7 +150,7 @@
     "Environment": "Dev",
     "Version": "10.5.0-dev",
     "Build Number": "Build-78901",
-    "Deploy Date": "2026-06-21T00:00:00",
+    "Deploy Date": "2026-06-21",
     "Deployed By": "Casey Chen",
     "Status": "Active",
     "Notes": "Route optimization update"
@@ -162,7 +162,7 @@
     "Environment": "Test",
     "Version": "10.4.8",
     "Build Number": "Build-78800",
-    "Deploy Date": "2026-06-16T00:00:00",
+    "Deploy Date": "2026-06-16",
     "Deployed By": "Pat Murphy",
     "Status": "Active",
     "Notes": "Integration tests"
@@ -174,7 +174,7 @@
     "Environment": "UAT",
     "Version": "10.4.6",
     "Build Number": "Build-78700",
-    "Deploy Date": "2026-06-11T00:00:00",
+    "Deploy Date": "2026-06-11",
     "Deployed By": "Phoebe Buffay",
     "Status": "Active",
     "Notes": "Carrier testing"
@@ -186,7 +186,7 @@
     "Environment": "Pre-prod",
     "Version": "10.4.5",
     "Build Number": "Build-78650",
-    "Deploy Date": "2026-06-06T00:00:00",
+    "Deploy Date": "2026-06-06",
     "Deployed By": "Lucas White",
     "Status": "Active",
     "Notes": "Load tested"
@@ -198,7 +198,7 @@
     "Environment": "Prod",
     "Version": "10.4.4-GA",
     "Build Number": "Build-78600",
-    "Deploy Date": "2026-05-30T00:00:00",
+    "Deploy Date": "2026-05-30",
     "Deployed By": "Catherine Royal",
     "Status": "Active",
     "Notes": "Production stable"
@@ -210,7 +210,7 @@
     "Environment": "DR",
     "Version": "10.4.4-GA",
     "Build Number": "Build-78600",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "James Fortress",
     "Status": "Active",
     "Notes": "Failover tested"
@@ -222,7 +222,7 @@
     "Environment": "Dev",
     "Version": "Spring'26.3-beta",
     "Build Number": "Build-SF2603",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Morgan Taylor",
     "Status": "Active",
     "Notes": "Lightning update"
@@ -234,7 +234,7 @@
     "Environment": "Test",
     "Version": "Spring'26.2",
     "Build Number": "Build-SF2602",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Jesse Garcia",
     "Status": "Active",
     "Notes": "API testing"
@@ -246,7 +246,7 @@
     "Environment": "UAT",
     "Version": "Spring'26.1",
     "Build Number": "Build-SF2601",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Emma Watson",
     "Status": "Active",
     "Notes": "Sales team review"
@@ -258,7 +258,7 @@
     "Environment": "Pre-prod",
     "Version": "Winter'26.5",
     "Build Number": "Build-SF2605",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Mason Gray",
     "Status": "Active",
     "Notes": "Sandbox refresh done"
@@ -270,7 +270,7 @@
     "Environment": "Prod",
     "Version": "Winter'26.4-GA",
     "Build Number": "Build-SF2604",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Margaret Noble",
     "Status": "Active",
     "Notes": "Current release"
@@ -282,7 +282,7 @@
     "Environment": "DR",
     "Version": "Winter'26.4-GA",
     "Build Number": "Build-SF2604",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "Michael Bastion",
     "Status": "Active",
     "Notes": "DR active"
@@ -294,7 +294,7 @@
     "Environment": "Dev",
     "Version": "2026.Q2.3-dev",
     "Build Number": "Build-MFG890",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Jamie Patel",
     "Status": "Active",
     "Notes": "MES integration"
@@ -306,7 +306,7 @@
     "Environment": "Test",
     "Version": "2026.Q2.2",
     "Build Number": "Build-MFG880",
-    "Deploy Date": "2026-06-20T00:00:00",
+    "Deploy Date": "2026-06-20",
     "Deployed By": "Robin Chen",
     "Status": "Active",
     "Notes": "Shop floor tests"
@@ -318,7 +318,7 @@
     "Environment": "UAT",
     "Version": "2026.Q2.1",
     "Build Number": "Build-MFG870",
-    "Deploy Date": "2026-06-15T00:00:00",
+    "Deploy Date": "2026-06-15",
     "Deployed By": "Sophie Turner",
     "Status": "Active",
     "Notes": "Plant validation"
@@ -330,7 +330,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.Q1.5",
     "Build Number": "Build-MFG860",
-    "Deploy Date": "2026-06-10T00:00:00",
+    "Deploy Date": "2026-06-10",
     "Deployed By": "Logan Stone",
     "Status": "Active",
     "Notes": "Capacity tested"
@@ -342,7 +342,7 @@
     "Environment": "Prod",
     "Version": "2026.Q1.4-GA",
     "Build Number": "Build-MFG850",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "Diana Prince",
     "Status": "Active",
     "Notes": "Running in 3 plants"
@@ -354,7 +354,7 @@
     "Environment": "DR",
     "Version": "2026.Q1.4-GA",
     "Build Number": "Build-MFG850",
-    "Deploy Date": "2026-06-04T00:00:00",
+    "Deploy Date": "2026-06-04",
     "Deployed By": "David Tower",
     "Status": "Active",
     "Notes": "Geo-redundant"
@@ -366,7 +366,7 @@
     "Environment": "Dev",
     "Version": "Tokyo-P3-dev",
     "Build Number": "Build-SN5502",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Riley Kim",
     "Status": "Active",
     "Notes": "CMDB enhancements"
@@ -378,7 +378,7 @@
     "Environment": "Test",
     "Version": "Tokyo-P2",
     "Build Number": "Build-SN5501",
-    "Deploy Date": "2026-06-17T00:00:00",
+    "Deploy Date": "2026-06-17",
     "Deployed By": "Dana Wilson",
     "Status": "Active",
     "Notes": "Workflow testing"
@@ -390,7 +390,7 @@
     "Environment": "UAT",
     "Version": "Tokyo-P1",
     "Build Number": "Build-SN5500",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Mia Collins",
     "Status": "Active",
     "Notes": "IT team sign-off"
@@ -402,7 +402,7 @@
     "Environment": "Pre-prod",
     "Version": "San Diego-P5",
     "Build Number": "Build-SN5405",
-    "Deploy Date": "2026-06-07T00:00:00",
+    "Deploy Date": "2026-06-07",
     "Deployed By": "Jacob Hill",
     "Status": "Active",
     "Notes": "Performance OK"
@@ -414,7 +414,7 @@
     "Environment": "Prod",
     "Version": "San Diego-P4-GA",
     "Build Number": "Build-SN5404",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Helena Troy",
     "Status": "Active",
     "Notes": "All modules active"
@@ -426,7 +426,7 @@
     "Environment": "DR",
     "Version": "San Diego-P4-GA",
     "Build Number": "Build-SN5404",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Richard Wall",
     "Status": "Active",
     "Notes": "HA configured"
@@ -438,7 +438,7 @@
     "Environment": "Dev",
     "Version": "2026R2-dev",
     "Build Number": "Build-WD2602",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Quinn Johnson",
     "Status": "Active",
     "Notes": "Talent module update"
@@ -450,7 +450,7 @@
     "Environment": "Test",
     "Version": "2026R1.5",
     "Build Number": "Build-WD2615",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Kelly Nguyen",
     "Status": "Active",
     "Notes": "Payroll integration"
@@ -462,7 +462,7 @@
     "Environment": "UAT",
     "Version": "2026R1.4",
     "Build Number": "Build-WD2614",
-    "Deploy Date": "2026-06-13T00:00:00",
+    "Deploy Date": "2026-06-13",
     "Deployed By": "Isabella Moore",
     "Status": "Active",
     "Notes": "HR validation"
@@ -474,7 +474,7 @@
     "Environment": "Pre-prod",
     "Version": "2026R1.3",
     "Build Number": "Build-WD2613",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Aiden Clark",
     "Status": "Active",
     "Notes": "Data migration done"
@@ -486,7 +486,7 @@
     "Environment": "Prod",
     "Version": "2026R1.2-GA",
     "Build Number": "Build-WD2612",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Sophia Grace",
     "Status": "Active",
     "Notes": "Global rollout"
@@ -498,7 +498,7 @@
     "Environment": "DR",
     "Version": "2026R1.2-GA",
     "Build Number": "Build-WD2612",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Thomas Castle",
     "Status": "Active",
     "Notes": "Cross-region sync"
@@ -510,7 +510,7 @@
     "Environment": "Dev",
     "Version": "23.5.0-beta",
     "Build Number": "Build-DS2350",
-    "Deploy Date": "2026-06-21T00:00:00",
+    "Deploy Date": "2026-06-21",
     "Deployed By": "Avery Williams",
     "Status": "Active",
     "Notes": "AI clause analysis"
@@ -522,7 +522,7 @@
     "Environment": "Test",
     "Version": "23.4.3",
     "Build Number": "Build-DS2343",
-    "Deploy Date": "2026-06-16T00:00:00",
+    "Deploy Date": "2026-06-16",
     "Deployed By": "Terry Brooks",
     "Status": "Active",
     "Notes": "E-signature tests"
@@ -534,7 +534,7 @@
     "Environment": "UAT",
     "Version": "23.4.2",
     "Build Number": "Build-DS2342",
-    "Deploy Date": "2026-06-11T00:00:00",
+    "Deploy Date": "2026-06-11",
     "Deployed By": "Olivia James",
     "Status": "Active",
     "Notes": "Legal review"
@@ -546,7 +546,7 @@
     "Environment": "Pre-prod",
     "Version": "23.4.1",
     "Build Number": "Build-DS2341",
-    "Deploy Date": "2026-06-06T00:00:00",
+    "Deploy Date": "2026-06-06",
     "Deployed By": "Jackson Moore",
     "Status": "Active",
     "Notes": "Compliance verified"
@@ -558,7 +558,7 @@
     "Environment": "Prod",
     "Version": "23.4.0-GA",
     "Build Number": "Build-DS2340",
-    "Deploy Date": "2026-05-30T00:00:00",
+    "Deploy Date": "2026-05-30",
     "Deployed By": "Alexandra Reid",
     "Status": "Active",
     "Notes": "All templates live"
@@ -570,7 +570,7 @@
     "Environment": "DR",
     "Version": "23.4.0-GA",
     "Build Number": "Build-DS2340",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Charles Vault",
     "Status": "Active",
     "Notes": "Cloud DR active"
@@ -582,7 +582,7 @@
     "Environment": "Dev",
     "Version": "7.2.0-alpha",
     "Build Number": "Build-CS720",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Drew Martinez",
     "Status": "Active",
     "Notes": "New threat models"
@@ -594,7 +594,7 @@
     "Environment": "Test",
     "Version": "7.1.5",
     "Build Number": "Build-CS715",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Skyler Davis",
     "Status": "Active",
     "Notes": "Detection testing"
@@ -606,7 +606,7 @@
     "Environment": "UAT",
     "Version": "7.1.4",
     "Build Number": "Build-CS714",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Ava Mitchell",
     "Status": "Active",
     "Notes": "SOC validation"
@@ -618,7 +618,7 @@
     "Environment": "Pre-prod",
     "Version": "7.1.3",
     "Build Number": "Build-CS713",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Sebastian Hall",
     "Status": "Active",
     "Notes": "Sensor verified"
@@ -630,7 +630,7 @@
     "Environment": "Prod",
     "Version": "7.1.2-GA",
     "Build Number": "Build-CS712",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Christina Vale",
     "Status": "Active",
     "Notes": "All endpoints"
@@ -642,7 +642,7 @@
     "Environment": "DR",
     "Version": "7.1.2-GA",
     "Build Number": "Build-CS712",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "Daniel Bunker",
     "Status": "Active",
     "Notes": "24/7 monitoring"
@@ -654,7 +654,7 @@
     "Environment": "Dev",
     "Version": "9.3.0-dev",
     "Build Number": "Build-SP930",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Cameron Brown",
     "Status": "Active",
     "Notes": "ML features"
@@ -666,7 +666,7 @@
     "Environment": "Test",
     "Version": "9.2.5",
     "Build Number": "Build-SP925",
-    "Deploy Date": "2026-06-17T00:00:00",
+    "Deploy Date": "2026-06-17",
     "Deployed By": "Jordan Reed",
     "Status": "Active",
     "Notes": "Index testing"
@@ -678,7 +678,7 @@
     "Environment": "UAT",
     "Version": "9.2.4",
     "Build Number": "Build-SP924",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Charlotte Price",
     "Status": "Active",
     "Notes": "Dashboard review"
@@ -690,7 +690,7 @@
     "Environment": "Pre-prod",
     "Version": "9.2.3",
     "Build Number": "Build-SP923",
-    "Deploy Date": "2026-06-07T00:00:00",
+    "Deploy Date": "2026-06-07",
     "Deployed By": "Caleb Young",
     "Status": "Active",
     "Notes": "License validated"
@@ -702,7 +702,7 @@
     "Environment": "Prod",
     "Version": "9.2.2-GA",
     "Build Number": "Build-SP922",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Natasha Roman",
     "Status": "Active",
     "Notes": "Heavy forwarders"
@@ -714,7 +714,7 @@
     "Environment": "DR",
     "Version": "9.2.2-GA",
     "Build Number": "Build-SP922",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Matthew Haven",
     "Status": "Active",
     "Notes": "Search head cluster"
@@ -726,7 +726,7 @@
     "Environment": "Dev",
     "Version": "R33.1-dev",
     "Build Number": "Build-CP3310",
-    "Deploy Date": "2026-06-20T00:00:00",
+    "Deploy Date": "2026-06-20",
     "Deployed By": "Taylor Singh",
     "Status": "Active",
     "Notes": "Supplier portal update"
@@ -738,7 +738,7 @@
     "Environment": "Test",
     "Version": "R33.0",
     "Build Number": "Build-CP3300",
-    "Deploy Date": "2026-06-15T00:00:00",
+    "Deploy Date": "2026-06-15",
     "Deployed By": "Alex Foster",
     "Status": "Active",
     "Notes": "Invoice testing"
@@ -750,7 +750,7 @@
     "Environment": "UAT",
     "Version": "R32.5",
     "Build Number": "Build-CP3250",
-    "Deploy Date": "2026-06-10T00:00:00",
+    "Deploy Date": "2026-06-10",
     "Deployed By": "Amelia Scott",
     "Status": "Active",
     "Notes": "Procurement review"
@@ -762,7 +762,7 @@
     "Environment": "Pre-prod",
     "Version": "R32.4",
     "Build Number": "Build-CP3240",
-    "Deploy Date": "2026-06-05T00:00:00",
+    "Deploy Date": "2026-06-05",
     "Deployed By": "Owen King",
     "Status": "Active",
     "Notes": "Integration verified"
@@ -774,7 +774,7 @@
     "Environment": "Prod",
     "Version": "R32.3-GA",
     "Build Number": "Build-CP3230",
-    "Deploy Date": "2026-05-28T00:00:00",
+    "Deploy Date": "2026-05-28",
     "Deployed By": "Amanda Cross",
     "Status": "Active",
     "Notes": "P2P live"
@@ -786,7 +786,7 @@
     "Environment": "DR",
     "Version": "R32.3-GA",
     "Build Number": "Build-CP3230",
-    "Deploy Date": "2026-05-29T00:00:00",
+    "Deploy Date": "2026-05-29",
     "Deployed By": "Anthony Secure",
     "Status": "Active",
     "Notes": "Cloud backup"
@@ -798,7 +798,7 @@
     "Environment": "Dev",
     "Version": "10.0.38-dev",
     "Build Number": "Build-D365038",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Blake Thompson",
     "Status": "Active",
     "Notes": "Copilot features"
@@ -810,7 +810,7 @@
     "Environment": "Test",
     "Version": "10.0.37",
     "Build Number": "Build-D365037",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Morgan Hayes",
     "Status": "Active",
     "Notes": "Plugin testing"
@@ -822,7 +822,7 @@
     "Environment": "UAT",
     "Version": "10.0.36",
     "Build Number": "Build-D365036",
-    "Deploy Date": "2026-06-13T00:00:00",
+    "Deploy Date": "2026-06-13",
     "Deployed By": "Harper Lewis",
     "Status": "Active",
     "Notes": "Sales team review"
@@ -834,7 +834,7 @@
     "Environment": "Pre-prod",
     "Version": "10.0.35",
     "Build Number": "Build-D365035",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Liam Wright",
     "Status": "Active",
     "Notes": "Data sync done"
@@ -846,7 +846,7 @@
     "Environment": "Prod",
     "Version": "10.0.34-GA",
     "Build Number": "Build-D365034",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Rebecca Stone",
     "Status": "Active",
     "Notes": "Multi-region"
@@ -858,7 +858,7 @@
     "Environment": "DR",
     "Version": "10.0.34-GA",
     "Build Number": "Build-D365034",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Mark Backup",
     "Status": "Active",
     "Notes": "Azure failover"
@@ -870,7 +870,7 @@
     "Environment": "Dev",
     "Version": "2026.2.0-dev",
     "Build Number": "Build-OPC260",
-    "Deploy Date": "2026-06-21T00:00:00",
+    "Deploy Date": "2026-06-21",
     "Deployed By": "Alex Rivera",
     "Status": "Active",
     "Notes": "Digital twin update"
@@ -882,7 +882,7 @@
     "Environment": "Test",
     "Version": "2026.1.5",
     "Build Number": "Build-OPC255",
-    "Deploy Date": "2026-06-16T00:00:00",
+    "Deploy Date": "2026-06-16",
     "Deployed By": "Sam Anderson",
     "Status": "Active",
     "Notes": "MES integration"
@@ -894,7 +894,7 @@
     "Environment": "UAT",
     "Version": "2026.1.4",
     "Build Number": "Build-OPC254",
-    "Deploy Date": "2026-06-11T00:00:00",
+    "Deploy Date": "2026-06-11",
     "Deployed By": "Rachel Green",
     "Status": "Active",
     "Notes": "Plant floor review"
@@ -906,7 +906,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.1.3",
     "Build Number": "Build-OPC253",
-    "Deploy Date": "2026-06-06T00:00:00",
+    "Deploy Date": "2026-06-06",
     "Deployed By": "Nathan Cole",
     "Status": "Active",
     "Notes": "Load tested"
@@ -918,7 +918,7 @@
     "Environment": "Prod",
     "Version": "2026.1.2-GA",
     "Build Number": "Build-OPC252",
-    "Deploy Date": "2026-05-30T00:00:00",
+    "Deploy Date": "2026-05-30",
     "Deployed By": "Victoria Sterling",
     "Status": "Active",
     "Notes": "4 plants live"
@@ -930,7 +930,7 @@
     "Environment": "DR",
     "Version": "2026.1.2-GA",
     "Build Number": "Build-OPC252",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Robert Shield",
     "Status": "Active",
     "Notes": "Hot standby"
@@ -942,7 +942,7 @@
     "Environment": "Dev",
     "Version": "2H-2026-dev",
     "Build Number": "Build-SF2H26",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Jordan Lee",
     "Status": "Active",
     "Notes": "Performance mgmt"
@@ -954,7 +954,7 @@
     "Environment": "Test",
     "Version": "1H-2026.5",
     "Build Number": "Build-SF1H25",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Chris Park",
     "Status": "Active",
     "Notes": "Goal setting test"
@@ -966,7 +966,7 @@
     "Environment": "UAT",
     "Version": "1H-2026.4",
     "Build Number": "Build-SF1H24",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Monica Geller",
     "Status": "Active",
     "Notes": "Employee review"
@@ -978,7 +978,7 @@
     "Environment": "Pre-prod",
     "Version": "1H-2026.3",
     "Build Number": "Build-SF1H23",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Ethan Black",
     "Status": "Active",
     "Notes": "Integration OK"
@@ -990,7 +990,7 @@
     "Environment": "Prod",
     "Version": "1H-2026.2-GA",
     "Build Number": "Build-SF1H22",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Elizabeth Crown",
     "Status": "Active",
     "Notes": "Global HCM"
@@ -1002,7 +1002,7 @@
     "Environment": "DR",
     "Version": "1H-2026.2-GA",
     "Build Number": "Build-SF1H22",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "William Guard",
     "Status": "Active",
     "Notes": "Cloud DR"
@@ -1014,7 +1014,7 @@
     "Environment": "Dev",
     "Version": "10.5.0-beta",
     "Build Number": "Build-IM1050",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Casey Chen",
     "Status": "Active",
     "Notes": "Matter mgmt update"
@@ -1026,7 +1026,7 @@
     "Environment": "Test",
     "Version": "10.4.5",
     "Build Number": "Build-IM1045",
-    "Deploy Date": "2026-06-17T00:00:00",
+    "Deploy Date": "2026-06-17",
     "Deployed By": "Pat Murphy",
     "Status": "Active",
     "Notes": "Doc search tests"
@@ -1038,7 +1038,7 @@
     "Environment": "UAT",
     "Version": "10.4.4",
     "Build Number": "Build-IM1044",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Phoebe Buffay",
     "Status": "Active",
     "Notes": "Legal team review"
@@ -1050,7 +1050,7 @@
     "Environment": "Pre-prod",
     "Version": "10.4.3",
     "Build Number": "Build-IM1043",
-    "Deploy Date": "2026-06-07T00:00:00",
+    "Deploy Date": "2026-06-07",
     "Deployed By": "Lucas White",
     "Status": "Active",
     "Notes": "Security verified"
@@ -1062,7 +1062,7 @@
     "Environment": "Prod",
     "Version": "10.4.2-GA",
     "Build Number": "Build-IM1042",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Catherine Royal",
     "Status": "Active",
     "Notes": "Firm-wide"
@@ -1074,7 +1074,7 @@
     "Environment": "DR",
     "Version": "10.4.2-GA",
     "Build Number": "Build-IM1042",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "James Fortress",
     "Status": "Active",
     "Notes": "Replicated"
@@ -1086,7 +1086,7 @@
     "Environment": "Dev",
     "Version": "2026.05.2-dev",
     "Build Number": "Build-OK0502",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Morgan Taylor",
     "Status": "Active",
     "Notes": "MFA enhancement"
@@ -1098,7 +1098,7 @@
     "Environment": "Test",
     "Version": "2026.05.1",
     "Build Number": "Build-OK0501",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Jesse Garcia",
     "Status": "Active",
     "Notes": "SSO testing"
@@ -1110,7 +1110,7 @@
     "Environment": "UAT",
     "Version": "2026.04.5",
     "Build Number": "Build-OK0405",
-    "Deploy Date": "2026-06-13T00:00:00",
+    "Deploy Date": "2026-06-13",
     "Deployed By": "Emma Watson",
     "Status": "Active",
     "Notes": "Access review"
@@ -1122,7 +1122,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.04.4",
     "Build Number": "Build-OK0404",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Mason Gray",
     "Status": "Active",
     "Notes": "Policy verified"
@@ -1134,7 +1134,7 @@
     "Environment": "Prod",
     "Version": "2026.04.3-GA",
     "Build Number": "Build-OK0403",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Margaret Noble",
     "Status": "Active",
     "Notes": "Enterprise IAM"
@@ -1146,7 +1146,7 @@
     "Environment": "DR",
     "Version": "2026.04.3-GA",
     "Build Number": "Build-OK0403",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Michael Bastion",
     "Status": "Active",
     "Notes": "Federated DR"
@@ -1158,7 +1158,7 @@
     "Environment": "Dev",
     "Version": "2026.3-dev",
     "Build Number": "Build-BY263",
-    "Deploy Date": "2026-06-21T00:00:00",
+    "Deploy Date": "2026-06-21",
     "Deployed By": "Jamie Patel",
     "Status": "Active",
     "Notes": "AI forecasting"
@@ -1170,7 +1170,7 @@
     "Environment": "Test",
     "Version": "2026.2.5",
     "Build Number": "Build-BY2625",
-    "Deploy Date": "2026-06-16T00:00:00",
+    "Deploy Date": "2026-06-16",
     "Deployed By": "Robin Chen",
     "Status": "Active",
     "Notes": "Wave planning test"
@@ -1182,7 +1182,7 @@
     "Environment": "UAT",
     "Version": "2026.2.4",
     "Build Number": "Build-BY2624",
-    "Deploy Date": "2026-06-11T00:00:00",
+    "Deploy Date": "2026-06-11",
     "Deployed By": "Sophie Turner",
     "Status": "Active",
     "Notes": "Warehouse review"
@@ -1194,7 +1194,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.2.3",
     "Build Number": "Build-BY2623",
-    "Deploy Date": "2026-06-06T00:00:00",
+    "Deploy Date": "2026-06-06",
     "Deployed By": "Logan Stone",
     "Status": "Active",
     "Notes": "Peak load OK"
@@ -1206,7 +1206,7 @@
     "Environment": "Prod",
     "Version": "2026.2.2-GA",
     "Build Number": "Build-BY2622",
-    "Deploy Date": "2026-05-30T00:00:00",
+    "Deploy Date": "2026-05-30",
     "Deployed By": "Diana Prince",
     "Status": "Active",
     "Notes": "5 DCs live"
@@ -1218,7 +1218,7 @@
     "Environment": "DR",
     "Version": "2026.2.2-GA",
     "Build Number": "Build-BY2622",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "David Tower",
     "Status": "Active",
     "Notes": "Regional backup"
@@ -1230,7 +1230,7 @@
     "Environment": "Dev",
     "Version": "1.8.0-dev",
     "Build Number": "Build-TF180",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Riley Kim",
     "Status": "Active",
     "Notes": "Provider updates"
@@ -1242,7 +1242,7 @@
     "Environment": "Test",
     "Version": "1.7.5",
     "Build Number": "Build-TF175",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Dana Wilson",
     "Status": "Active",
     "Notes": "Module testing"
@@ -1254,7 +1254,7 @@
     "Environment": "UAT",
     "Version": "1.7.4",
     "Build Number": "Build-TF174",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Mia Collins",
     "Status": "Active",
     "Notes": "Infra review"
@@ -1266,7 +1266,7 @@
     "Environment": "Pre-prod",
     "Version": "1.7.3",
     "Build Number": "Build-TF173",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Jacob Hill",
     "Status": "Active",
     "Notes": "State migrated"
@@ -1278,7 +1278,7 @@
     "Environment": "Prod",
     "Version": "1.7.2-GA",
     "Build Number": "Build-TF172",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Helena Troy",
     "Status": "Active",
     "Notes": "IaC platform"
@@ -1290,7 +1290,7 @@
     "Environment": "DR",
     "Version": "1.7.2-GA",
     "Build Number": "Build-TF172",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "Richard Wall",
     "Status": "Active",
     "Notes": "Workspace sync"
@@ -1302,7 +1302,7 @@
     "Environment": "Dev",
     "Version": "11.2.14-dev",
     "Build Number": "Build-HFM214",
-    "Deploy Date": "2026-06-20T00:00:00",
+    "Deploy Date": "2026-06-20",
     "Deployed By": "Quinn Johnson",
     "Status": "Active",
     "Notes": "Consolidation rules"
@@ -1314,7 +1314,7 @@
     "Environment": "Test",
     "Version": "11.2.13",
     "Build Number": "Build-HFM213",
-    "Deploy Date": "2026-06-15T00:00:00",
+    "Deploy Date": "2026-06-15",
     "Deployed By": "Kelly Nguyen",
     "Status": "Active",
     "Notes": "Close cycle test"
@@ -1326,7 +1326,7 @@
     "Environment": "UAT",
     "Version": "11.2.12",
     "Build Number": "Build-HFM212",
-    "Deploy Date": "2026-06-10T00:00:00",
+    "Deploy Date": "2026-06-10",
     "Deployed By": "Isabella Moore",
     "Status": "Active",
     "Notes": "Finance review"
@@ -1338,7 +1338,7 @@
     "Environment": "Pre-prod",
     "Version": "11.2.11",
     "Build Number": "Build-HFM211",
-    "Deploy Date": "2026-06-05T00:00:00",
+    "Deploy Date": "2026-06-05",
     "Deployed By": "Aiden Clark",
     "Status": "Active",
     "Notes": "Period close OK"
@@ -1350,7 +1350,7 @@
     "Environment": "Prod",
     "Version": "11.2.10-GA",
     "Build Number": "Build-HFM210",
-    "Deploy Date": "2026-05-28T00:00:00",
+    "Deploy Date": "2026-05-28",
     "Deployed By": "Sophia Grace",
     "Status": "Active",
     "Notes": "Multi-entity"
@@ -1362,7 +1362,7 @@
     "Environment": "DR",
     "Version": "11.2.10-GA",
     "Build Number": "Build-HFM210",
-    "Deploy Date": "2026-05-29T00:00:00",
+    "Deploy Date": "2026-05-29",
     "Deployed By": "Thomas Castle",
     "Status": "Active",
     "Notes": "Oracle RAC DR"
@@ -1374,7 +1374,7 @@
     "Environment": "Dev",
     "Version": "2026.Q2-dev",
     "Build Number": "Build-HS26Q2",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Avery Williams",
     "Status": "Active",
     "Notes": "Marketing hub"
@@ -1386,7 +1386,7 @@
     "Environment": "Test",
     "Version": "2026.Q1.5",
     "Build Number": "Build-HS26Q15",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Terry Brooks",
     "Status": "Active",
     "Notes": "Campaign tests"
@@ -1398,7 +1398,7 @@
     "Environment": "UAT",
     "Version": "2026.Q1.4",
     "Build Number": "Build-HS26Q14",
-    "Deploy Date": "2026-06-13T00:00:00",
+    "Deploy Date": "2026-06-13",
     "Deployed By": "Olivia James",
     "Status": "Active",
     "Notes": "Marketing review"
@@ -1410,7 +1410,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.Q1.3",
     "Build Number": "Build-HS26Q13",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Jackson Moore",
     "Status": "Active",
     "Notes": "API verified"
@@ -1422,7 +1422,7 @@
     "Environment": "Prod",
     "Version": "2026.Q1.2-GA",
     "Build Number": "Build-HS26Q12",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Alexandra Reid",
     "Status": "Active",
     "Notes": "All hubs live"
@@ -1434,7 +1434,7 @@
     "Environment": "DR",
     "Version": "2026.Q1.2-GA",
     "Build Number": "Build-HS26Q12",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Charles Vault",
     "Status": "Active",
     "Notes": "Cloud native DR"
@@ -1446,7 +1446,7 @@
     "Environment": "Dev",
     "Version": "5.15.0-dev",
     "Build Number": "Build-JSM515",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Drew Martinez",
     "Status": "Active",
     "Notes": "AI agent update"
@@ -1458,7 +1458,7 @@
     "Environment": "Test",
     "Version": "5.14.5",
     "Build Number": "Build-JSM5145",
-    "Deploy Date": "2026-06-17T00:00:00",
+    "Deploy Date": "2026-06-17",
     "Deployed By": "Skyler Davis",
     "Status": "Active",
     "Notes": "Queue testing"
@@ -1470,7 +1470,7 @@
     "Environment": "UAT",
     "Version": "5.14.4",
     "Build Number": "Build-JSM5144",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Ava Mitchell",
     "Status": "Active",
     "Notes": "Help desk review"
@@ -1482,7 +1482,7 @@
     "Environment": "Pre-prod",
     "Version": "5.14.3",
     "Build Number": "Build-JSM5143",
-    "Deploy Date": "2026-06-07T00:00:00",
+    "Deploy Date": "2026-06-07",
     "Deployed By": "Sebastian Hall",
     "Status": "Active",
     "Notes": "SLA config OK"
@@ -1494,7 +1494,7 @@
     "Environment": "Prod",
     "Version": "5.14.2-GA",
     "Build Number": "Build-JSM5142",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Christina Vale",
     "Status": "Active",
     "Notes": "IT service desk"
@@ -1506,7 +1506,7 @@
     "Environment": "DR",
     "Version": "5.14.2-GA",
     "Build Number": "Build-JSM5142",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Daniel Bunker",
     "Status": "Active",
     "Notes": "Atlassian DR"
@@ -1518,7 +1518,7 @@
     "Environment": "Dev",
     "Version": "23.10.1-dev",
     "Build Number": "Build-PA2310",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Cameron Brown",
     "Status": "Active",
     "Notes": "CSPM updates"
@@ -1530,7 +1530,7 @@
     "Environment": "Test",
     "Version": "23.9.5",
     "Build Number": "Build-PA2395",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Jordan Reed",
     "Status": "Active",
     "Notes": "Policy testing"
@@ -1542,7 +1542,7 @@
     "Environment": "UAT",
     "Version": "23.9.4",
     "Build Number": "Build-PA2394",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Charlotte Price",
     "Status": "Active",
     "Notes": "SOC review"
@@ -1554,7 +1554,7 @@
     "Environment": "Pre-prod",
     "Version": "23.9.3",
     "Build Number": "Build-PA2393",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Caleb Young",
     "Status": "Active",
     "Notes": "Scan verified"
@@ -1566,7 +1566,7 @@
     "Environment": "Prod",
     "Version": "23.9.2-GA",
     "Build Number": "Build-PA2392",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Natasha Roman",
     "Status": "Active",
     "Notes": "Multi-cloud"
@@ -1578,7 +1578,7 @@
     "Environment": "DR",
     "Version": "23.9.2-GA",
     "Build Number": "Build-PA2392",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "Matthew Haven",
     "Status": "Active",
     "Notes": "SaaS DR"
@@ -1590,7 +1590,7 @@
     "Environment": "Dev",
     "Version": "26B-dev",
     "Build Number": "Build-OHCM26B",
-    "Deploy Date": "2026-06-21T00:00:00",
+    "Deploy Date": "2026-06-21",
     "Deployed By": "Taylor Singh",
     "Status": "Active",
     "Notes": "Benefits update"
@@ -1602,7 +1602,7 @@
     "Environment": "Test",
     "Version": "26A.5",
     "Build Number": "Build-OHCM26A5",
-    "Deploy Date": "2026-06-16T00:00:00",
+    "Deploy Date": "2026-06-16",
     "Deployed By": "Alex Foster",
     "Status": "Active",
     "Notes": "Payroll cycle"
@@ -1614,7 +1614,7 @@
     "Environment": "UAT",
     "Version": "26A.4",
     "Build Number": "Build-OHCM26A4",
-    "Deploy Date": "2026-06-11T00:00:00",
+    "Deploy Date": "2026-06-11",
     "Deployed By": "Amelia Scott",
     "Status": "Active",
     "Notes": "HR team review"
@@ -1626,7 +1626,7 @@
     "Environment": "Pre-prod",
     "Version": "26A.3",
     "Build Number": "Build-OHCM26A3",
-    "Deploy Date": "2026-06-06T00:00:00",
+    "Deploy Date": "2026-06-06",
     "Deployed By": "Owen King",
     "Status": "Active",
     "Notes": "OCI tested"
@@ -1638,7 +1638,7 @@
     "Environment": "Prod",
     "Version": "26A.2-GA",
     "Build Number": "Build-OHCM26A2",
-    "Deploy Date": "2026-05-30T00:00:00",
+    "Deploy Date": "2026-05-30",
     "Deployed By": "Amanda Cross",
     "Status": "Active",
     "Notes": "Global payroll"
@@ -1650,7 +1650,7 @@
     "Environment": "DR",
     "Version": "26A.2-GA",
     "Build Number": "Build-OHCM26A2",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Anthony Secure",
     "Status": "Active",
     "Notes": "Oracle DR"
@@ -1662,7 +1662,7 @@
     "Environment": "Dev",
     "Version": "14.0.0-dev",
     "Build Number": "Build-FT140",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Blake Thompson",
     "Status": "Active",
     "Notes": "SCADA update"
@@ -1674,7 +1674,7 @@
     "Environment": "Test",
     "Version": "13.5.5",
     "Build Number": "Build-FT1355",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Morgan Hayes",
     "Status": "Active",
     "Notes": "PLC integration"
@@ -1686,7 +1686,7 @@
     "Environment": "UAT",
     "Version": "13.5.4",
     "Build Number": "Build-FT1354",
-    "Deploy Date": "2026-06-13T00:00:00",
+    "Deploy Date": "2026-06-13",
     "Deployed By": "Harper Lewis",
     "Status": "Active",
     "Notes": "Plant floor test"
@@ -1698,7 +1698,7 @@
     "Environment": "Pre-prod",
     "Version": "13.5.3",
     "Build Number": "Build-FT1353",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Liam Wright",
     "Status": "Active",
     "Notes": "OT network OK"
@@ -1710,7 +1710,7 @@
     "Environment": "Prod",
     "Version": "13.5.2-GA",
     "Build Number": "Build-FT1352",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Rebecca Stone",
     "Status": "Active",
     "Notes": "6 plants live"
@@ -1722,7 +1722,7 @@
     "Environment": "DR",
     "Version": "13.5.2-GA",
     "Build Number": "Build-FT1352",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Mark Backup",
     "Status": "Active",
     "Notes": "Historian DR"
@@ -1734,7 +1734,7 @@
     "Environment": "Dev",
     "Version": "2026.3-dev",
     "Build Number": "Build-PL263",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Alex Rivera",
     "Status": "Active",
     "Notes": "Knowledge base"
@@ -1746,7 +1746,7 @@
     "Environment": "Test",
     "Version": "2026.2.5",
     "Build Number": "Build-PL2625",
-    "Deploy Date": "2026-06-17T00:00:00",
+    "Deploy Date": "2026-06-17",
     "Deployed By": "Sam Anderson",
     "Status": "Active",
     "Notes": "Search testing"
@@ -1758,7 +1758,7 @@
     "Environment": "UAT",
     "Version": "2026.2.4",
     "Build Number": "Build-PL2624",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Rachel Green",
     "Status": "Active",
     "Notes": "Legal review"
@@ -1770,7 +1770,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.2.3",
     "Build Number": "Build-PL2623",
-    "Deploy Date": "2026-06-07T00:00:00",
+    "Deploy Date": "2026-06-07",
     "Deployed By": "Nathan Cole",
     "Status": "Active",
     "Notes": "Content sync"
@@ -1782,7 +1782,7 @@
     "Environment": "Prod",
     "Version": "2026.2.2-GA",
     "Build Number": "Build-PL2622",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Victoria Sterling",
     "Status": "Active",
     "Notes": "All libraries"
@@ -1794,7 +1794,7 @@
     "Environment": "DR",
     "Version": "2026.2.2-GA",
     "Build Number": "Build-PL2622",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Robert Shield",
     "Status": "Active",
     "Notes": "SaaS replicated"
@@ -1806,7 +1806,7 @@
     "Environment": "Dev",
     "Version": "2026.2.0-dev",
     "Build Number": "Build-MA2620",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Jordan Lee",
     "Status": "Active",
     "Notes": "Labor mgmt"
@@ -1818,7 +1818,7 @@
     "Environment": "Test",
     "Version": "2026.1.5",
     "Build Number": "Build-MA2615",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Chris Park",
     "Status": "Active",
     "Notes": "Pick path test"
@@ -1830,7 +1830,7 @@
     "Environment": "UAT",
     "Version": "2026.1.4",
     "Build Number": "Build-MA2614",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Monica Geller",
     "Status": "Active",
     "Notes": "DC team review"
@@ -1842,7 +1842,7 @@
     "Environment": "Pre-prod",
     "Version": "2026.1.3",
     "Build Number": "Build-MA2613",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Ethan Black",
     "Status": "Active",
     "Notes": "Performance OK"
@@ -1854,7 +1854,7 @@
     "Environment": "Prod",
     "Version": "2026.1.2-GA",
     "Build Number": "Build-MA2612",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Elizabeth Crown",
     "Status": "Active",
     "Notes": "3 warehouses"
@@ -1866,7 +1866,7 @@
     "Environment": "DR",
     "Version": "2026.1.2-GA",
     "Build Number": "Build-MA2612",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "William Guard",
     "Status": "Active",
     "Notes": "Replicated"
@@ -1878,7 +1878,7 @@
     "Environment": "Dev",
     "Version": "2026R2.1-dev",
     "Build Number": "Build-WF26R2",
-    "Deploy Date": "2026-06-21T00:00:00",
+    "Deploy Date": "2026-06-21",
     "Deployed By": "Casey Chen",
     "Status": "Active",
     "Notes": "Revenue module"
@@ -1890,7 +1890,7 @@
     "Environment": "Test",
     "Version": "2026R1.5",
     "Build Number": "Build-WF26R15",
-    "Deploy Date": "2026-06-16T00:00:00",
+    "Deploy Date": "2026-06-16",
     "Deployed By": "Pat Murphy",
     "Status": "Active",
     "Notes": "GL testing"
@@ -1902,7 +1902,7 @@
     "Environment": "UAT",
     "Version": "2026R1.4",
     "Build Number": "Build-WF26R14",
-    "Deploy Date": "2026-06-11T00:00:00",
+    "Deploy Date": "2026-06-11",
     "Deployed By": "Phoebe Buffay",
     "Status": "Active",
     "Notes": "Controller review"
@@ -1914,7 +1914,7 @@
     "Environment": "Pre-prod",
     "Version": "2026R1.3",
     "Build Number": "Build-WF26R13",
-    "Deploy Date": "2026-06-06T00:00:00",
+    "Deploy Date": "2026-06-06",
     "Deployed By": "Lucas White",
     "Status": "Active",
     "Notes": "Close cycle OK"
@@ -1926,7 +1926,7 @@
     "Environment": "Prod",
     "Version": "2026R1.2-GA",
     "Build Number": "Build-WF26R12",
-    "Deploy Date": "2026-05-30T00:00:00",
+    "Deploy Date": "2026-05-30",
     "Deployed By": "Catherine Royal",
     "Status": "Active",
     "Notes": "Core financials"
@@ -1938,7 +1938,7 @@
     "Environment": "DR",
     "Version": "2026R1.2-GA",
     "Build Number": "Build-WF26R12",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "James Fortress",
     "Status": "Active",
     "Notes": "Cloud DR"
@@ -1950,7 +1950,7 @@
     "Environment": "Dev",
     "Version": "6.3.0-dev",
     "Build Number": "Build-SOAR63",
-    "Deploy Date": "2026-06-23T00:00:00",
+    "Deploy Date": "2026-06-23",
     "Deployed By": "Morgan Taylor",
     "Status": "Active",
     "Notes": "Playbook update"
@@ -1962,7 +1962,7 @@
     "Environment": "Test",
     "Version": "6.2.5",
     "Build Number": "Build-SOAR625",
-    "Deploy Date": "2026-06-18T00:00:00",
+    "Deploy Date": "2026-06-18",
     "Deployed By": "Jesse Garcia",
     "Status": "Active",
     "Notes": "Automation test"
@@ -1974,7 +1974,7 @@
     "Environment": "UAT",
     "Version": "6.2.4",
     "Build Number": "Build-SOAR624",
-    "Deploy Date": "2026-06-13T00:00:00",
+    "Deploy Date": "2026-06-13",
     "Deployed By": "Emma Watson",
     "Status": "Active",
     "Notes": "SOC validation"
@@ -1986,7 +1986,7 @@
     "Environment": "Pre-prod",
     "Version": "6.2.3",
     "Build Number": "Build-SOAR623",
-    "Deploy Date": "2026-06-08T00:00:00",
+    "Deploy Date": "2026-06-08",
     "Deployed By": "Mason Gray",
     "Status": "Active",
     "Notes": "Integration OK"
@@ -1998,7 +1998,7 @@
     "Environment": "Prod",
     "Version": "6.2.2-GA",
     "Build Number": "Build-SOAR622",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "Margaret Noble",
     "Status": "Active",
     "Notes": "Active response"
@@ -2010,7 +2010,7 @@
     "Environment": "DR",
     "Version": "6.2.2-GA",
     "Build Number": "Build-SOAR622",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Michael Bastion",
     "Status": "Active",
     "Notes": "SIEM linked"
@@ -2022,7 +2022,7 @@
     "Environment": "Dev",
     "Version": "26B.2-dev",
     "Build Number": "Build-OMC26B2",
-    "Deploy Date": "2026-06-22T00:00:00",
+    "Deploy Date": "2026-06-22",
     "Deployed By": "Jamie Patel",
     "Status": "Active",
     "Notes": "Quality module"
@@ -2034,7 +2034,7 @@
     "Environment": "Test",
     "Version": "26B.1",
     "Build Number": "Build-OMC26B1",
-    "Deploy Date": "2026-06-17T00:00:00",
+    "Deploy Date": "2026-06-17",
     "Deployed By": "Robin Chen",
     "Status": "Active",
     "Notes": "BOM testing"
@@ -2046,7 +2046,7 @@
     "Environment": "UAT",
     "Version": "26A.5",
     "Build Number": "Build-OMC26A5",
-    "Deploy Date": "2026-06-12T00:00:00",
+    "Deploy Date": "2026-06-12",
     "Deployed By": "Sophie Turner",
     "Status": "Active",
     "Notes": "Production review"
@@ -2058,7 +2058,7 @@
     "Environment": "Pre-prod",
     "Version": "26A.4",
     "Build Number": "Build-OMC26A4",
-    "Deploy Date": "2026-06-07T00:00:00",
+    "Deploy Date": "2026-06-07",
     "Deployed By": "Logan Stone",
     "Status": "Active",
     "Notes": "OCI tested"
@@ -2070,7 +2070,7 @@
     "Environment": "Prod",
     "Version": "26A.3-GA",
     "Build Number": "Build-OMC26A3",
-    "Deploy Date": "2026-05-31T00:00:00",
+    "Deploy Date": "2026-05-31",
     "Deployed By": "Diana Prince",
     "Status": "Active",
     "Notes": "3 facilities"
@@ -2082,7 +2082,7 @@
     "Environment": "DR",
     "Version": "26A.3-GA",
     "Build Number": "Build-OMC26A3",
-    "Deploy Date": "2026-06-01T00:00:00",
+    "Deploy Date": "2026-06-01",
     "Deployed By": "David Tower",
     "Status": "Active",
     "Notes": "Oracle RAC"
@@ -2094,7 +2094,7 @@
     "Environment": "Dev",
     "Version": "7.50.0-dev",
     "Build Number": "Build-DD750",
-    "Deploy Date": "2026-06-24T00:00:00",
+    "Deploy Date": "2026-06-24",
     "Deployed By": "Riley Kim",
     "Status": "Active",
     "Notes": "APM update"
@@ -2106,7 +2106,7 @@
     "Environment": "Test",
     "Version": "7.49.5",
     "Build Number": "Build-DD7495",
-    "Deploy Date": "2026-06-19T00:00:00",
+    "Deploy Date": "2026-06-19",
     "Deployed By": "Dana Wilson",
     "Status": "Active",
     "Notes": "Agent testing"
@@ -2118,7 +2118,7 @@
     "Environment": "UAT",
     "Version": "7.49.4",
     "Build Number": "Build-DD7494",
-    "Deploy Date": "2026-06-14T00:00:00",
+    "Deploy Date": "2026-06-14",
     "Deployed By": "Mia Collins",
     "Status": "Active",
     "Notes": "Dashboard review"
@@ -2130,7 +2130,7 @@
     "Environment": "Pre-prod",
     "Version": "7.49.3",
     "Build Number": "Build-DD7493",
-    "Deploy Date": "2026-06-09T00:00:00",
+    "Deploy Date": "2026-06-09",
     "Deployed By": "Jacob Hill",
     "Status": "Active",
     "Notes": "Integration OK"
@@ -2142,7 +2142,7 @@
     "Environment": "Prod",
     "Version": "7.49.2-GA",
     "Build Number": "Build-DD7492",
-    "Deploy Date": "2026-06-02T00:00:00",
+    "Deploy Date": "2026-06-02",
     "Deployed By": "Helena Troy",
     "Status": "Active",
     "Notes": "Observability"
@@ -2154,7 +2154,7 @@
     "Environment": "DR",
     "Version": "7.49.2-GA",
     "Build Number": "Build-DD7492",
-    "Deploy Date": "2026-06-03T00:00:00",
+    "Deploy Date": "2026-06-03",
     "Deployed By": "Richard Wall",
     "Status": "Active",
     "Notes": "Multi-region"

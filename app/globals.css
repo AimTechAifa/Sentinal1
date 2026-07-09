@@ -12,6 +12,7 @@
   --sidebar-width-collapsed: 80px;
   --sidebar-width: var(--sidebar-width-expanded);
   --header-height: 72px;
+  --data-table-toolbar-height: 5.625rem;
   --materio-grid-gap: 24px;
   --brand-500: #7c3aed;
   --brand-600: #6d28d9;
@@ -258,6 +259,23 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  /* Scroll container: sticky headers stay aligned; vertical bar hidden, horizontal kept. */
+  .data-table-body {
+    overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .data-table-body::-webkit-scrollbar {
+    width: 0;
+    height: 6px;
+  }
+  .data-table-body::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: rgb(156 163 175 / 0.55);
+  }
+  .data-table-body::-webkit-scrollbar-thumb:hover {
+    background: rgb(107 114 128 / 0.7);
+  }
   .border-beam-spin {
     background: conic-gradient(from 0deg, transparent 0 340deg, var(--color-from) 360deg);
     animation: border-beam var(--duration, 8s) linear infinite;
@@ -440,24 +458,9 @@ body {
     border-color: rgba(186, 26, 26, 0.28) !important;
   }
 
-  /* Auth pages: keep Clerk sign-in readable (global dark overrides break Clerk widgets) */
-  .auth-shell .cl-rootBox,
-  .auth-shell .cl-signIn-root,
-  .auth-shell .cl-signUp-root,
+  /* Auth pages: host layout only — Clerk styling via appearance + @clerk/ui */
   .auth-shell .clerk-sign-in-host {
-    width: 100% !important;
+    width: 100%;
     min-height: 420px;
-  }
-
-  .auth-shell .cl-card,
-  .auth-shell [class*="cl-"] .cl-card {
-    background-color: #ffffff !important;
-    color: #111827 !important;
-  }
-
-  .auth-shell input,
-  .auth-shell button,
-  .auth-shell label {
-    color: inherit;
   }
 }

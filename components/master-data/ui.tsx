@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Loader2, MoreVertical, Plus, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2, MoreVertical, Plus, X } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { cn } from "@/lib/utils";
 
@@ -329,21 +329,30 @@ export function SortableTh({
   label,
   active,
   dir,
-  onClick,
+  onSort,
   className,
 }: {
   label: string;
   active: boolean;
   dir: "asc" | "desc";
-  onClick: () => void;
+  onSort: (dir?: "asc" | "desc") => void;
   className?: string;
 }) {
   return (
-    <th className={cn(thClass, "sticky top-[var(--header-height)] z-20 bg-gray-50 dark:bg-gray-800/95", className)}>
-      <button type="button" onClick={onClick} className="flex items-center gap-1 hover:text-gray-800 dark:hover:text-white">
-        {label}
-        {active && <span className="text-[10px]">{dir === "asc" ? "▲" : "▼"}</span>}
-      </button>
+    <th className={cn(thClass, "sticky top-0 z-20 bg-gray-50 dark:bg-[var(--card)]", className)}>
+      <div className="inline-flex items-center gap-1.5">
+        <button type="button" onClick={() => onSort()} className="hover:text-gray-800 dark:hover:text-white">
+          {label}
+        </button>
+        <span className="inline-flex shrink-0 flex-col items-center justify-center leading-none">
+          <button type="button" title="Ascending" aria-label="Ascending" onClick={() => onSort("asc")} className="rounded p-0.5 hover:bg-gray-200/80 dark:hover:bg-white/10">
+            <ChevronUp className={cn("h-2.5 w-2.5 -mb-px", active && dir === "asc" ? "text-brand-600 dark:text-brand-400" : "text-gray-400 dark:text-gray-500")} />
+          </button>
+          <button type="button" title="Descending" aria-label="Descending" onClick={() => onSort("desc")} className="rounded p-0.5 hover:bg-gray-200/80 dark:hover:bg-white/10">
+            <ChevronDown className={cn("h-2.5 w-2.5", active && dir === "desc" ? "text-brand-600 dark:text-brand-400" : "text-gray-400 dark:text-gray-500")} />
+          </button>
+        </span>
+      </div>
     </th>
   );
 }

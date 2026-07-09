@@ -21,6 +21,7 @@ import {
   type EnvFilterRow,
   type ReleaseListFilters,
 } from "@/lib/release-filters";
+import type { SortDirection } from "@/lib/table-sort";
 
 type ReleaseFiltersContextValue = {
   filters: ReleaseListFilters;
@@ -40,7 +41,7 @@ type ReleaseFiltersContextValue = {
   setPriority: (priority: string) => void;
   setImpact: (impact: string) => void;
   setSort: (sort: string, sortDir?: string) => void;
-  toggleSort: (key: string) => void;
+  toggleSort: (key: string, dir?: SortDirection) => void;
   setPeriod: (period: string) => void;
   setAnchor: (anchor: string) => void;
   setTab: (tab: string) => void;
@@ -165,8 +166,12 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
   );
 
   const toggleSort = useCallback(
-    (key: string) => {
+    (key: string, dir?: SortDirection) => {
       if (!key) return;
+      if (dir) {
+        pushFilters({ ...filters, sort: key, sortDir: dir });
+        return;
+      }
       if (filters.sort === key) {
         pushFilters({ ...filters, sortDir: filters.sortDir === "asc" ? "desc" : "asc" });
         return;

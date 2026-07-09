@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { BOOKING_COLUMNS, BOOKING_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { DataTableHeadRow, TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { BOOKING_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTableHeadRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -101,6 +103,7 @@ export default function BookingContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -223,7 +226,7 @@ export default function BookingContent() {
       ) : (
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[var(--card)] shadow-sm overflow-hidden">
         <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
-          <TableToolbar>{columnPicker}</TableToolbar>
+          <TablePageToolbar columnPicker={columnPicker} presets={BOOKING_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[2200px] text-left text-sm">

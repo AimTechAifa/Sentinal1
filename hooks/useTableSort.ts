@@ -13,8 +13,13 @@ export function useTableSort(
   const { sortKey, sortDir } = readSortFromValues(values, defaultKey, defaultDir);
 
   const toggleSort = useCallback(
-    (key: string) => {
+    (key: string, dir?: SortDirection) => {
       if (!key) return;
+      if (dir) {
+        setFilter("sort", key);
+        setFilter("sortDir", dir);
+        return;
+      }
       if (sortKey === key) {
         setFilter("sortDir", nextSortDir(sortKey, key, sortDir));
         return;
@@ -25,5 +30,13 @@ export function useTableSort(
     [setFilter, sortDir, sortKey]
   );
 
-  return { sortKey, sortDir, toggleSort };
+  const setSort = useCallback(
+    (sort: string, dir: SortDirection) => {
+      setFilter("sort", sort);
+      setFilter("sortDir", dir);
+    },
+    [setFilter]
+  );
+
+  return { sortKey, sortDir, toggleSort, setSort };
 }

@@ -7,7 +7,7 @@
     "Region": "North America",
     "Phone": "+1-555-0101",
     "Status": "Active",
-    "Start Date": "2020-03-15T00:00:00",
+    "Start Date": "2020-03-15",
     "Specialization": "Finance & HR Systems"
   },
   {
@@ -18,7 +18,7 @@
     "Region": "North America",
     "Phone": "+1-555-0102",
     "Status": "Active",
-    "Start Date": "2019-06-20T00:00:00",
+    "Start Date": "2019-06-20",
     "Specialization": "Manufacturing & Logistics"
   },
   {
@@ -29,7 +29,7 @@
     "Region": "EMEA",
     "Phone": "+44-20-5550103",
     "Status": "Active",
-    "Start Date": "2021-01-10T00:00:00",
+    "Start Date": "2021-01-10",
     "Specialization": "CRM & Sales Systems"
   },
   {
@@ -40,7 +40,7 @@
     "Region": "EMEA",
     "Phone": "+44-20-5550104",
     "Status": "Active",
-    "Start Date": "2018-09-01T00:00:00",
+    "Start Date": "2018-09-01",
     "Specialization": "Security & Infrastructure"
   },
   {
@@ -51,7 +51,7 @@
     "Region": "APAC",
     "Phone": "+61-2-5550105",
     "Status": "Active",
-    "Start Date": "2020-11-15T00:00:00",
+    "Start Date": "2020-11-15",
     "Specialization": "Legal & Compliance"
   },
   {
@@ -62,7 +62,7 @@
     "Region": "APAC",
     "Phone": "+61-2-5550106",
     "Status": "Active",
-    "Start Date": "2022-02-28T00:00:00",
+    "Start Date": "2022-02-28",
     "Specialization": "HR & Talent Systems"
   },
   {
@@ -73,7 +73,7 @@
     "Region": "North America",
     "Phone": "+1-555-0107",
     "Status": "Active",
-    "Start Date": "2019-04-12T00:00:00",
+    "Start Date": "2019-04-12",
     "Specialization": "Integration & Middleware"
   },
   {
@@ -84,7 +84,7 @@
     "Region": "EMEA",
     "Phone": "+44-20-5550108",
     "Status": "Active",
-    "Start Date": "2021-07-22T00:00:00",
+    "Start Date": "2021-07-22",
     "Specialization": "Data & Analytics"
   },
   {
@@ -95,7 +95,7 @@
     "Region": "LATAM",
     "Phone": "+55-11-5550109",
     "Status": "Active",
-    "Start Date": "2020-08-05T00:00:00",
+    "Start Date": "2020-08-05",
     "Specialization": "ERP Systems"
   },
   {
@@ -106,7 +106,7 @@
     "Region": "North America",
     "Phone": "+1-555-0110",
     "Status": "Active",
-    "Start Date": "2017-12-01T00:00:00",
+    "Start Date": "2017-12-01",
     "Specialization": "Cloud & SaaS Platforms"
   },
   {
@@ -117,7 +117,7 @@
     "Region": "APAC",
     "Phone": "+65-5550111",
     "Status": "Active",
-    "Start Date": "2022-05-18T00:00:00",
+    "Start Date": "2022-05-18",
     "Specialization": "Manufacturing Execution"
   },
   {
@@ -128,7 +128,7 @@
     "Region": "EMEA",
     "Phone": "+49-30-5550112",
     "Status": "On Leave",
-    "Start Date": "2019-10-30T00:00:00",
+    "Start Date": "2019-10-30",
     "Specialization": "Finance Reporting"
   }
 ]

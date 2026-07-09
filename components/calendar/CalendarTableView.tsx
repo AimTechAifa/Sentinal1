@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { DataTable, TableToolbar, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { CALENDAR_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, dataTableTableClass, tableCell, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
@@ -26,7 +28,27 @@ export function CalendarTableView({
   dataLoading: boolean;
 }) {
   const [page, setPage] = useState(1);
+  const [sortKey, setSortKey] = useState("date");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const setSort = (sort: string, dir: "asc" | "desc") => {
+    setSortKey(sort);
+    setSortDir(dir);
+    setPage(1);
+  };
+
+  const toggleSort = (key: string, dir?: "asc" | "desc") => {
+    if (dir) {
+      setSort(key, dir);
+      return;
+    }
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+    setPage(1);
+  };
 
   const { isColumnVisible, columnPicker, prefsLoaded } = useTablePagePreferences(
     "calendar-table",
@@ -39,12 +61,12 @@ export function CalendarTableView({
 
   useEffect(() => {
     setPage(1);
-  }, [events.length, sortDir]);
+  }, [events.length, sortKey, sortDir]);
 
   const rows = useMemo(() => {
     const mapped = events.map(mapCalendarEventToTableRow);
-    return sortCalendarTableRows(mapped, sortDir);
-  }, [events, sortDir]);
+    return sortCalendarTableRows(mapped, sortKey, sortDir);
+  }, [events, sortKey, sortDir]);
 
   const totalPages = pageCount(rows.length, PAGE_SIZE);
   const safePage = Math.min(page, totalPages);
@@ -52,10 +74,6 @@ export function CalendarTableView({
   const from = rows.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1;
   const to = Math.min(safePage * PAGE_SIZE, rows.length);
 
-  const toggleDateSort = () => {
-    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    setPage(1);
-  };
 
   return (
     <div className="space-y-4">
@@ -71,7 +89,7 @@ export function CalendarTableView({
           title="Calendar Events"
           subtitle="CAB meetings, releases, and governance dates — sorted by date"
           icon={CalendarDays}
-          toolbar={<TableToolbar>{columnPicker}</TableToolbar>}
+          toolbar={<TablePageToolbar columnPicker={columnPicker} presets={CALENDAR_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 px-6 py-3 text-[13px] text-gray-600 dark:border-gray-700 dark:text-white/55">
             <span>
@@ -100,49 +118,15 @@ export function CalendarTableView({
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1100px] text-sm">
-              <thead className={tableHeadRow}>
-                <tr>
-                  {isColumnVisible("month") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Month</th>
-                  )}
-                  {isColumnVisible("week") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Week</th>
-                  )}
-                  {isColumnVisible("date") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>
-                      <button
-                        type="button"
-                        onClick={toggleDateSort}
-                        className="inline-flex items-center gap-1 hover:text-brand-600 dark:hover:text-brand-400"
-                      >
-                        Date
-                        <span className="text-[10px] text-gray-400">{sortDir === "asc" ? "↑" : "↓"}</span>
-                      </button>
-                    </th>
-                  )}
-                  {isColumnVisible("day") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Day</th>
-                  )}
-                  {isColumnVisible("eventType") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Event Type</th>
-                  )}
-                  {isColumnVisible("releaseCode") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release ID</th>
-                  )}
-                  {isColumnVisible("releaseName") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Release Name</th>
-                  )}
-                  {isColumnVisible("department") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Department</th>
-                  )}
-                  {isColumnVisible("sizeImpact") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Size/Impact</th>
-                  )}
-                  {isColumnVisible("notes") && (
-                    <th className={`${tableCell} text-left font-medium whitespace-nowrap`}>Notes</th>
-                  )}
-                </tr>
+            <table className={dataTableTableClass}>
+              <thead>
+                <DataTableHeadRow
+                  columns={CALENDAR_TABLE_COLUMNS}
+                  isColumnVisible={isColumnVisible}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
               </thead>
               <tbody>
                 {pageRows.map((row) => (

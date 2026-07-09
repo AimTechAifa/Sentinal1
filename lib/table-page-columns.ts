@@ -7,6 +7,7 @@ export const RELEASE_COLUMNS: ColumnDef[] = [
   { key: "name", label: "Release Name" },
   { key: "department", label: "Department" },
   { key: "application", label: "Application" },
+  { key: "dependencies", label: "Dependencies" },
   { key: "releaseSize", label: "Release Size" },
   { key: "impact", label: "Impact" },
   { key: "priority", label: "Priority" },

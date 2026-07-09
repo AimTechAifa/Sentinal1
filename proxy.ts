@@ -34,6 +34,8 @@ export default clerkMiddleware(
       signIn.searchParams.set("redirect_url", req.nextUrl.pathname + req.nextUrl.search);
       return NextResponse.redirect(signIn);
     }
+
+    return NextResponse.next();
   },
   process.env.NODE_ENV === "production" && authorizedParties.length > 0
     ? { authorizedParties }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FilterPicker } from "@/components/filters/FilterPicker";
 import {
   fetchTablePreferences,
   getCachedTablePreferences,
@@ -100,6 +101,19 @@ export function useFilterPreferences(pageKey: string, allFilters: FilterFieldDef
 
   const hideableFilters = filters;
 
+  const filterPicker = useMemo(
+    () => (
+      <FilterPicker
+        hideableFilters={hideableFilters}
+        hiddenFilters={hiddenFilters}
+        toggleFilter={toggleFilter}
+        saveNow={saveNow}
+        loaded={loaded}
+      />
+    ),
+    [hideableFilters, hiddenFilters, toggleFilter, saveNow, loaded]
+  );
+
   return {
     hiddenFilters,
     hideableFilters,
@@ -107,5 +121,6 @@ export function useFilterPreferences(pageKey: string, allFilters: FilterFieldDef
     isFilterVisible,
     saveNow,
     loaded,
+    filterPicker,
   };
 }

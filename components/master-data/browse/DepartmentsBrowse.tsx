@@ -8,7 +8,8 @@ import { DEPARTMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { DEPARTMENT_COLUMNS, DEPARTMENT_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { DEPARTMENT_SORT_PRESETS } from "@/lib/table-sort-presets";
 import {
   apiJson,
   BrowseToolbar,
@@ -36,7 +37,7 @@ type FormState = { name: string; head: string };
 const emptyForm: FormState = { name: "", head: "" };
 
 export function DepartmentsBrowse() {
-  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(DEPARTMENTS_FILTER_SCHEMA);
+  const { values, setFilter, setSort, clearAll, hasActive, apiQuery } = useTableFilters(DEPARTMENTS_FILTER_SCHEMA);
   const [rows, setRows] = useState<DepartmentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +80,11 @@ export function DepartmentsBrowse() {
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
 
-  const toggleSort = (key: "name" | "head") => {
+  const toggleSort = (key: "name" | "head", dir?: "asc" | "desc") => {
+    if (dir) {
+      setSort(key, dir);
+      return;
+    }
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
       setFilter("sort", key);
@@ -157,7 +162,7 @@ export function DepartmentsBrowse() {
 
       {error && <MasterDataError message={error} onRetry={load} />}
 
-      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={DEPARTMENT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -176,10 +181,10 @@ export function DepartmentsBrowse() {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("name") && (
-                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
+                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onSort={(dir) => toggleSort("name", dir)} />
                 )}
                 {isColumnVisible("head") && (
-                  <SortableTh label="Head" active={sortKey === "head"} dir={sortDir} onClick={() => toggleSort("head")} />
+                  <SortableTh label="Head" active={sortKey === "head"} dir={sortDir} onSort={(dir) => toggleSort("head", dir)} />
                 )}
                 {isColumnVisible("applicationCount") && <th className={thClass}>Application Count</th>}
                 <th className={`${thClass} text-right`}>Actions</th>

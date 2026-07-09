@@ -8,7 +8,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-002",
@@ -19,7 +19,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-003",
@@ -30,7 +30,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-004",
@@ -41,7 +41,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-005",
@@ -52,7 +52,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-006",
@@ -63,7 +63,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-007",
@@ -74,7 +74,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-008",
@@ -85,7 +85,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-009",
@@ -96,7 +96,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-010",
@@ -107,7 +107,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-011",
@@ -118,7 +118,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-012",
@@ -129,7 +129,7 @@
     "Manager": "CTO Office",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-013",
@@ -140,7 +140,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-014",
@@ -151,7 +151,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-015",
@@ -162,7 +162,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-016",
@@ -173,7 +173,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-017",
@@ -184,7 +184,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-018",
@@ -195,7 +195,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-019",
@@ -206,7 +206,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-020",
@@ -217,7 +217,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-021",
@@ -228,7 +228,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-022",
@@ -239,7 +239,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-023",
@@ -250,7 +250,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-024",
@@ -261,7 +261,7 @@
     "Manager": "QA Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-025",
@@ -272,7 +272,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-026",
@@ -283,7 +283,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-027",
@@ -294,7 +294,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-028",
@@ -305,7 +305,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-029",
@@ -316,7 +316,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-030",
@@ -327,7 +327,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-031",
@@ -338,7 +338,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-032",
@@ -349,7 +349,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-033",
@@ -360,7 +360,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-034",
@@ -371,7 +371,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-035",
@@ -382,7 +382,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-036",
@@ -393,7 +393,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-037",
@@ -404,7 +404,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-038",
@@ -415,7 +415,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-039",
@@ -426,7 +426,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-040",
@@ -437,7 +437,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-041",
@@ -448,7 +448,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-042",
@@ -459,7 +459,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-043",
@@ -470,7 +470,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-044",
@@ -481,7 +481,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-045",
@@ -492,7 +492,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-046",
@@ -503,7 +503,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-047",
@@ -514,7 +514,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-048",
@@ -525,7 +525,7 @@
     "Manager": "IT Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-049",
@@ -536,7 +536,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-050",
@@ -547,7 +547,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-051",
@@ -558,7 +558,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-052",
@@ -569,7 +569,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-053",
@@ -580,7 +580,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-054",
@@ -591,7 +591,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-055",
@@ -602,7 +602,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-056",
@@ -613,7 +613,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-057",
@@ -624,7 +624,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-058",
@@ -635,7 +635,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-059",
@@ -646,7 +646,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-060",
@@ -657,7 +657,7 @@
     "Manager": "VP Operations",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-061",
@@ -668,7 +668,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-062",
@@ -679,7 +679,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-063",
@@ -690,7 +690,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-064",
@@ -701,7 +701,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-065",
@@ -712,7 +712,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-066",
@@ -723,7 +723,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-067",
@@ -734,7 +734,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-068",
@@ -745,7 +745,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-069",
@@ -756,7 +756,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-070",
@@ -767,7 +767,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-071",
@@ -778,7 +778,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-072",
@@ -789,7 +789,7 @@
     "Manager": "Infra Director",
     "Access Level": "Admin",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-073",
@@ -800,7 +800,7 @@
     "Manager": "Finance Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-074",
@@ -811,7 +811,7 @@
     "Manager": "Finance Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-075",
@@ -822,7 +822,7 @@
     "Manager": "Logistics Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-076",
@@ -833,7 +833,7 @@
     "Manager": "Sales Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-077",
@@ -844,7 +844,7 @@
     "Manager": "Mfg Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-078",
@@ -855,7 +855,7 @@
     "Manager": "IT Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-079",
@@ -866,7 +866,7 @@
     "Manager": "HR Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-080",
@@ -877,7 +877,7 @@
     "Manager": "Legal Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-081",
@@ -888,7 +888,7 @@
     "Manager": "CISO",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-082",
@@ -899,7 +899,7 @@
     "Manager": "App Owner",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-083",
@@ -910,7 +910,7 @@
     "Manager": "App Owner",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-084",
@@ -921,7 +921,7 @@
     "Manager": "App Owner",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-085",
@@ -932,7 +932,7 @@
     "Manager": "App Owner",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-086",
@@ -943,7 +943,7 @@
     "Manager": "App Owner",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-087",
@@ -954,7 +954,7 @@
     "Manager": "App Owner",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-088",
@@ -965,7 +965,7 @@
     "Manager": "CEO",
     "Access Level": "Executive",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-089",
@@ -976,7 +976,7 @@
     "Manager": "CEO",
     "Access Level": "Executive",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-090",
@@ -987,7 +987,7 @@
     "Manager": "CEO",
     "Access Level": "Executive",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-091",
@@ -998,7 +998,7 @@
     "Manager": "CTO",
     "Access Level": "Executive",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-092",
@@ -1009,7 +1009,7 @@
     "Manager": "COO",
     "Access Level": "Executive",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-093",
@@ -1020,7 +1020,7 @@
     "Manager": "Dev Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-094",
@@ -1031,7 +1031,7 @@
     "Manager": "Dev Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-23T00:00:00"
+    "Last Login": "2026-06-23"
   },
   {
     "User ID": "USR-095",
@@ -1042,7 +1042,7 @@
     "Manager": "Infra Lead",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-096",
@@ -1053,7 +1053,7 @@
     "Manager": "BA Manager",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-24T00:00:00"
+    "Last Login": "2026-06-24"
   },
   {
     "User ID": "USR-097",
@@ -1064,7 +1064,7 @@
     "Manager": "Infra Lead",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-098",
@@ -1075,7 +1075,7 @@
     "Manager": "CISO",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
   },
   {
     "User ID": "USR-099",
@@ -1086,7 +1086,7 @@
     "Manager": "Infra Lead",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-22T00:00:00"
+    "Last Login": "2026-06-22"
   },
   {
     "User ID": "USR-100",
@@ -1097,6 +1097,50 @@
     "Manager": "PMO Director",
     "Access Level": "Standard",
     "Status": "Active",
-    "Last Login": "2026-06-25T00:00:00"
+    "Last Login": "2026-06-25"
+  },
+  {
+    "User ID": "USR-101",
+    "Name": "Rebecca Stone",
+    "Email": "rebecca.stone@company.com",
+    "Role": "Conflict Resolution Specialist",
+    "Department": "IT",
+    "Manager": "Release Director",
+    "Access Level": "Standard",
+    "Status": "Active",
+    "Last Login": "7/5/26"
+  },
+  {
+    "User ID": "USR-102",
+    "Name": "Marcus Chen",
+    "Email": "marcus.chen@company.com",
+    "Role": "Conflict Resolution Specialist",
+    "Department": "IT",
+    "Manager": "Release Director",
+    "Access Level": "Standard",
+    "Status": "Active",
+    "Last Login": "7/5/26"
+  },
+  {
+    "User ID": "USR-103",
+    "Name": "Diana Foster",
+    "Email": "diana.foster@company.com",
+    "Role": "Conflict Resolution Specialist",
+    "Department": "IT",
+    "Manager": "Release Director",
+    "Access Level": "Standard",
+    "Status": "Active",
+    "Last Login": "7/4/26"
+  },
+  {
+    "User ID": "USR-104",
+    "Name": "Kevin Walsh",
+    "Email": "kevin.walsh@company.com",
+    "Role": "Conflict Resolution Specialist",
+    "Department": "IT",
+    "Manager": "Release Director",
+    "Access Level": "Standard",
+    "Status": "Active",
+    "Last Login": "7/5/26"
   }
 ]

@@ -83,12 +83,15 @@ export function filterCalendarEvents(
     bookings: BookingFilterRow[];
     environments: EnvFilterRow[];
     departments: { id: string; name: string }[];
+    /** Calendar-only event type filter (CAB MEETING, RELEASE, etc.). */
+    eventType?: string;
   },
 ): CalendarEventApi[] {
-  const { period, viewDate, filters, dbRows, bookings, environments, departments } = opts;
+  const { period, viewDate, filters, dbRows, bookings, environments, departments, eventType } = opts;
 
   return events.filter((ev) => {
     if (!inPeriod(ev.date, period, viewDate)) return false;
+    if (eventType && ev.eventType !== eventType) return false;
 
     if (ev.releaseId) {
       const db = dbRows.find((r) => r.id === ev.releaseId);
@@ -116,6 +119,31 @@ export function filterCalendarEvents(
   });
 }
 
-export function sortCalendarTableRows(rows: CalendarTableRow[], dir: "asc" | "desc"): CalendarTableRow[] {
-  return [...rows].sort((a, b) => (dir === "asc" ? a.dateMs - b.dateMs : b.dateMs - a.dateMs));
+export function sortCalendarTableRows(
+  rows: CalendarTableRow[],
+  sortKey: string,
+  dir: "asc" | "desc"
+): CalendarTableRow[] {
+  const key = sortKey || "date";
+  const accessors: Record<string, (r: CalendarTableRow) => string | number> = {
+    month: (r) => r.month,
+    week: (r) => r.week,
+    date: (r) => r.dateMs,
+    day: (r) => r.day,
+    eventType: (r) => r.eventType,
+    releaseCode: (r) => r.releaseCode ?? "",
+    releaseName: (r) => r.releaseName,
+    department: (r) => r.department,
+    sizeImpact: (r) => r.sizeImpact,
+    notes: (r) => r.notes,
+  };
+  const accessor = accessors[key] ?? accessors.date;
+  const mult = dir === "desc" ? -1 : 1;
+  return [...rows].sort((a, b) => {
+    const av = accessor(a);
+    const bv = accessor(b);
+    if (av < bv) return -1 * mult;
+    if (av > bv) return 1 * mult;
+    return 0;
+  });
 }

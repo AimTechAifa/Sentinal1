@@ -16,7 +16,8 @@ import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBa
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { APPLICATION_COLUMNS, APPLICATION_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { APPLICATION_SORT_PRESETS } from "@/lib/table-sort-presets";
 import {
   apiJson,
   BrowseToolbar,
@@ -95,7 +96,7 @@ const emptyEnvForm: EnvFormState = {
 type AppSortKey = "name" | "type" | "criticality" | "productOwner" | "techLead";
 
 export function ApplicationsBrowse() {
-  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(APPLICATIONS_FILTER_SCHEMA);
+  const { values, setFilter, setSort, clearAll, hasActive, apiQuery } = useTableFilters(APPLICATIONS_FILTER_SCHEMA);
   const [apps, setApps] = useState<ApplicationRow[]>([]);
   const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -187,7 +188,11 @@ export function ApplicationsBrowse() {
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
 
-  const toggleSort = (key: AppSortKey) => {
+  const toggleSort = (key: AppSortKey, dir?: "asc" | "desc") => {
+    if (dir) {
+      setSort(key, dir);
+      return;
+    }
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
       setFilter("sort", key);
@@ -456,7 +461,7 @@ export function ApplicationsBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={APPLICATION_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -475,20 +480,20 @@ export function ApplicationsBrowse() {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("name") && (
-                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
+                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onSort={(dir) => toggleSort("name", dir)} />
                 )}
                 {isColumnVisible("department") && <th className={thClass}>Department</th>}
                 {isColumnVisible("type") && (
-                  <SortableTh label="Type" active={sortKey === "type"} dir={sortDir} onClick={() => toggleSort("type")} />
+                  <SortableTh label="Type" active={sortKey === "type"} dir={sortDir} onSort={(dir) => toggleSort("type", dir)} />
                 )}
                 {isColumnVisible("criticality") && (
-                  <SortableTh label="Criticality" active={sortKey === "criticality"} dir={sortDir} onClick={() => toggleSort("criticality")} />
+                  <SortableTh label="Criticality" active={sortKey === "criticality"} dir={sortDir} onSort={(dir) => toggleSort("criticality", dir)} />
                 )}
                 {isColumnVisible("productOwner") && (
-                  <SortableTh label="Product Owner" active={sortKey === "productOwner"} dir={sortDir} onClick={() => toggleSort("productOwner")} />
+                  <SortableTh label="Product Owner" active={sortKey === "productOwner"} dir={sortDir} onSort={(dir) => toggleSort("productOwner", dir)} />
                 )}
                 {isColumnVisible("techLead") && (
-                  <SortableTh label="Tech Lead" active={sortKey === "techLead"} dir={sortDir} onClick={() => toggleSort("techLead")} />
+                  <SortableTh label="Tech Lead" active={sortKey === "techLead"} dir={sortDir} onSort={(dir) => toggleSort("techLead", dir)} />
                 )}
                 {isColumnVisible("envCount") && <th className={thClass}>Env Count</th>}
                 <th className={`${thClass} text-right`}>Actions</th>

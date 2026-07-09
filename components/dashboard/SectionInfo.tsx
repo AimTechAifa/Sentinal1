@@ -16,6 +16,7 @@ export function SectionInfo({ text, className }: { text: string; className?: str
             maxWidth: 280,
             fontSize: "12px",
             lineHeight: 1.45,
+            padding: "12px 16px",
             bgcolor: "var(--card)",
             color: "var(--foreground)",
             border: "1px solid",

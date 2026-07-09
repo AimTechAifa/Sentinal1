@@ -2,11 +2,12 @@
   {
     "Month": "Jun 2026",
     "Week": 4,
-    "Date": "2026-06-28T00:00:00",
+    "Date": "2026-06-28",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0001",
     "Release Name": "CAB: Kyriba UI Tweak v4.5...",
+    "Application": "Kyriba",
     "Department": "Finance",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0001"
@@ -14,11 +15,12 @@
   {
     "Month": "Jun 2026",
     "Week": 5,
-    "Date": "2026-06-30T00:00:00",
+    "Date": "2026-06-30",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0001",
     "Release Name": "Kyriba UI Tweak v4.5",
+    "Application": "Kyriba",
     "Department": "Finance",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low - Quarter-End Freeze AFFECTED"
@@ -26,11 +28,12 @@
   {
     "Month": "Jun 2026",
     "Week": 5,
-    "Date": "2026-06-30T00:00:00",
+    "Date": "2026-06-30",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0003",
     "Release Name": "CAB: Zendesk Minor Update v4.3...",
+    "Application": "Zendesk",
     "Department": "CRM",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0003"
@@ -38,11 +41,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-02T00:00:00",
+    "Date": "2026-07-02",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0002",
     "Release Name": "CAB: Blue Workflow Automation v2.1...",
+    "Application": "Blue Yonder WMS",
     "Department": "Logistics",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0002"
@@ -50,11 +54,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-02T00:00:00",
+    "Date": "2026-07-02",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0003",
     "Release Name": "Zendesk Minor Update v4.3",
+    "Application": "Zendesk",
     "Department": "CRM",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -62,11 +67,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-02T00:00:00",
+    "Date": "2026-07-02",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0007",
     "Release Name": "CAB: Mitratech Integration Enhancem...",
+    "Application": "Mitratech TeamConnect",
     "Department": "Legal",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0007"
@@ -74,11 +80,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-04T00:00:00",
+    "Date": "2026-07-04",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0002",
     "Release Name": "Blue Workflow Automation v2.1",
+    "Application": "Blue Yonder WMS",
     "Department": "Logistics",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -86,11 +93,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-04T00:00:00",
+    "Date": "2026-07-04",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0007",
     "Release Name": "Mitratech Integration Enhancement v5.2",
+    "Application": "Mitratech TeamConnect",
     "Department": "Legal",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -98,11 +106,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-04T00:00:00",
+    "Date": "2026-07-04",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0012",
     "Release Name": "CAB: Plex Report Fix v2.5...",
+    "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0012"
@@ -110,11 +119,12 @@
   {
     "Month": "Jul 2026",
     "Week": 1,
-    "Date": "2026-07-06T00:00:00",
+    "Date": "2026-07-06",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0012",
     "Release Name": "Plex Report Fix v2.5",
+    "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Medium",
     "Notes": "Impact: Medium"
@@ -122,11 +132,12 @@
   {
     "Month": "Jul 2026",
     "Week": 2,
-    "Date": "2026-07-10T00:00:00",
+    "Date": "2026-07-10",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0004",
     "Release Name": "CAB: AVEVA Dashboard Upgrade v5.5...",
+    "Application": "AVEVA MES",
     "Department": "Manufacturing",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0004"
@@ -134,11 +145,12 @@
   {
     "Month": "Jul 2026",
     "Week": 2,
-    "Date": "2026-07-12T00:00:00",
+    "Date": "2026-07-12",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0004",
     "Release Name": "AVEVA Dashboard Upgrade v5.5",
+    "Application": "AVEVA MES",
     "Department": "Manufacturing",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -146,11 +158,12 @@
   {
     "Month": "Jul 2026",
     "Week": 2,
-    "Date": "2026-07-14T00:00:00",
+    "Date": "2026-07-14",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0005",
     "Release Name": "CAB: Datadog Security Patch Bundle ...",
+    "Application": "Datadog",
     "Department": "IT",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0005"
@@ -158,11 +171,12 @@
   {
     "Month": "Jul 2026",
     "Week": 3,
-    "Date": "2026-07-15T00:00:00",
+    "Date": "2026-07-15",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0010",
     "Release Name": "CAB: Manhattan Major Enhancement v5...",
+    "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0010"
@@ -170,11 +184,12 @@
   {
     "Month": "Jul 2026",
     "Week": 3,
-    "Date": "2026-07-16T00:00:00",
+    "Date": "2026-07-16",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0005",
     "Release Name": "Datadog Security Patch Bundle v3.5",
+    "Application": "Datadog",
     "Department": "IT",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -182,11 +197,12 @@
   {
     "Month": "Jul 2026",
     "Week": 3,
-    "Date": "2026-07-18T00:00:00",
+    "Date": "2026-07-18",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0006",
     "Release Name": "CAB: SAP Configuration Change v5.2...",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0006"
@@ -194,11 +210,12 @@
   {
     "Month": "Jul 2026",
     "Week": 3,
-    "Date": "2026-07-18T00:00:00",
+    "Date": "2026-07-18",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0010",
     "Release Name": "Manhattan Major Enhancement v5.2",
+    "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Size/Impact": "Large / Medium",
     "Notes": "Impact: Medium"
@@ -206,11 +223,12 @@
   {
     "Month": "Jul 2026",
     "Week": 3,
-    "Date": "2026-07-20T00:00:00",
+    "Date": "2026-07-20",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0006",
     "Release Name": "SAP Configuration Change v5.2",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small / Medium",
     "Notes": "Impact: Medium"
@@ -218,11 +236,12 @@
   {
     "Month": "Jul 2026",
     "Week": 5,
-    "Date": "2026-07-29T00:00:00",
+    "Date": "2026-07-29",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0008",
     "Release Name": "CAB: CrowdStrike Minor Update v3.6...",
+    "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0008"
@@ -230,11 +249,12 @@
   {
     "Month": "Jul 2026",
     "Week": 5,
-    "Date": "2026-07-31T00:00:00",
+    "Date": "2026-07-31",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0008",
     "Release Name": "CrowdStrike Minor Update v3.6",
+    "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -242,11 +262,12 @@
   {
     "Month": "Aug 2026",
     "Week": 1,
-    "Date": "2026-08-02T00:00:00",
+    "Date": "2026-08-02",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0009",
     "Release Name": "CAB: Oracle Report Fix v3.4...",
+    "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0009"
@@ -254,11 +275,12 @@
   {
     "Month": "Aug 2026",
     "Week": 1,
-    "Date": "2026-08-04T00:00:00",
+    "Date": "2026-08-04",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0009",
     "Release Name": "Oracle Report Fix v3.4",
+    "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Size/Impact": "Small / Medium",
     "Notes": "Impact: Medium"
@@ -266,11 +288,12 @@
   {
     "Month": "Aug 2026",
     "Week": 2,
-    "Date": "2026-08-10T00:00:00",
+    "Date": "2026-08-10",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0011",
     "Release Name": "CAB: HubSpot Minor Update v3.7...",
+    "Application": "HubSpot CRM",
     "Department": "CRM",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0011"
@@ -278,11 +301,12 @@
   {
     "Month": "Aug 2026",
     "Week": 2,
-    "Date": "2026-08-11T00:00:00",
+    "Date": "2026-08-11",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0014",
     "Release Name": "CAB: Oracle Global Rollout v2.2...",
+    "Application": "Oracle HCM Cloud",
     "Department": "HR",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0014"
@@ -290,11 +314,12 @@
   {
     "Month": "Aug 2026",
     "Week": 2,
-    "Date": "2026-08-12T00:00:00",
+    "Date": "2026-08-12",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0011",
     "Release Name": "HubSpot Minor Update v3.7",
+    "Application": "HubSpot CRM",
     "Department": "CRM",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -302,11 +327,12 @@
   {
     "Month": "Aug 2026",
     "Week": 2,
-    "Date": "2026-08-14T00:00:00",
+    "Date": "2026-08-14",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0014",
     "Release Name": "Oracle Global Rollout v2.2",
+    "Application": "Oracle HCM Cloud",
     "Department": "HR",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -314,11 +340,12 @@
   {
     "Month": "Aug 2026",
     "Week": 3,
-    "Date": "2026-08-18T00:00:00",
+    "Date": "2026-08-18",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0013",
     "Release Name": "CAB: Dynatrace UI Tweak v3.1...",
+    "Application": "Dynatrace",
     "Department": "IT",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0013"
@@ -326,11 +353,12 @@
   {
     "Month": "Aug 2026",
     "Week": 3,
-    "Date": "2026-08-19T00:00:00",
+    "Date": "2026-08-19",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0015",
     "Release Name": "CAB: DocuSign Core Transformation v...",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0015"
@@ -338,11 +366,12 @@
   {
     "Month": "Aug 2026",
     "Week": 3,
-    "Date": "2026-08-20T00:00:00",
+    "Date": "2026-08-20",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0013",
     "Release Name": "Dynatrace UI Tweak v3.1",
+    "Application": "Dynatrace",
     "Department": "IT",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -350,11 +379,12 @@
   {
     "Month": "Aug 2026",
     "Week": 4,
-    "Date": "2026-08-22T00:00:00",
+    "Date": "2026-08-22",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0015",
     "Release Name": "DocuSign Core Transformation v1.0",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -362,11 +392,12 @@
   {
     "Month": "Aug 2026",
     "Week": 4,
-    "Date": "2026-08-22T00:00:00",
+    "Date": "2026-08-22",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0017",
     "Release Name": "CAB: HighRadius Report Fix v2.4...",
+    "Application": "HighRadius",
     "Department": "Finance",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0017"
@@ -374,11 +405,12 @@
   {
     "Month": "Aug 2026",
     "Week": 4,
-    "Date": "2026-08-24T00:00:00",
+    "Date": "2026-08-24",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0017",
     "Release Name": "HighRadius Report Fix v2.4",
+    "Application": "HighRadius",
     "Department": "Finance",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -386,11 +418,12 @@
   {
     "Month": "Aug 2026",
     "Week": 4,
-    "Date": "2026-08-24T00:00:00",
+    "Date": "2026-08-24",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0022",
     "Release Name": "CAB: Oracle Dashboard Upgrade v2.5...",
+    "Application": "Oracle HCM Cloud",
     "Department": "HR",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0022"
@@ -398,11 +431,12 @@
   {
     "Month": "Aug 2026",
     "Week": 4,
-    "Date": "2026-08-26T00:00:00",
+    "Date": "2026-08-26",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0022",
     "Release Name": "Oracle Dashboard Upgrade v2.5",
+    "Application": "Oracle HCM Cloud",
     "Department": "HR",
     "Size/Impact": "Medium / Low",
     "Notes": "Impact: Low"
@@ -410,11 +444,12 @@
   {
     "Month": "Sep 2026",
     "Week": 1,
-    "Date": "2026-09-01T00:00:00",
+    "Date": "2026-09-01",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0016",
     "Release Name": "CAB: CyberArk Enterprise Integratio...",
+    "Application": "CyberArk PAM",
     "Department": "Security",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0016"
@@ -422,11 +457,12 @@
   {
     "Month": "Sep 2026",
     "Week": 1,
-    "Date": "2026-09-04T00:00:00",
+    "Date": "2026-09-04",
     "Day": "Fri",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0016",
     "Release Name": "CyberArk Enterprise Integration v2.0",
+    "Application": "CyberArk PAM",
     "Department": "Security",
     "Size/Impact": "Large / High",
     "Notes": "SOC2 Requirement"
@@ -434,11 +470,12 @@
   {
     "Month": "Sep 2026",
     "Week": 2,
-    "Date": "2026-09-10T00:00:00",
+    "Date": "2026-09-10",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0018",
     "Release Name": "CAB: Oracle UI Tweak v2.0...",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0018"
@@ -446,11 +483,12 @@
   {
     "Month": "Sep 2026",
     "Week": 2,
-    "Date": "2026-09-12T00:00:00",
+    "Date": "2026-09-12",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0018",
     "Release Name": "Oracle UI Tweak v2.0",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -458,11 +496,12 @@
   {
     "Month": "Sep 2026",
     "Week": 2,
-    "Date": "2026-09-14T00:00:00",
+    "Date": "2026-09-14",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0019",
     "Release Name": "CAB: Salesforce Minor Update v2.5...",
+    "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0019"
@@ -470,11 +509,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-16T00:00:00",
+    "Date": "2026-09-16",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0019",
     "Release Name": "Salesforce Minor Update v2.5",
+    "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -482,11 +522,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-16T00:00:00",
+    "Date": "2026-09-16",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0021",
     "Release Name": "CAB: Splunk Bug Fix Release v3.7...",
+    "Application": "Splunk Enterprise",
     "Department": "IT",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0021"
@@ -494,11 +535,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-18T00:00:00",
+    "Date": "2026-09-18",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0020",
     "Release Name": "CAB: Rockwell Quick Enhancement v1....",
+    "Application": "Rockwell FactoryTalk",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0020"
@@ -506,11 +548,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-18T00:00:00",
+    "Date": "2026-09-18",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0021",
     "Release Name": "Splunk Bug Fix Release v3.7",
+    "Application": "Splunk Enterprise",
     "Department": "IT",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -518,11 +561,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-18T00:00:00",
+    "Date": "2026-09-18",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0026",
     "Release Name": "CAB: Kinaxis Dashboard Upgrade v3.2...",
+    "Application": "Kinaxis RapidResponse",
     "Department": "Logistics",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0026"
@@ -530,11 +574,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-20T00:00:00",
+    "Date": "2026-09-20",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0020",
     "Release Name": "Rockwell Quick Enhancement v1.5",
+    "Application": "Rockwell FactoryTalk",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -542,11 +587,12 @@
   {
     "Month": "Sep 2026",
     "Week": 3,
-    "Date": "2026-09-20T00:00:00",
+    "Date": "2026-09-20",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0026",
     "Release Name": "Kinaxis Dashboard Upgrade v3.2",
+    "Application": "Kinaxis RapidResponse",
     "Department": "Logistics",
     "Size/Impact": "Medium / Low",
     "Notes": "Impact: Low"
@@ -554,11 +600,12 @@
   {
     "Month": "Oct 2026",
     "Week": 1,
-    "Date": "2026-10-02T00:00:00",
+    "Date": "2026-10-02",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0023",
     "Release Name": "CAB: DocuSign Feature Release v3.0...",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0023"
@@ -566,11 +613,12 @@
   {
     "Month": "Oct 2026",
     "Week": 1,
-    "Date": "2026-10-04T00:00:00",
+    "Date": "2026-10-04",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0023",
     "Release Name": "DocuSign Feature Release v3.0",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -578,11 +626,12 @@
   {
     "Month": "Oct 2026",
     "Week": 1,
-    "Date": "2026-10-04T00:00:00",
+    "Date": "2026-10-04",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0027",
     "Release Name": "CAB: Salesforce Hotfix v4.3...",
+    "Application": "Salesforce Sales Cloud",
     "Department": "CRM",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0027"
@@ -590,11 +639,12 @@
   {
     "Month": "Oct 2026",
     "Week": 1,
-    "Date": "2026-10-06T00:00:00",
+    "Date": "2026-10-06",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0024",
     "Release Name": "CAB: Okta Minor Update v4.1...",
+    "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0024"
@@ -602,11 +652,12 @@
   {
     "Month": "Oct 2026",
     "Week": 1,
-    "Date": "2026-10-06T00:00:00",
+    "Date": "2026-10-06",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0027",
     "Release Name": "Salesforce Hotfix v4.3",
+    "Application": "Salesforce Sales Cloud",
     "Department": "CRM",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -614,11 +665,12 @@
   {
     "Month": "Oct 2026",
     "Week": 2,
-    "Date": "2026-10-08T00:00:00",
+    "Date": "2026-10-08",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0024",
     "Release Name": "Okta Minor Update v4.1",
+    "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -626,11 +678,12 @@
   {
     "Month": "Oct 2026",
     "Week": 2,
-    "Date": "2026-10-10T00:00:00",
+    "Date": "2026-10-10",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0025",
     "Release Name": "CAB: Coupa Dashboard Upgrade v5.8...",
+    "Application": "Coupa",
     "Department": "Finance",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0025"
@@ -638,11 +691,12 @@
   {
     "Month": "Oct 2026",
     "Week": 2,
-    "Date": "2026-10-12T00:00:00",
+    "Date": "2026-10-12",
     "Day": "Mon",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0025",
     "Release Name": "Coupa Dashboard Upgrade v5.8",
+    "Application": "Coupa",
     "Department": "Finance",
     "Size/Impact": "Medium / Medium",
     "Notes": "SOX Compliance"
@@ -650,11 +704,12 @@
   {
     "Month": "Oct 2026",
     "Week": 3,
-    "Date": "2026-10-21T00:00:00",
+    "Date": "2026-10-21",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0028",
     "Release Name": "CAB: SAP Architecture Overhaul v5.5...",
+    "Application": "SAP S/4HANA Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0028"
@@ -662,11 +717,12 @@
   {
     "Month": "Oct 2026",
     "Week": 4,
-    "Date": "2026-10-24T00:00:00",
+    "Date": "2026-10-24",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0028",
     "Release Name": "SAP Architecture Overhaul v5.5",
+    "Application": "SAP S/4HANA Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -674,11 +730,12 @@
   {
     "Month": "Oct 2026",
     "Week": 5,
-    "Date": "2026-10-29T00:00:00",
+    "Date": "2026-10-29",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0029",
     "Release Name": "CAB: Datadog Feature Release v2.2...",
+    "Application": "Datadog",
     "Department": "IT",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0029"
@@ -686,11 +743,12 @@
   {
     "Month": "Oct 2026",
     "Week": 5,
-    "Date": "2026-10-31T00:00:00",
+    "Date": "2026-10-31",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0029",
     "Release Name": "Datadog Feature Release v2.2",
+    "Application": "Datadog",
     "Department": "IT",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -698,11 +756,12 @@
   {
     "Month": "Nov 2026",
     "Week": 1,
-    "Date": "2026-11-02T00:00:00",
+    "Date": "2026-11-02",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0030",
     "Release Name": "CAB: Cornerstone Feature Release v1...",
+    "Application": "Cornerstone OnDemand",
     "Department": "HR",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0030"
@@ -710,11 +769,12 @@
   {
     "Month": "Nov 2026",
     "Week": 1,
-    "Date": "2026-11-04T00:00:00",
+    "Date": "2026-11-04",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0030",
     "Release Name": "Cornerstone Feature Release v1.7",
+    "Application": "Cornerstone OnDemand",
     "Department": "HR",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -722,11 +782,12 @@
   {
     "Month": "Nov 2026",
     "Week": 1,
-    "Date": "2026-11-06T00:00:00",
+    "Date": "2026-11-06",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0031",
     "Release Name": "CAB: Mitratech Data Patch v2.9...",
+    "Application": "Mitratech TeamConnect",
     "Department": "Legal",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0031"
@@ -734,11 +795,12 @@
   {
     "Month": "Nov 2026",
     "Week": 2,
-    "Date": "2026-11-08T00:00:00",
+    "Date": "2026-11-08",
     "Day": "Sun",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0031",
     "Release Name": "Mitratech Data Patch v2.9",
+    "Application": "Mitratech TeamConnect",
     "Department": "Legal",
     "Size/Impact": "Small / Low",
     "Notes": "GDPR Compliance"
@@ -746,11 +808,12 @@
   {
     "Month": "Nov 2026",
     "Week": 2,
-    "Date": "2026-11-10T00:00:00",
+    "Date": "2026-11-10",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0032",
     "Release Name": "CAB: CrowdStrike UI Tweak v1.5...",
+    "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0032"
@@ -758,11 +821,12 @@
   {
     "Month": "Nov 2026",
     "Week": 2,
-    "Date": "2026-11-12T00:00:00",
+    "Date": "2026-11-12",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0032",
     "Release Name": "CrowdStrike UI Tweak v1.5",
+    "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -770,11 +834,12 @@
   {
     "Month": "Nov 2026",
     "Week": 2,
-    "Date": "2026-11-13T00:00:00",
+    "Date": "2026-11-13",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0033",
     "Release Name": "CAB: Oracle Major Enhancement v5.3...",
+    "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0033"
@@ -782,11 +847,12 @@
   {
     "Month": "Nov 2026",
     "Week": 3,
-    "Date": "2026-11-16T00:00:00",
+    "Date": "2026-11-16",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0033",
     "Release Name": "Oracle Major Enhancement v5.3",
+    "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Size/Impact": "Large / Medium",
     "Notes": "Impact: Medium"
@@ -794,11 +860,12 @@
   {
     "Month": "Nov 2026",
     "Week": 3,
-    "Date": "2026-11-18T00:00:00",
+    "Date": "2026-11-18",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0034",
     "Release Name": "CAB: Manhattan Module Update v2.8...",
+    "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0034"
@@ -806,11 +873,12 @@
   {
     "Month": "Nov 2026",
     "Week": 3,
-    "Date": "2026-11-20T00:00:00",
+    "Date": "2026-11-20",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0034",
     "Release Name": "Manhattan Module Update v2.8",
+    "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Size/Impact": "Medium / Low",
     "Notes": "Impact: Low"
@@ -818,11 +886,12 @@
   {
     "Month": "Nov 2026",
     "Week": 4,
-    "Date": "2026-11-22T00:00:00",
+    "Date": "2026-11-22",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0035",
     "Release Name": "CAB: Salesforce Report Fix v5.8...",
+    "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0035"
@@ -830,11 +899,12 @@
   {
     "Month": "Nov 2026",
     "Week": 4,
-    "Date": "2026-11-24T00:00:00",
+    "Date": "2026-11-24",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0035",
     "Release Name": "Salesforce Report Fix v5.8",
+    "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Size/Impact": "Small / Medium",
     "Notes": "Impact: Medium"
@@ -842,11 +912,12 @@
   {
     "Month": "Nov 2026",
     "Week": 4,
-    "Date": "2026-11-28T00:00:00",
+    "Date": "2026-11-28",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0036",
     "Release Name": "CAB: Plex UI Tweak v3.6...",
+    "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0036"
@@ -854,11 +925,12 @@
   {
     "Month": "Nov 2026",
     "Week": 5,
-    "Date": "2026-11-30T00:00:00",
+    "Date": "2026-11-30",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0036",
     "Release Name": "Plex UI Tweak v3.6",
+    "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -866,11 +938,12 @@
   {
     "Month": "Dec 2026",
     "Week": 1,
-    "Date": "2026-12-01T00:00:00",
+    "Date": "2026-12-01",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0037",
     "Release Name": "CAB: Dynatrace Platform Upgrade v4....",
+    "Application": "Dynatrace",
     "Department": "IT",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0037"
@@ -878,11 +951,12 @@
   {
     "Month": "Dec 2026",
     "Week": 1,
-    "Date": "2026-12-04T00:00:00",
+    "Date": "2026-12-04",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0037",
     "Release Name": "Dynatrace Platform Upgrade v4.0",
+    "Application": "Dynatrace",
     "Department": "IT",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -890,11 +964,12 @@
   {
     "Month": "Dec 2026",
     "Week": 1,
-    "Date": "2026-12-06T00:00:00",
+    "Date": "2026-12-06",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0038",
     "Release Name": "CAB: SAP Bug Fix Release v5.5...",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0038"
@@ -902,11 +977,12 @@
   {
     "Month": "Dec 2026",
     "Week": 2,
-    "Date": "2026-12-08T00:00:00",
+    "Date": "2026-12-08",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0038",
     "Release Name": "SAP Bug Fix Release v5.5",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -914,11 +990,12 @@
   {
     "Month": "Dec 2026",
     "Week": 2,
-    "Date": "2026-12-09T00:00:00",
+    "Date": "2026-12-09",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0039",
     "Release Name": "CAB: Agiloft Core Transformation v4...",
+    "Application": "Agiloft CLM",
     "Department": "Legal",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0039"
@@ -926,11 +1003,12 @@
   {
     "Month": "Dec 2026",
     "Week": 2,
-    "Date": "2026-12-12T00:00:00",
+    "Date": "2026-12-12",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0039",
     "Release Name": "Agiloft Core Transformation v4.6",
+    "Application": "Agiloft CLM",
     "Department": "Legal",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -938,11 +1016,12 @@
   {
     "Month": "Dec 2026",
     "Week": 2,
-    "Date": "2026-12-13T00:00:00",
+    "Date": "2026-12-13",
     "Day": "Sun",
     "Event Type": "CHANGE FREEZE",
     "Release ID": "-",
     "Release Name": "Year-End Change Freeze START",
+    "Application": "",
     "Department": "ALL",
     "Size/Impact": "Critical",
     "Notes": "No deployments allowed"
@@ -950,11 +1029,12 @@
   {
     "Month": "Dec 2026",
     "Week": 2,
-    "Date": "2026-12-14T00:00:00",
+    "Date": "2026-12-14",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0040",
     "Release Name": "CAB: Palo Quick Enhancement v3.7...",
+    "Application": "Palo Alto Cortex XDR",
     "Department": "Security",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0040"
@@ -962,11 +1042,12 @@
   {
     "Month": "Dec 2026",
     "Week": 3,
-    "Date": "2026-12-16T00:00:00",
+    "Date": "2026-12-16",
     "Day": "Wed",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0040",
     "Release Name": "Palo Quick Enhancement v3.7",
+    "Application": "Palo Alto Cortex XDR",
     "Department": "Security",
     "Size/Impact": "Small / Low",
     "Notes": "SOC2 Requirement"
@@ -974,11 +1055,12 @@
   {
     "Month": "Dec 2026",
     "Week": 3,
-    "Date": "2026-12-18T00:00:00",
+    "Date": "2026-12-18",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0041",
     "Release Name": "CAB: Anaplan Bug Fix Release v3.3...",
+    "Application": "Anaplan",
     "Department": "Finance",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0041"
@@ -986,11 +1068,12 @@
   {
     "Month": "Dec 2026",
     "Week": 3,
-    "Date": "2026-12-20T00:00:00",
+    "Date": "2026-12-20",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0041",
     "Release Name": "Anaplan Bug Fix Release v3.3",
+    "Application": "Anaplan",
     "Department": "Finance",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low - Year-End Freeze AFFECTED"
@@ -998,11 +1081,12 @@
   {
     "Month": "Dec 2026",
     "Week": 3,
-    "Date": "2026-12-21T00:00:00",
+    "Date": "2026-12-21",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0043",
     "Release Name": "CAB: Microsoft Integration Enhancem...",
+    "Application": "Microsoft Dynamics 365 CRM",
     "Department": "CRM",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0043"
@@ -1010,11 +1094,12 @@
   {
     "Month": "Dec 2026",
     "Week": 4,
-    "Date": "2026-12-22T00:00:00",
+    "Date": "2026-12-22",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0042",
     "Release Name": "CAB: Oracle Security Patch Bundle v...",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0042"
@@ -1022,11 +1107,12 @@
   {
     "Month": "Dec 2026",
     "Week": 4,
-    "Date": "2026-12-23T00:00:00",
+    "Date": "2026-12-23",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0043",
     "Release Name": "Microsoft Integration Enhancement v1.9",
+    "Application": "Microsoft Dynamics 365 CRM",
     "Department": "CRM",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium - Year-End Freeze AFFECTED"
@@ -1034,11 +1120,12 @@
   {
     "Month": "Dec 2026",
     "Week": 4,
-    "Date": "2026-12-24T00:00:00",
+    "Date": "2026-12-24",
     "Day": "Thu",
     "Event Type": "VENDOR MAINT",
     "Release ID": "REL-0042",
     "Release Name": "Oracle Security Patch Bundle v5.6",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Medium / Medium",
     "Notes": "Oracle Patch Window"
@@ -1046,11 +1133,12 @@
   {
     "Month": "Dec 2026",
     "Week": 5,
-    "Date": "2026-12-31T00:00:00",
+    "Date": "2026-12-31",
     "Day": "Thu",
     "Event Type": "CHANGE FREEZE",
     "Release ID": "-",
     "Release Name": "Year-End Change Freeze END",
+    "Application": "",
     "Department": "ALL",
     "Size/Impact": "Critical",
     "Notes": "No deployments allowed"
@@ -1058,11 +1146,12 @@
   {
     "Month": "Jan 2027",
     "Week": 1,
-    "Date": "2027-01-02T00:00:00",
+    "Date": "2027-01-02",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0044",
     "Release Name": "CAB: Siemens Integration Enhancemen...",
+    "Application": "Siemens Opcenter",
     "Department": "Manufacturing",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0044"
@@ -1070,11 +1159,12 @@
   {
     "Month": "Jan 2027",
     "Week": 1,
-    "Date": "2027-01-04T00:00:00",
+    "Date": "2027-01-04",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0044",
     "Release Name": "Siemens Integration Enhancement v2.2",
+    "Application": "Siemens Opcenter",
     "Department": "Manufacturing",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High - Year-End Freeze AFFECTED"
@@ -1082,11 +1172,12 @@
   {
     "Month": "Jan 2027",
     "Week": 1,
-    "Date": "2027-01-05T00:00:00",
+    "Date": "2027-01-05",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0045",
     "Release Name": "CAB: Splunk Global Rollout v3.0...",
+    "Application": "Splunk Enterprise",
     "Department": "IT",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0045"
@@ -1094,11 +1185,12 @@
   {
     "Month": "Jan 2027",
     "Week": 2,
-    "Date": "2027-01-08T00:00:00",
+    "Date": "2027-01-08",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0045",
     "Release Name": "Splunk Global Rollout v3.0",
+    "Application": "Splunk Enterprise",
     "Department": "IT",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -1106,11 +1198,12 @@
   {
     "Month": "Jan 2027",
     "Week": 2,
-    "Date": "2027-01-10T00:00:00",
+    "Date": "2027-01-10",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0046",
     "Release Name": "CAB: SAP UI Tweak v5.2...",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0046"
@@ -1118,11 +1211,12 @@
   {
     "Month": "Jan 2027",
     "Week": 2,
-    "Date": "2027-01-12T00:00:00",
+    "Date": "2027-01-12",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0046",
     "Release Name": "SAP UI Tweak v5.2",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1130,11 +1224,12 @@
   {
     "Month": "Jan 2027",
     "Week": 2,
-    "Date": "2027-01-14T00:00:00",
+    "Date": "2027-01-14",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0047",
     "Release Name": "CAB: DocuSign Integration Enhanceme...",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0047"
@@ -1142,11 +1237,12 @@
   {
     "Month": "Jan 2027",
     "Week": 3,
-    "Date": "2027-01-16T00:00:00",
+    "Date": "2027-01-16",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0047",
     "Release Name": "DocuSign Integration Enhancement v1.4",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1154,11 +1250,12 @@
   {
     "Month": "Jan 2027",
     "Week": 3,
-    "Date": "2027-01-18T00:00:00",
+    "Date": "2027-01-18",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0048",
     "Release Name": "CAB: Okta Report Fix v4.1...",
+    "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0048"
@@ -1166,11 +1263,12 @@
   {
     "Month": "Jan 2027",
     "Week": 3,
-    "Date": "2027-01-20T00:00:00",
+    "Date": "2027-01-20",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0048",
     "Release Name": "Okta Report Fix v4.1",
+    "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1178,11 +1276,12 @@
   {
     "Month": "Jan 2027",
     "Week": 4,
-    "Date": "2027-01-22T00:00:00",
+    "Date": "2027-01-22",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0049",
     "Release Name": "CAB: Anaplan Minor Update v3.3...",
+    "Application": "Anaplan",
     "Department": "Finance",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0049"
@@ -1190,11 +1289,12 @@
   {
     "Month": "Jan 2027",
     "Week": 4,
-    "Date": "2027-01-24T00:00:00",
+    "Date": "2027-01-24",
     "Day": "Sun",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0049",
     "Release Name": "Anaplan Minor Update v3.3",
+    "Application": "Anaplan",
     "Department": "Finance",
     "Size/Impact": "Small / Low",
     "Notes": "SOX Compliance"
@@ -1202,11 +1302,12 @@
   {
     "Month": "Jan 2027",
     "Week": 5,
-    "Date": "2027-01-29T00:00:00",
+    "Date": "2027-01-29",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0050",
     "Release Name": "CAB: Blue Configuration Change v5.9...",
+    "Application": "Blue Yonder WMS",
     "Department": "Logistics",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0050"
@@ -1214,11 +1315,12 @@
   {
     "Month": "Jan 2027",
     "Week": 5,
-    "Date": "2027-01-31T00:00:00",
+    "Date": "2027-01-31",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0050",
     "Release Name": "Blue Configuration Change v5.9",
+    "Application": "Blue Yonder WMS",
     "Department": "Logistics",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1226,11 +1328,12 @@
   {
     "Month": "Feb 2027",
     "Week": 1,
-    "Date": "2027-02-02T00:00:00",
+    "Date": "2027-02-02",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0051",
     "Release Name": "CAB: HubSpot Module Update v4.7...",
+    "Application": "HubSpot CRM",
     "Department": "CRM",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0051"
@@ -1238,11 +1341,12 @@
   {
     "Month": "Feb 2027",
     "Week": 1,
-    "Date": "2027-02-04T00:00:00",
+    "Date": "2027-02-04",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0051",
     "Release Name": "HubSpot Module Update v4.7",
+    "Application": "HubSpot CRM",
     "Department": "CRM",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1250,11 +1354,12 @@
   {
     "Month": "Feb 2027",
     "Week": 1,
-    "Date": "2027-02-06T00:00:00",
+    "Date": "2027-02-06",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0052",
     "Release Name": "CAB: SAP Configuration Change v1.3...",
+    "Application": "SAP S/4HANA Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0052"
@@ -1262,11 +1367,12 @@
   {
     "Month": "Feb 2027",
     "Week": 2,
-    "Date": "2027-02-08T00:00:00",
+    "Date": "2027-02-08",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0052",
     "Release Name": "SAP Configuration Change v1.3",
+    "Application": "SAP S/4HANA Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1274,11 +1380,12 @@
   {
     "Month": "Feb 2027",
     "Week": 2,
-    "Date": "2027-02-09T00:00:00",
+    "Date": "2027-02-09",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0053",
     "Release Name": "CAB: Splunk Global Rollout v5.8...",
+    "Application": "Splunk Enterprise",
     "Department": "IT",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0053"
@@ -1286,11 +1393,12 @@
   {
     "Month": "Feb 2027",
     "Week": 2,
-    "Date": "2027-02-12T00:00:00",
+    "Date": "2027-02-12",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0053",
     "Release Name": "Splunk Global Rollout v5.8",
+    "Application": "Splunk Enterprise",
     "Department": "IT",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -1298,11 +1406,12 @@
   {
     "Month": "Feb 2027",
     "Week": 2,
-    "Date": "2027-02-13T00:00:00",
+    "Date": "2027-02-13",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0054",
     "Release Name": "CAB: Workday Core Transformation v2...",
+    "Application": "Workday HCM",
     "Department": "HR",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0054"
@@ -1310,11 +1419,12 @@
   {
     "Month": "Feb 2027",
     "Week": 3,
-    "Date": "2027-02-16T00:00:00",
+    "Date": "2027-02-16",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0054",
     "Release Name": "Workday Core Transformation v2.7",
+    "Application": "Workday HCM",
     "Department": "HR",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -1322,11 +1432,12 @@
   {
     "Month": "Feb 2027",
     "Week": 3,
-    "Date": "2027-02-17T00:00:00",
+    "Date": "2027-02-17",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0055",
     "Release Name": "CAB: DocuSign Major Enhancement v5....",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0055"
@@ -1334,11 +1445,12 @@
   {
     "Month": "Feb 2027",
     "Week": 3,
-    "Date": "2027-02-20T00:00:00",
+    "Date": "2027-02-20",
     "Day": "Sat",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0055",
     "Release Name": "DocuSign Major Enhancement v5.2",
+    "Application": "DocuSign CLM",
     "Department": "Legal",
     "Size/Impact": "Large / High",
     "Notes": "GDPR Compliance"
@@ -1346,11 +1458,12 @@
   {
     "Month": "Feb 2027",
     "Week": 4,
-    "Date": "2027-02-22T00:00:00",
+    "Date": "2027-02-22",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0056",
     "Release Name": "CAB: Okta Performance Optimization ...",
+    "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0056"
@@ -1358,11 +1471,12 @@
   {
     "Month": "Feb 2027",
     "Week": 4,
-    "Date": "2027-02-24T00:00:00",
+    "Date": "2027-02-24",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0056",
     "Release Name": "Okta Performance Optimization v5.0",
+    "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1370,11 +1484,12 @@
   {
     "Month": "Feb 2027",
     "Week": 4,
-    "Date": "2027-02-25T00:00:00",
+    "Date": "2027-02-25",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0058",
     "Release Name": "CAB: Manhattan API Enhancement v2.0...",
+    "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0058"
@@ -1382,11 +1497,12 @@
   {
     "Month": "Feb 2027",
     "Week": 4,
-    "Date": "2027-02-26T00:00:00",
+    "Date": "2027-02-26",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0057",
     "Release Name": "CAB: Coupa Security Patch Bundle v3...",
+    "Application": "Coupa",
     "Department": "Finance",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0057"
@@ -1394,11 +1510,12 @@
   {
     "Month": "Feb 2027",
     "Week": 4,
-    "Date": "2027-02-27T00:00:00",
+    "Date": "2027-02-27",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0058",
     "Release Name": "Manhattan API Enhancement v2.0",
+    "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Size/Impact": "Medium / Low",
     "Notes": "Impact: Low"
@@ -1406,11 +1523,12 @@
   {
     "Month": "Feb 2027",
     "Week": 4,
-    "Date": "2027-02-28T00:00:00",
+    "Date": "2027-02-28",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0057",
     "Release Name": "Coupa Security Patch Bundle v3.3",
+    "Application": "Coupa",
     "Department": "Finance",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1418,11 +1536,12 @@
   {
     "Month": "Mar 2027",
     "Week": 1,
-    "Date": "2027-03-06T00:00:00",
+    "Date": "2027-03-06",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0059",
     "Release Name": "CAB: Salesforce Workflow Automation...",
+    "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0059"
@@ -1430,11 +1549,12 @@
   {
     "Month": "Mar 2027",
     "Week": 2,
-    "Date": "2027-03-08T00:00:00",
+    "Date": "2027-03-08",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0059",
     "Release Name": "Salesforce Workflow Automation v5.8",
+    "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1442,11 +1562,12 @@
   {
     "Month": "Mar 2027",
     "Week": 2,
-    "Date": "2027-03-10T00:00:00",
+    "Date": "2027-03-10",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0060",
     "Release Name": "CAB: Plex UI Tweak v4.0...",
+    "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0060"
@@ -1454,11 +1575,12 @@
   {
     "Month": "Mar 2027",
     "Week": 2,
-    "Date": "2027-03-12T00:00:00",
+    "Date": "2027-03-12",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0060",
     "Release Name": "Plex UI Tweak v4.0",
+    "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1466,11 +1588,12 @@
   {
     "Month": "Mar 2027",
     "Week": 2,
-    "Date": "2027-03-14T00:00:00",
+    "Date": "2027-03-14",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0061",
     "Release Name": "CAB: Datadog API Enhancement v5.6...",
+    "Application": "Datadog",
     "Department": "IT",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0061"
@@ -1478,11 +1601,12 @@
   {
     "Month": "Mar 2027",
     "Week": 3,
-    "Date": "2027-03-16T00:00:00",
+    "Date": "2027-03-16",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0061",
     "Release Name": "Datadog API Enhancement v5.6",
+    "Application": "Datadog",
     "Department": "IT",
     "Size/Impact": "Medium / Low",
     "Notes": "Impact: Low"
@@ -1490,11 +1614,12 @@
   {
     "Month": "Mar 2027",
     "Week": 3,
-    "Date": "2027-03-18T00:00:00",
+    "Date": "2027-03-18",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0062",
     "Release Name": "CAB: SAP Report Fix v2.8...",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0062"
@@ -1502,11 +1627,12 @@
   {
     "Month": "Mar 2027",
     "Week": 3,
-    "Date": "2027-03-20T00:00:00",
+    "Date": "2027-03-20",
     "Day": "Sat",
     "Event Type": "RELEASE",
     "Release ID": "REL-0062",
     "Release Name": "SAP Report Fix v2.8",
+    "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Size/Impact": "Small / Medium",
     "Notes": "Impact: Medium"
@@ -1514,11 +1640,12 @@
   {
     "Month": "Mar 2027",
     "Week": 4,
-    "Date": "2027-03-22T00:00:00",
+    "Date": "2027-03-22",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0063",
     "Release Name": "CAB: Mitratech Workflow Automation ...",
+    "Application": "Mitratech TeamConnect",
     "Department": "Legal",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0063"
@@ -1526,11 +1653,12 @@
   {
     "Month": "Mar 2027",
     "Week": 4,
-    "Date": "2027-03-24T00:00:00",
+    "Date": "2027-03-24",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0063",
     "Release Name": "Mitratech Workflow Automation v2.3",
+    "Application": "Mitratech TeamConnect",
     "Department": "Legal",
     "Size/Impact": "Medium / Low",
     "Notes": "Impact: Low"
@@ -1538,11 +1666,12 @@
   {
     "Month": "Mar 2027",
     "Week": 4,
-    "Date": "2027-03-26T00:00:00",
+    "Date": "2027-03-26",
     "Day": "Fri",
     "Event Type": "CHANGE FREEZE",
     "Release ID": "-",
     "Release Name": "Q1 Quarter-End Freeze START",
+    "Application": "",
     "Department": "ALL",
     "Size/Impact": "Critical",
     "Notes": "No deployments allowed"
@@ -1550,11 +1679,12 @@
   {
     "Month": "Mar 2027",
     "Week": 4,
-    "Date": "2027-03-28T00:00:00",
+    "Date": "2027-03-28",
     "Day": "Sun",
     "Event Type": "CHANGE FREEZE",
     "Release ID": "-",
     "Release Name": "Q1 Quarter-End Freeze END",
+    "Application": "",
     "Department": "ALL",
     "Size/Impact": "Critical",
     "Notes": "No deployments allowed"
@@ -1562,11 +1692,12 @@
   {
     "Month": "Mar 2027",
     "Week": 5,
-    "Date": "2027-03-29T00:00:00",
+    "Date": "2027-03-29",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0064",
     "Release Name": "CAB: Microsoft Integration Enhancem...",
+    "Application": "Microsoft Sentinel",
     "Department": "Security",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0064"
@@ -1574,11 +1705,12 @@
   {
     "Month": "Mar 2027",
     "Week": 5,
-    "Date": "2027-03-31T00:00:00",
+    "Date": "2027-03-31",
     "Day": "Wed",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0064",
     "Release Name": "Microsoft Integration Enhancement v4.1",
+    "Application": "Microsoft Sentinel",
     "Department": "Security",
     "Size/Impact": "Medium / Low",
     "Notes": "SOC2 Requirement"
@@ -1586,11 +1718,12 @@
   {
     "Month": "Apr 2027",
     "Week": 1,
-    "Date": "2027-04-01T00:00:00",
+    "Date": "2027-04-01",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0065",
     "Release Name": "CAB: Oracle System Migration v1.9...",
+    "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0065"
@@ -1598,11 +1731,12 @@
   {
     "Month": "Apr 2027",
     "Week": 1,
-    "Date": "2027-04-04T00:00:00",
+    "Date": "2027-04-04",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0065",
     "Release Name": "Oracle System Migration v1.9",
+    "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -1610,11 +1744,12 @@
   {
     "Month": "Apr 2027",
     "Week": 1,
-    "Date": "2027-04-06T00:00:00",
+    "Date": "2027-04-06",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0066",
     "Release Name": "CAB: Oracle Module Update v5.6...",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0066"
@@ -1622,11 +1757,12 @@
   {
     "Month": "Apr 2027",
     "Week": 2,
-    "Date": "2027-04-08T00:00:00",
+    "Date": "2027-04-08",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0066",
     "Release Name": "Oracle Module Update v5.6",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1634,11 +1770,12 @@
   {
     "Month": "Apr 2027",
     "Week": 2,
-    "Date": "2027-04-09T00:00:00",
+    "Date": "2027-04-09",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0067",
     "Release Name": "CAB: Salesforce Complete Redesign v...",
+    "Application": "Salesforce Sales Cloud",
     "Department": "CRM",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0067"
@@ -1646,11 +1783,12 @@
   {
     "Month": "Apr 2027",
     "Week": 2,
-    "Date": "2027-04-09T00:00:00",
+    "Date": "2027-04-09",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0068",
     "Release Name": "CAB: Rockwell Minor Update v1.1...",
+    "Application": "Rockwell FactoryTalk",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0068"
@@ -1658,11 +1796,12 @@
   {
     "Month": "Apr 2027",
     "Week": 2,
-    "Date": "2027-04-11T00:00:00",
+    "Date": "2027-04-11",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0068",
     "Release Name": "Rockwell Minor Update v1.1",
+    "Application": "Rockwell FactoryTalk",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1670,11 +1809,12 @@
   {
     "Month": "Apr 2027",
     "Week": 2,
-    "Date": "2027-04-12T00:00:00",
+    "Date": "2027-04-12",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0067",
     "Release Name": "Salesforce Complete Redesign v1.9",
+    "Application": "Salesforce Sales Cloud",
     "Department": "CRM",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -1682,11 +1822,12 @@
   {
     "Month": "Apr 2027",
     "Week": 3,
-    "Date": "2027-04-18T00:00:00",
+    "Date": "2027-04-18",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0069",
     "Release Name": "CAB: BMC UI Tweak v5.1...",
+    "Application": "BMC Remedy",
     "Department": "IT",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0069"
@@ -1694,11 +1835,12 @@
   {
     "Month": "Apr 2027",
     "Week": 3,
-    "Date": "2027-04-20T00:00:00",
+    "Date": "2027-04-20",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0069",
     "Release Name": "BMC UI Tweak v5.1",
+    "Application": "BMC Remedy",
     "Department": "IT",
     "Size/Impact": "Small / Medium",
     "Notes": "Impact: Medium"
@@ -1706,11 +1848,12 @@
   {
     "Month": "Apr 2027",
     "Week": 4,
-    "Date": "2027-04-22T00:00:00",
+    "Date": "2027-04-22",
     "Day": "Thu",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0070",
     "Release Name": "CAB: Oracle Workflow Automation v3....",
+    "Application": "Oracle HCM Cloud",
     "Department": "HR",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0070"
@@ -1718,11 +1861,12 @@
   {
     "Month": "Apr 2027",
     "Week": 4,
-    "Date": "2027-04-24T00:00:00",
+    "Date": "2027-04-24",
     "Day": "Sat",
     "Event Type": "VENDOR MAINT",
     "Release ID": "REL-0070",
     "Release Name": "Oracle Workflow Automation v3.6",
+    "Application": "Oracle HCM Cloud",
     "Department": "HR",
     "Size/Impact": "Medium / Medium",
     "Notes": "Oracle Patch Window"
@@ -1730,11 +1874,12 @@
   {
     "Month": "Apr 2027",
     "Week": 4,
-    "Date": "2027-04-28T00:00:00",
+    "Date": "2027-04-28",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0071",
     "Release Name": "CAB: Agiloft Minor Update v4.1...",
+    "Application": "Agiloft CLM",
     "Department": "Legal",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0071"
@@ -1742,11 +1887,12 @@
   {
     "Month": "Apr 2027",
     "Week": 5,
-    "Date": "2027-04-30T00:00:00",
+    "Date": "2027-04-30",
     "Day": "Fri",
     "Event Type": "RELEASE",
     "Release ID": "REL-0071",
     "Release Name": "Agiloft Minor Update v4.1",
+    "Application": "Agiloft CLM",
     "Department": "Legal",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1754,11 +1900,12 @@
   {
     "Month": "May 2027",
     "Week": 1,
-    "Date": "2027-05-01T00:00:00",
+    "Date": "2027-05-01",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0073",
     "Release Name": "CAB: Kyriba Security Patch Bundle v...",
+    "Application": "Kyriba",
     "Department": "Finance",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0073"
@@ -1766,11 +1913,12 @@
   {
     "Month": "May 2027",
     "Week": 1,
-    "Date": "2027-05-02T00:00:00",
+    "Date": "2027-05-02",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0072",
     "Release Name": "CAB: Palo Hotfix v5.8...",
+    "Application": "Palo Alto Cortex XDR",
     "Department": "Security",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0072"
@@ -1778,11 +1926,12 @@
   {
     "Month": "May 2027",
     "Week": 1,
-    "Date": "2027-05-03T00:00:00",
+    "Date": "2027-05-03",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0073",
     "Release Name": "Kyriba Security Patch Bundle v3.6",
+    "Application": "Kyriba",
     "Department": "Finance",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1790,11 +1939,12 @@
   {
     "Month": "May 2027",
     "Week": 1,
-    "Date": "2027-05-04T00:00:00",
+    "Date": "2027-05-04",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0072",
     "Release Name": "Palo Hotfix v5.8",
+    "Application": "Palo Alto Cortex XDR",
     "Department": "Security",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1802,11 +1952,12 @@
   {
     "Month": "May 2027",
     "Week": 2,
-    "Date": "2027-05-10T00:00:00",
+    "Date": "2027-05-10",
     "Day": "Mon",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0074",
     "Release Name": "CAB: Oracle Hotfix v4.3...",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0074"
@@ -1814,11 +1965,12 @@
   {
     "Month": "May 2027",
     "Week": 2,
-    "Date": "2027-05-12T00:00:00",
+    "Date": "2027-05-12",
     "Day": "Wed",
     "Event Type": "RELEASE",
     "Release ID": "REL-0074",
     "Release Name": "Oracle Hotfix v4.3",
+    "Application": "Oracle Transportation Management",
     "Department": "Logistics",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1826,11 +1978,12 @@
   {
     "Month": "May 2027",
     "Week": 2,
-    "Date": "2027-05-14T00:00:00",
+    "Date": "2027-05-14",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0075",
     "Release Name": "CAB: HubSpot Performance Optimizati...",
+    "Application": "HubSpot CRM",
     "Department": "CRM",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0075"
@@ -1838,11 +1991,12 @@
   {
     "Month": "May 2027",
     "Week": 3,
-    "Date": "2027-05-16T00:00:00",
+    "Date": "2027-05-16",
     "Day": "Sun",
     "Event Type": "RELEASE",
     "Release ID": "REL-0075",
     "Release Name": "HubSpot Performance Optimization v3.0",
+    "Application": "HubSpot CRM",
     "Department": "CRM",
     "Size/Impact": "Medium / Medium",
     "Notes": "Impact: Medium"
@@ -1850,11 +2004,12 @@
   {
     "Month": "May 2027",
     "Week": 3,
-    "Date": "2027-05-18T00:00:00",
+    "Date": "2027-05-18",
     "Day": "Tue",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0076",
     "Release Name": "CAB: SAP Hotfix v4.1...",
+    "Application": "SAP S/4HANA Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small",
     "Notes": "Approval meeting for REL-0076"
@@ -1862,11 +2017,12 @@
   {
     "Month": "May 2027",
     "Week": 3,
-    "Date": "2027-05-20T00:00:00",
+    "Date": "2027-05-20",
     "Day": "Thu",
     "Event Type": "RELEASE",
     "Release ID": "REL-0076",
     "Release Name": "SAP Hotfix v4.1",
+    "Application": "SAP S/4HANA Manufacturing",
     "Department": "Manufacturing",
     "Size/Impact": "Small / Low",
     "Notes": "Impact: Low"
@@ -1874,11 +2030,12 @@
   {
     "Month": "May 2027",
     "Week": 3,
-    "Date": "2027-05-21T00:00:00",
+    "Date": "2027-05-21",
     "Day": "Fri",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0077",
     "Release Name": "CAB: Jira Core Transformation v1.8...",
+    "Application": "Jira Service Management",
     "Department": "IT",
     "Size/Impact": "Large",
     "Notes": "Approval meeting for REL-0077"
@@ -1886,11 +2043,12 @@
   {
     "Month": "May 2027",
     "Week": 4,
-    "Date": "2027-05-24T00:00:00",
+    "Date": "2027-05-24",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0077",
     "Release Name": "Jira Core Transformation v1.8",
+    "Application": "Jira Service Management",
     "Department": "IT",
     "Size/Impact": "Large / High",
     "Notes": "Impact: High"
@@ -1898,11 +2056,12 @@
   {
     "Month": "May 2027",
     "Week": 5,
-    "Date": "2027-05-29T00:00:00",
+    "Date": "2027-05-29",
     "Day": "Sat",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0078",
     "Release Name": "CAB: ADP Workflow Automation v2.7...",
+    "Application": "ADP Workforce Now",
     "Department": "HR",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0078"
@@ -1910,11 +2069,12 @@
   {
     "Month": "May 2027",
     "Week": 5,
-    "Date": "2027-05-31T00:00:00",
+    "Date": "2027-05-31",
     "Day": "Mon",
     "Event Type": "RELEASE",
     "Release ID": "REL-0078",
     "Release Name": "ADP Workflow Automation v2.7",
+    "Application": "ADP Workforce Now",
     "Department": "HR",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -1922,11 +2082,12 @@
   {
     "Month": "Jun 2027",
     "Week": 1,
-    "Date": "2027-06-02T00:00:00",
+    "Date": "2027-06-02",
     "Day": "Wed",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0079",
     "Release Name": "CAB: Ironclad Module Update v4.7...",
+    "Application": "Ironclad",
     "Department": "Legal",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0079"
@@ -1934,11 +2095,12 @@
   {
     "Month": "Jun 2027",
     "Week": 1,
-    "Date": "2027-06-04T00:00:00",
+    "Date": "2027-06-04",
     "Day": "Fri",
     "Event Type": "REGULATORY",
     "Release ID": "REL-0079",
     "Release Name": "Ironclad Module Update v4.7",
+    "Application": "Ironclad",
     "Department": "Legal",
     "Size/Impact": "Medium / High",
     "Notes": "GDPR Compliance"
@@ -1946,11 +2108,12 @@
   {
     "Month": "Jun 2027",
     "Week": 1,
-    "Date": "2027-06-06T00:00:00",
+    "Date": "2027-06-06",
     "Day": "Sun",
     "Event Type": "CAB MEETING",
     "Release ID": "REL-0080",
     "Release Name": "CAB: CrowdStrike Performance Optimi...",
+    "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Size/Impact": "Medium",
     "Notes": "Approval meeting for REL-0080"
@@ -1958,11 +2121,12 @@
   {
     "Month": "Jun 2027",
     "Week": 2,
-    "Date": "2027-06-08T00:00:00",
+    "Date": "2027-06-08",
     "Day": "Tue",
     "Event Type": "RELEASE",
     "Release ID": "REL-0080",
     "Release Name": "CrowdStrike Performance Optimization v5.9",
+    "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Size/Impact": "Medium / High",
     "Notes": "Impact: High"
@@ -1970,11 +2134,12 @@
   {
     "Month": "Jun 2027",
     "Week": 4,
-    "Date": "2027-06-25T00:00:00",
+    "Date": "2027-06-25",
     "Day": "Fri",
     "Event Type": "CHANGE FREEZE",
     "Release ID": "-",
     "Release Name": "Q2 Quarter-End Freeze START",
+    "Application": "",
     "Department": "ALL",
     "Size/Impact": "Critical",
     "Notes": "No deployments allowed"
@@ -1982,11 +2147,12 @@
   {
     "Month": "Jun 2027",
     "Week": 4,
-    "Date": "2027-06-27T00:00:00",
+    "Date": "2027-06-27",
     "Day": "Sun",
     "Event Type": "CHANGE FREEZE",
     "Release ID": "-",
     "Release Name": "Q2 Quarter-End Freeze END",
+    "Application": "",
     "Department": "ALL",
     "Size/Impact": "Critical",
     "Notes": "No deployments allowed"

@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { ClipboardCheck, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { APPROVAL_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { APPROVAL_COLUMNS, APPROVALS_FILTER_FIELDS } from "@/lib/table-page-columns";
@@ -42,6 +44,7 @@ export default function ApprovalQueueContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -121,7 +124,7 @@ export default function ApprovalQueueContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No approvals match the selected filters." : "No approvals found."}</p>
         </div>
       ) : (
-        <DataTable title="All Approvals" subtitle="Click column headers to sort" icon={ClipboardCheck} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+        <DataTable title="All Approvals" icon={ClipboardCheck} toolbar={<TablePageToolbar columnPicker={columnPicker} presets={APPROVAL_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

@@ -170,3 +170,21 @@ export function periodContextLabel(period: DashboardPeriod): string {
       return "across the portfolio";
   }
 }
+
+/** Section heading suffix matching dashboard period filter, e.g. "for today", "for week". */
+export function dashboardPeriodForLabel(period: DashboardPeriod): string {
+  switch (period) {
+    case "today":
+      return "for today";
+    case "week":
+      return "for week";
+    case "month":
+      return "for month";
+    default:
+      return "for all";
+  }
+}
+
+export function dashboardSectionTitle(label: string, period: DashboardPeriod): string {
+  return `${label} ${dashboardPeriodForLabel(period)}`;
+}

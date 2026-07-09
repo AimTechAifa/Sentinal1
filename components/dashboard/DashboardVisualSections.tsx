@@ -243,8 +243,10 @@ export function HorizontalCompareVisual({
 
 export function HealthStatusVisual({
   items,
+  onNavigate,
 }: {
-  items: { label: string; status: string }[];
+  items: { label: string; status: string; value: number; metricLabel: string; href: string }[];
+  onNavigate?: (href: string) => void;
 }) {
   const tone = (status: string) => {
     if (status === "Critical") return { ring: "#f43f5e", bg: "bg-rose-50 dark:bg-rose-950/35", text: "text-rose-600 dark:text-rose-400" };
@@ -253,36 +255,54 @@ export function HealthStatusVisual({
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       {items.map((h) => {
         const t = tone(h.status);
         const fill = h.status === "Healthy" ? 100 : h.status === "Warning" ? 55 : 22;
+        const inner = (
+          <div className="flex items-center gap-4">
+            <div className="relative h-16 w-16 shrink-0">
+              <svg viewBox="0 0 44 44" className="h-16 w-16 -rotate-90">
+                <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" className="text-white/60 dark:text-white/10" strokeWidth="4" />
+                <circle
+                  cx="22"
+                  cy="22"
+                  r="18"
+                  fill="none"
+                  stroke={t.ring}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(fill / 100) * 113} 113`}
+                />
+              </svg>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[12px] font-medium text-slate-600 dark:text-white/65">{h.label}</div>
+              <div className={cn("mt-0.5 text-[12px] font-semibold", t.text)}>{h.status}</div>
+            </div>
+            <div className="ml-auto shrink-0 text-right">
+              <div className="text-[34px] font-bold leading-none tabular-nums text-slate-800 dark:text-white">{h.value}</div>
+              <div className="mt-1 text-[10px] leading-tight text-slate-500 dark:text-white/45">{h.metricLabel}</div>
+            </div>
+          </div>
+        );
+
+        if (onNavigate) {
+          return (
+            <button
+              key={h.label}
+              type="button"
+              onClick={() => onNavigate(h.href)}
+              className={cn("w-full rounded-2xl px-4 py-3.5 text-left transition-opacity hover:opacity-90", t.bg)}
+            >
+              {inner}
+            </button>
+          );
+        }
+
         return (
           <div key={h.label} className={cn("rounded-2xl px-4 py-3.5", t.bg)}>
-            <div className="flex items-center gap-3">
-              <div className="relative h-11 w-11 shrink-0">
-                <svg viewBox="0 0 44 44" className="h-11 w-11 -rotate-90">
-                  <circle cx="22" cy="22" r="18" fill="none" stroke="currentColor" className="text-white/60 dark:text-white/10" strokeWidth="4" />
-                  <circle
-                    cx="22"
-                    cy="22"
-                    r="18"
-                    fill="none"
-                    stroke={t.ring}
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                    strokeDasharray={`${(fill / 100) * 113} 113`}
-                  />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <span className="h-2 w-2 rounded-full" style={{ background: t.ring }} />
-                </span>
-              </div>
-              <div className="min-w-0">
-                <div className="truncate text-[12px] font-medium text-slate-600 dark:text-white/65">{h.label}</div>
-                <div className={cn("text-[13px] font-bold", t.text)}>{h.status}</div>
-              </div>
-            </div>
+            {inner}
           </div>
         );
       })}

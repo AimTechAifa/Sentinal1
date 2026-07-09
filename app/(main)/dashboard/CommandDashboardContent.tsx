@@ -38,7 +38,7 @@ import {
   type ChartDatum,
 } from "@/components/dashboard/DashboardVisualSections";
 import { useThemeMode } from "@/context/ThemeModeContext";
-import { DASHBOARD_PERIOD_OPTIONS, type DashboardPeriod } from "@/lib/dashboard-period";
+import { DASHBOARD_PERIOD_OPTIONS, dashboardSectionTitle, type DashboardPeriod } from "@/lib/dashboard-period";
 
 type DashboardPayload = {
   period: DashboardPeriod;
@@ -97,7 +97,7 @@ type DashboardPayload = {
     rollbackAtRisk: number;
     avgGoLiveChecklistPct: number;
   };
-  health: { label: string; status: string }[];
+  health: { label: string; status: string; value: number; metricLabel: string; href: string }[];
 };
 
 const INCIDENT_TREND_LABEL: Record<DashboardPeriod, string> = {
@@ -251,15 +251,15 @@ export default function CommandDashboardContent() {
             <div className="text-[12px] font-semibold text-slate-400 dark:text-white/50">Release Desk / Overview</div>
             <h1 className="mt-0.5 text-[30px] font-bold tracking-tight text-[#1B2559] dark:text-white">Command Dashboard</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-2xl bg-white p-1.5 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.25)] dark:bg-[var(--card)] dark:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.4)]">
+          <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+            <div className="flex min-w-[min(100%,22rem)] flex-1 items-center gap-1 rounded-2xl bg-white p-1.5 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.25)] dark:bg-[var(--card)] dark:shadow-[0_18px_40px_-24px_rgba(0,0,0,0.4)] sm:min-w-[28rem] sm:flex-none">
               {DASHBOARD_PERIOD_OPTIONS.map((f) => (
                 <button
                   key={f.value}
                   type="button"
                   onClick={() => setPeriod(f.value)}
                   className={cn(
-                    "rounded-xl px-4 py-2 text-[13px] font-semibold transition-all",
+                    "min-w-[4.5rem] flex-1 rounded-xl px-5 py-2.5 text-[13px] font-semibold transition-all sm:min-w-[6.5rem] sm:px-8",
                     period === f.value
                       ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
                       : "text-slate-500 hover:bg-slate-50 dark:text-white/55 dark:hover:bg-white/5"
@@ -281,18 +281,18 @@ export default function CommandDashboardContent() {
         </div>
 
         {/* Hero */}
-        <div className="relative mb-7 overflow-hidden rounded-[28px] bg-gradient-to-r from-[#3E2CBB] via-[#5A3FE0] to-[#7C5CFF] p-7 text-white shadow-[0_30px_60px_-25px_rgba(90,63,224,0.55)]">
-          <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+        <div className="relative mb-7 overflow-hidden rounded-[22px] bg-gradient-to-r from-[#3E2CBB] via-[#5A3FE0] to-[#7C5CFF] px-5 py-4 text-white shadow-[0_24px_48px_-22px_rgba(90,63,224,0.5)]">
+          <div className="pointer-events-none absolute -right-16 -top-24 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
           <div className="relative">
-            <div className="mb-4 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-white/60">
-              <Sparkles size={13} /> Portfolio snapshot
+            <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/60">
+              <Sparkles size={12} /> Portfolio snapshot
               <SectionInfo
                 text="Live counts for releases in the selected period, currently active incidents, open monitoring alerts, and production apps marked Down."
                 className="text-white/50 hover:bg-white/10 hover:text-white/80"
               />
             </div>
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div className="flex flex-wrap items-end gap-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
+              <div className="flex flex-wrap items-center gap-6 sm:gap-8">
                 {[
                   { n: data.summary.totalReleases, l: "Total releases", href: `/releases?period=${period}` },
                   { n: data.summary.activeIncidents, l: "Active incidents", href: "/incidents" },
@@ -300,36 +300,38 @@ export default function CommandDashboardContent() {
                   { n: data.summary.appsDownProd, l: "Apps down in Prod", href: "/application-status?status=Down&env=Prod" },
                 ].map((x) => (
                   <button key={x.l} type="button" onClick={() => onNavigate(x.href)} className="group text-left focus:outline-none">
-                    <div className="text-[40px] font-bold leading-none tabular-nums transition-transform duration-300 group-hover:scale-105">
+                    <div className="text-[30px] font-bold leading-none tabular-nums transition-transform duration-300 group-hover:scale-105 sm:text-[32px]">
                       {x.n}
                     </div>
-                    <div className="mt-1 flex items-center gap-1 text-[13px] font-medium text-white/70 group-hover:text-white">
+                    <div className="mt-0.5 flex items-center gap-1 text-[12px] font-medium text-white/70 group-hover:text-white">
                       {x.l}
-                      <ArrowUpRight size={14} className="opacity-0 transition-opacity group-hover:opacity-100" />
+                      <ArrowUpRight size={13} className="opacity-0 transition-opacity group-hover:opacity-100" />
                     </div>
                   </button>
                 ))}
               </div>
-              <p className="max-w-[340px] text-[13px] leading-relaxed text-white/80">{data.briefing}</p>
+              <p className="text-[12.5px] leading-snug text-white/80 lg:max-w-[38%] lg:flex-1 lg:border-l lg:border-white/20 lg:pl-6">
+                {data.briefing}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Overall Health */}
+        {/* Needs your attention */}
         <SectionCard
-          title="Overall Health"
+          title={dashboardSectionTitle("Needs your attention", period)}
           subtitle="Live status by portfolio area"
           info="Derived from blocked releases, environment booking conflicts, active P1 incidents, and critical monitoring alerts for the selected period."
           accent="bg-slate-300 dark:bg-slate-600"
           className="mb-7"
           onNavigate={onNavigate}
         >
-          <HealthStatusVisual items={data.health} />
+          <HealthStatusVisual items={data.health} onNavigate={onNavigate} />
         </SectionCard>
 
         {/* Release Pipeline */}
         <SectionCard
-          title="Release Pipeline"
+          title={dashboardSectionTitle("Release Pipeline", period)}
           subtitle={`${data.pipelineDetail.total} releases in period`}
           info="Status mix and priority distribution for releases whose go-live date falls in the selected period. Click a segment to filter the releases list."
           href="/releases"
@@ -358,7 +360,7 @@ export default function CommandDashboardContent() {
         {/* Ops row 1 */}
         <div className="mb-7 grid grid-cols-1 gap-5 lg:grid-cols-2">
           <SectionCard
-            title="Environment Bookings"
+            title={dashboardSectionTitle("Environment Bookings", period)}
             subtitle={`${data.envBookings.activeBookings} active bookings`}
             info="Environment booking conflicts overlapping the selected period versus total active bookings in that window."
             href="/booking"
@@ -387,7 +389,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Dependencies"
+            title={dashboardSectionTitle("Dependencies", period)}
             subtitle={`${data.dependencies.total} tracked dependencies`}
             info="Blocked release dependencies in the selected period compared with all dependencies tied to those releases."
             href="/dependencies"
@@ -419,7 +421,7 @@ export default function CommandDashboardContent() {
         {/* Ops row 2 */}
         <div className="mb-7 grid grid-cols-1 gap-5 lg:grid-cols-2">
           <SectionCard
-            title="CAB & Approvals"
+            title={dashboardSectionTitle("CAB & Approvals", period)}
             subtitle="Governance queue"
             info="CAB meetings scheduled in the next 7 days and approval records still pending decision in the selected period."
             href="/approvals"
@@ -448,7 +450,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Resource Availability"
+            title={dashboardSectionTitle("Resource Availability", period)}
             subtitle="Leave coverage"
             info="Staff on leave today and staff with leave overlapping the next 7 days — useful for CAB and go-live coverage checks."
             href="/leaves"
@@ -480,7 +482,7 @@ export default function CommandDashboardContent() {
         {/* Charts row */}
         <div className="mb-7 grid grid-cols-1 gap-5 lg:grid-cols-3">
           <SectionCard
-            title="Application Availability"
+            title={dashboardSectionTitle("Application Availability", period)}
             subtitle={`${data.availability.total} app-environment records`}
             info="Current health state across all application-environment pairs. Production breakdown shown below the chart."
             href="/application-status"
@@ -504,7 +506,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Incidents"
+            title={dashboardSectionTitle("Incidents", period)}
             subtitle={`${data.incidentsDetail.total} active`}
             info="Active incident severity mix (P1–P3) for the selected period, plus investigation and 24-hour resolution activity."
             href="/incidents"
@@ -533,7 +535,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Release Conflicts & Risks"
+            title={dashboardSectionTitle("Release Conflicts & Risks", period)}
             subtitle={`${data.conflictsRisks.activeConflicts} active conflicts`}
             info="Open release conflicts from the conflicts register plus assessed risk bands (Simple Score) for releases in period."
             href="/risks"
@@ -552,7 +554,7 @@ export default function CommandDashboardContent() {
         {/* Alerts + Incident trend */}
         <div className="mb-7 grid grid-cols-1 gap-5 lg:grid-cols-2">
           <SectionCard
-            title="Monitoring Alerts"
+            title={dashboardSectionTitle("Monitoring Alerts", period)}
             subtitle={`${data.alertsDetail.total} active`}
             info="Active alert severity distribution plus acknowledged alerts and alerts resolved in the last 24 hours."
             href="/monitoring-alerts"
@@ -581,7 +583,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Incident Trend"
+            title={dashboardSectionTitle("Incident Trend", period)}
             subtitle={INCIDENT_TREND_LABEL[period]}
             info="How incident volume changes over time for the selected period — useful for spotting escalation patterns."
             href="/incidents"
@@ -626,7 +628,7 @@ export default function CommandDashboardContent() {
         {/* Bottom row */}
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           <SectionCard
-            title="Release Trend"
+            title={dashboardSectionTitle("Release Trend", period)}
             subtitle={RELEASE_TREND_LABEL[period]}
             info="Scheduled release volume across the trend window for the selected period filter."
             href="/calendar"
@@ -668,7 +670,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Planned Maintenance"
+            title={dashboardSectionTitle("Planned Maintenance", period)}
             subtitle={`${data.maintenanceTotal} events in window`}
             info="Maintenance scheduled in the rolling 30-day window: today's events, DB refreshes, vendor windows, and full outages."
             href="/planned-maintenance"
@@ -679,7 +681,7 @@ export default function CommandDashboardContent() {
           </SectionCard>
 
           <SectionCard
-            title="Change Freeze"
+            title={dashboardSectionTitle("Change Freeze", period)}
             subtitle="Governance freeze windows"
             info="Releases tagged with an active change-freeze type in the selected period. All zeros means no freeze constraints right now."
             href="/releases"
@@ -696,7 +698,7 @@ export default function CommandDashboardContent() {
 
         <div className="mt-5">
           <SectionCard
-            title="Quick Stats"
+            title={dashboardSectionTitle("Quick Stats", period)}
             subtitle="Readiness & rollback posture"
             info="Go-live checklist completion average, rollback plan readiness, and release volume for this week and month."
             href="/releases"

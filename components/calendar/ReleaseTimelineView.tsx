@@ -1,18 +1,19 @@
 "use client";
 
-import { StickyNote } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, StickyNote } from "lucide-react";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
 import {
   buildPeriodSegments,
   layoutTimelineMilestones,
   TIMELINE_AXIS_PERCENT,
-  TIMELINE_LEGEND,
   TIMELINE_TONES,
   TIMELINE_TRACK_HEIGHT,
   timelineTrackWidth,
   type TimelineMilestone,
 } from "@/lib/release-timeline";
 import type { UnifiedRelease } from "@/lib/unified-releases";
+import type { Period } from "@/lib/period-range";
 import { cn } from "@/lib/utils";
 
 function ConnectorDot({ className }: { className?: string }) {
@@ -87,18 +88,119 @@ function MilestoneCard({ milestone }: { milestone: TimelineMilestone }) {
   );
 }
 
+/** Year-zoom balloon: status-colored bubble with integrated pointer toward the track. */
+function MilestoneBalloon({ milestone }: { milestone: TimelineMilestone }) {
+  const t = TIMELINE_TONES[milestone.tone];
+  const isUp = milestone.side === "up";
+
+  const bubble = (
+    <ProgressLink
+      href={milestone.href}
+      className={cn(
+        "group relative block w-[148px] rounded-2xl px-3 py-2.5 text-left text-white shadow-md transition-transform hover:-translate-y-0.5",
+        t.chip,
+      )}
+    >
+      <div className="text-[12px] font-bold leading-snug">{milestone.code}</div>
+      <div className="mt-0.5 line-clamp-2 text-[10.5px] leading-snug text-white/90">{milestone.name}</div>
+      <div className="mt-1.5 flex items-center justify-between gap-1">
+        <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] font-bold">{milestone.status}</span>
+        <span className="text-[11px] font-bold tabular-nums">{milestone.dateLabel}</span>
+      </div>
+      {/* Pointer toward track — continuous with bubble */}
+      {isUp ? (
+        <span
+          className={cn(
+            "absolute left-1/2 top-full -translate-x-1/2 border-x-[7px] border-x-transparent border-t-[10px]",
+            milestone.tone === "rose" && "border-t-rose-500",
+            milestone.tone === "amber" && "border-t-amber-500",
+            milestone.tone === "emerald" && "border-t-emerald-500",
+            milestone.tone === "indigo" && "border-t-indigo-500",
+            milestone.tone === "violet" && "border-t-violet-500",
+          )}
+          aria-hidden
+        />
+      ) : (
+        <span
+          className={cn(
+            "absolute bottom-full left-1/2 -translate-x-1/2 border-x-[7px] border-x-transparent border-b-[10px]",
+            milestone.tone === "rose" && "border-b-rose-500",
+            milestone.tone === "amber" && "border-b-amber-500",
+            milestone.tone === "emerald" && "border-b-emerald-500",
+            milestone.tone === "indigo" && "border-b-indigo-500",
+            milestone.tone === "violet" && "border-b-violet-500",
+          )}
+          aria-hidden
+        />
+      )}
+    </ProgressLink>
+  );
+
+  return (
+    <div
+      className="absolute z-10"
+      style={{
+        left: milestone._x,
+        top: `${TIMELINE_AXIS_PERCENT}%`,
+        transform: "translateX(-50%)",
+      }}
+    >
+      {isUp ? (
+        <div className="flex flex-col items-center pb-1" style={{ transform: "translateY(-100%)" }}>
+          {bubble}
+          <span className="mt-2 h-2.5 w-2.5 rounded-full border-2 border-white bg-slate-400 shadow-sm dark:border-slate-700" />
+        </div>
+      ) : (
+        <div className="flex flex-col items-center pt-1">
+          <span className="mb-2 h-2.5 w-2.5 rounded-full border-2 border-white bg-slate-400 shadow-sm dark:border-slate-700" />
+          {bubble}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ReleaseTimelineView({
   releases,
   periodStart,
   periodEnd,
+  period = "month",
 }: {
   releases: UnifiedRelease[];
   periodStart: Date;
   periodEnd: Date;
+  /** When `year`, use balloon nodes instead of rectangular cards. */
+  period?: Period;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const useBalloons = period === "year";
   const trackWidth = timelineTrackWidth(releases.length);
   const milestones = layoutTimelineMilestones(releases, periodStart, periodEnd, trackWidth);
   const periods = buildPeriodSegments(milestones);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 4);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+    const el = scrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(updateScrollState);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [updateScrollState, trackWidth, releases.length]);
+
+  const scrollByPage = (dir: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir * Math.max(el.clientWidth * 0.85, 320), behavior: "smooth" });
+  };
 
   if (releases.length === 0) {
     return (
@@ -110,54 +212,81 @@ export function ReleaseTimelineView({
 
   return (
     <div className="overflow-visible rounded-[24px] bg-white px-4 py-5 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.18)] dark:bg-[var(--card)]">
-      <div className="mb-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-slate-100 pb-4 dark:border-slate-700">
-        <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500 dark:text-white/50">Legend</span>
-        {TIMELINE_LEGEND.map(({ tone, label }) => (
-          <span key={tone} className="flex items-center gap-1.5 text-[11.5px] font-medium text-slate-600 dark:text-white/70">
-            <span className={`h-2.5 w-2.5 rounded-full ${TIMELINE_TONES[tone].chip}`} /> {label}
-          </span>
-        ))}
-      </div>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => scrollByPage(-1)}
+          disabled={!canScrollLeft}
+          aria-label="Scroll timeline left"
+          className={cn(
+            "absolute left-0 top-1/2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition-opacity dark:border-slate-600 dark:bg-slate-800 dark:text-white/80",
+            canScrollLeft ? "opacity-100 hover:bg-slate-50 dark:hover:bg-slate-700" : "pointer-events-none opacity-30",
+          )}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => scrollByPage(1)}
+          disabled={!canScrollRight}
+          aria-label="Scroll timeline right"
+          className={cn(
+            "absolute right-0 top-1/2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 shadow-md transition-opacity dark:border-slate-600 dark:bg-slate-800 dark:text-white/80",
+            canScrollRight ? "opacity-100 hover:bg-slate-50 dark:hover:bg-slate-700" : "pointer-events-none opacity-30",
+          )}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
 
-      <div className="overflow-x-auto overflow-y-visible py-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <div className="relative overflow-visible" style={{ width: trackWidth, height: TIMELINE_TRACK_HEIGHT }}>
-          {/* Central timeline axis */}
+        <div
+          ref={scrollRef}
+          onScroll={updateScrollState}
+          className="overflow-x-auto overflow-y-visible px-10 py-6 [scrollbar-width:thin]"
+        >
           <div
-            className="absolute left-6 right-6 z-0 h-0.5 -translate-y-1/2 bg-slate-300 dark:bg-slate-600"
-            style={{ top: `${TIMELINE_AXIS_PERCENT}%` }}
-          />
-
-          {/* Colored period segments on the axis */}
-          <div
-            className="absolute left-0 right-0 z-[1] -translate-y-1/2"
-            style={{ top: `${TIMELINE_AXIS_PERCENT}%` }}
+            className="relative overflow-visible"
+            style={{ width: trackWidth, height: TIMELINE_TRACK_HEIGHT }}
           >
-            {periods.map((p, i) => (
-              <div
-                key={`${p.period}-${i}`}
-                className={`absolute h-3 rounded-full bg-gradient-to-r ${TIMELINE_TONES[p.tone].track} opacity-95 shadow-sm`}
-                style={{ left: p.x1 - 50, width: Math.max(p.x2 - p.x1 + 100, 80) }}
-              />
-            ))}
-          </div>
+            <div
+              className="absolute left-6 right-6 z-0 h-0.5 -translate-y-1/2 bg-slate-300 dark:bg-slate-600"
+              style={{ top: `${TIMELINE_AXIS_PERCENT}%` }}
+            />
 
-          {periods.map((p, i) => (
-            <span
-              key={`label-${p.period}-${i}`}
-              className="absolute z-[2] rounded-full bg-slate-800 px-3 py-1 text-[10px] font-bold text-white shadow-sm dark:bg-slate-700"
-              style={{
-                left: (p.x1 + p.x2) / 2,
-                top: `${TIMELINE_AXIS_PERCENT}%`,
-                transform: "translate(-50%, calc(-50% - 2.75rem))",
-              }}
+            <div
+              className="absolute left-0 right-0 z-[1] -translate-y-1/2"
+              style={{ top: `${TIMELINE_AXIS_PERCENT}%` }}
             >
-              {p.period}
-            </span>
-          ))}
+              {periods.map((p, i) => (
+                <div
+                  key={`${p.period}-${i}`}
+                  className={`absolute h-3 rounded-full bg-gradient-to-r ${TIMELINE_TONES[p.tone].track} opacity-95 shadow-sm`}
+                  style={{ left: p.x1 - 50, width: Math.max(p.x2 - p.x1 + 100, 80) }}
+                />
+              ))}
+            </div>
 
-          {milestones.map((m) => (
-            <MilestoneCard key={m.id} milestone={m} />
-          ))}
+            {periods.map((p, i) => (
+              <span
+                key={`label-${p.period}-${i}`}
+                className="absolute z-[2] rounded-full bg-slate-800 px-3 py-1 text-[10px] font-bold text-white shadow-sm dark:bg-slate-700"
+                style={{
+                  left: (p.x1 + p.x2) / 2,
+                  top: `${TIMELINE_AXIS_PERCENT}%`,
+                  transform: "translate(-50%, calc(-50% - 2.75rem))",
+                }}
+              >
+                {p.period}
+              </span>
+            ))}
+
+            {milestones.map((m) =>
+              useBalloons ? (
+                <MilestoneBalloon key={m.id} milestone={m} />
+              ) : (
+                <MilestoneCard key={m.id} milestone={m} />
+              ),
+            )}
+          </div>
         </div>
       </div>
     </div>

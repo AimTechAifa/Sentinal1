@@ -8,7 +8,9 @@ import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { DRIFT_COLUMNS, DRIFT_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { DRIFT_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
@@ -48,6 +50,7 @@ export default function DriftDashboardContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -138,7 +141,7 @@ export default function DriftDashboardContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No drifts match the selected filters." : "No configuration drifts detected."}</p>
         </div>
       ) : (
-        <DataTable title="All Drifts" subtitle="Click column headers to sort" icon={GitCompareArrows} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+        <DataTable title="All Drifts" icon={GitCompareArrows} toolbar={<TablePageToolbar columnPicker={columnPicker} presets={DRIFT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

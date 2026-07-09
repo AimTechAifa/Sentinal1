@@ -8,7 +8,9 @@ import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { INCIDENT_COLUMNS, INCIDENT_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { INCIDENT_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
@@ -44,6 +46,7 @@ export default function IncidentsContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -153,7 +156,7 @@ export default function IncidentsContent() {
           </p>
         </div>
       ) : (
-        <DataTable title="All Incidents" subtitle="Click column headers to sort" icon={AlertOctagon} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+        <DataTable title="All Incidents" icon={AlertOctagon} toolbar={<TablePageToolbar columnPicker={columnPicker} presets={INCIDENT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
           <table className="w-full text-sm">
             <thead>
               <DataTableHeadRow

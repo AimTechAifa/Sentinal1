@@ -7,7 +7,9 @@ import { StatusBadge } from "@/components/badges/StatusBadge";
 import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PLANNED_MAINTENANCE_COLUMNS, PLANNED_MAINTENANCE_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { formatDate } from "@/lib/utils";
-import { DataTable, DataTableHeadRow, TableToolbar, tableCell, tableRow } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { MAINTENANCE_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -37,6 +39,7 @@ export default function PlannedMaintenanceContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -125,7 +128,7 @@ export default function PlannedMaintenanceContent() {
           <p className="text-gray-500 dark:text-gray-400">{hasActive ? "No windows match the selected filters." : "No planned maintenance recorded."}</p>
         </div>
       ) : (
-        <DataTable title="Maintenance Calendar" subtitle="Click column headers to sort" icon={CalendarClock} toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+        <DataTable title="Maintenance Calendar" icon={CalendarClock} toolbar={<TablePageToolbar columnPicker={columnPicker} presets={MAINTENANCE_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

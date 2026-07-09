@@ -17,7 +17,8 @@ import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBa
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { USER_COLUMNS, USER_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { USER_SORT_PRESETS } from "@/lib/table-sort-presets";
 import {
   apiJson,
   BrowseToolbar,
@@ -73,7 +74,7 @@ const emptyForm: FormState = {
 type UserSortKey = "name" | "email" | "role" | "department" | "accessLevel" | "status";
 
 export function UsersBrowse() {
-  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(USERS_FILTER_SCHEMA);
+  const { values, setFilter, setSort, clearAll, hasActive, apiQuery } = useTableFilters(USERS_FILTER_SCHEMA);
   const [rows, setRows] = useState<UserRow[]>([]);
   const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +122,11 @@ export function UsersBrowse() {
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
 
-  const toggleSort = (key: UserSortKey) => {
+  const toggleSort = (key: UserSortKey, dir?: "asc" | "desc") => {
+    if (dir) {
+      setSort(key, dir);
+      return;
+    }
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
       setFilter("sort", key);
@@ -245,7 +250,7 @@ export function UsersBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={USER_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -264,22 +269,22 @@ export function UsersBrowse() {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("name") && (
-                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onClick={() => toggleSort("name")} />
+                  <SortableTh label="Name" active={sortKey === "name"} dir={sortDir} onSort={(dir) => toggleSort("name", dir)} />
                 )}
                 {isColumnVisible("email") && (
-                  <SortableTh label="Email" active={sortKey === "email"} dir={sortDir} onClick={() => toggleSort("email")} />
+                  <SortableTh label="Email" active={sortKey === "email"} dir={sortDir} onSort={(dir) => toggleSort("email", dir)} />
                 )}
                 {isColumnVisible("role") && (
-                  <SortableTh label="Role" active={sortKey === "role"} dir={sortDir} onClick={() => toggleSort("role")} />
+                  <SortableTh label="Role" active={sortKey === "role"} dir={sortDir} onSort={(dir) => toggleSort("role", dir)} />
                 )}
                 {isColumnVisible("department") && (
-                  <SortableTh label="Department" active={sortKey === "department"} dir={sortDir} onClick={() => toggleSort("department")} />
+                  <SortableTh label="Department" active={sortKey === "department"} dir={sortDir} onSort={(dir) => toggleSort("department", dir)} />
                 )}
                 {isColumnVisible("accessLevel") && (
-                  <SortableTh label="Access Level" active={sortKey === "accessLevel"} dir={sortDir} onClick={() => toggleSort("accessLevel")} />
+                  <SortableTh label="Access Level" active={sortKey === "accessLevel"} dir={sortDir} onSort={(dir) => toggleSort("accessLevel", dir)} />
                 )}
                 {isColumnVisible("status") && (
-                  <SortableTh label="Status" active={sortKey === "status"} dir={sortDir} onClick={() => toggleSort("status")} />
+                  <SortableTh label="Status" active={sortKey === "status"} dir={sortDir} onSort={(dir) => toggleSort("status", dir)} />
                 )}
                 {isColumnVisible("lastLogin") && <th className={thClass}>Last Login</th>}
                 <th className={`${thClass} text-right`}>Actions</th>

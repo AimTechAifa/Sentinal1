@@ -673,10 +673,34 @@ export async function GET(req: Request) {
 
   // --- Overall Health ---
   const health = [
-    { label: "Release Pipeline", status: blockedReleases > 0 ? "Critical" : "Healthy" },
-    { label: "Environment Health", status: envConflictBookings > 0 ? "Critical" : "Healthy" },
-    { label: "Incident Status", status: activeP1Incidents > 0 ? "Critical" : activeIncidentsTotal > 0 ? "Warning" : "Healthy" },
-    { label: "Alert Status", status: criticalAlertsActive > 0 ? "Critical" : totalAlertsActive > 0 ? "Warning" : "Healthy" },
+    {
+      label: "Release Pipeline",
+      status: blockedReleases > 0 ? "Critical" : "Healthy",
+      value: blockedReleases,
+      metricLabel: blockedReleases === 1 ? "blocked release" : "blocked releases",
+      href: "/releases?status=Blocked",
+    },
+    {
+      label: "Environment Health",
+      status: envConflictBookings > 0 ? "Critical" : "Healthy",
+      value: envConflictBookings,
+      metricLabel: envConflictBookings === 1 ? "booking conflict" : "booking conflicts",
+      href: "/conflicts",
+    },
+    {
+      label: "Incident Status",
+      status: activeP1Incidents > 0 ? "Critical" : activeIncidentsTotal > 0 ? "Warning" : "Healthy",
+      value: activeP1Incidents > 0 ? activeP1Incidents : activeIncidentsTotal,
+      metricLabel: activeP1Incidents > 0 ? "P1 active" : "active incidents",
+      href: activeP1Incidents > 0 ? "/incidents?severity=P1" : "/incidents",
+    },
+    {
+      label: "Alert Status",
+      status: criticalAlertsActive > 0 ? "Critical" : totalAlertsActive > 0 ? "Warning" : "Healthy",
+      value: criticalAlertsActive > 0 ? criticalAlertsActive : totalAlertsActive,
+      metricLabel: criticalAlertsActive > 0 ? "critical alerts" : "active alerts",
+      href: "/monitoring-alerts?status=Active",
+    },
   ];
 
   return NextResponse.json({

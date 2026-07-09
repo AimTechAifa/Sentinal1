@@ -1,7 +1,7 @@
 [
   {
     "Incident ID": "INC-001",
-    "Timestamp": "2026-06-28T22:48:00",
+    "Timestamp": "2026-06-28 22:48",
     "Application": "SAP S/4HANA Finance",
     "Department": "Finance",
     "Severity": "P1",
@@ -14,7 +14,7 @@
   },
   {
     "Incident ID": "INC-002",
-    "Timestamp": "2026-06-28T20:24:00",
+    "Timestamp": "2026-06-28 20:24",
     "Application": "Manhattan Associates WMS",
     "Department": "Logistics",
     "Severity": "P1",
@@ -27,7 +27,7 @@
   },
   {
     "Incident ID": "INC-003",
-    "Timestamp": "2026-06-28T18:00:00",
+    "Timestamp": "2026-06-28 18:00",
     "Application": "Datadog",
     "Department": "IT",
     "Severity": "P1",
@@ -35,12 +35,12 @@
     "Status": "Active",
     "Impact": "Down",
     "Assigned To": "Casey Chen",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-004",
-    "Timestamp": "2026-06-28T15:36:00",
+    "Timestamp": "2026-06-28 15:36",
     "Application": "Salesforce Service Cloud",
     "Department": "CRM",
     "Severity": "P2",
@@ -53,7 +53,7 @@
   },
   {
     "Incident ID": "INC-005",
-    "Timestamp": "2026-06-28T13:12:00",
+    "Timestamp": "2026-06-28 13:12",
     "Application": "CrowdStrike Falcon",
     "Department": "Security",
     "Severity": "P2",
@@ -61,12 +61,12 @@
     "Status": "Investigating",
     "Impact": "Degraded",
     "Assigned To": "Jamie Patel",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-006",
-    "Timestamp": "2026-06-28T10:48:00",
+    "Timestamp": "2026-06-28 10:48",
     "Application": "Okta Identity Cloud",
     "Department": "Security",
     "Severity": "P2",
@@ -79,7 +79,7 @@
   },
   {
     "Incident ID": "INC-007",
-    "Timestamp": "2026-06-28T08:24:00",
+    "Timestamp": "2026-06-28 08:24",
     "Application": "Blue Yonder WMS",
     "Department": "Logistics",
     "Severity": "P2",
@@ -87,12 +87,12 @@
     "Status": "Acknowledged",
     "Impact": "Degraded",
     "Assigned To": "Quinn Johnson",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "UAT"
   },
   {
     "Incident ID": "INC-008",
-    "Timestamp": "2026-06-28T06:00:00",
+    "Timestamp": "2026-06-28 06:00",
     "Application": "Splunk Enterprise",
     "Department": "IT",
     "Severity": "P3",
@@ -100,12 +100,12 @@
     "Status": "Active",
     "Impact": "Partial",
     "Assigned To": "Avery Williams",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-009",
-    "Timestamp": "2026-06-28T03:36:00",
+    "Timestamp": "2026-06-28 03:36",
     "Application": "Zendesk",
     "Department": "CRM",
     "Severity": "P3",
@@ -118,7 +118,7 @@
   },
   {
     "Incident ID": "INC-010",
-    "Timestamp": "2026-06-28T01:12:00",
+    "Timestamp": "2026-06-28 01:12",
     "Application": "AVEVA MES",
     "Department": "Manufacturing",
     "Severity": "P3",
@@ -131,7 +131,7 @@
   },
   {
     "Incident ID": "INC-011",
-    "Timestamp": "2026-06-27T22:48:00",
+    "Timestamp": "2026-06-27 22:48",
     "Application": "Kyriba",
     "Department": "Finance",
     "Severity": "P2",
@@ -144,7 +144,7 @@
   },
   {
     "Incident ID": "INC-012",
-    "Timestamp": "2026-06-27T20:24:00",
+    "Timestamp": "2026-06-27 20:24",
     "Application": "Oracle Hyperion HFM",
     "Department": "Finance",
     "Severity": "P3",
@@ -152,12 +152,12 @@
     "Status": "Acknowledged",
     "Impact": "Partial",
     "Assigned To": "Blake Thompson",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-013",
-    "Timestamp": "2026-06-27T18:00:00",
+    "Timestamp": "2026-06-27 18:00",
     "Application": "Plex Smart Manufacturing",
     "Department": "Manufacturing",
     "Severity": "P1",
@@ -170,7 +170,7 @@
   },
   {
     "Incident ID": "INC-014",
-    "Timestamp": "2026-06-27T15:36:00",
+    "Timestamp": "2026-06-27 15:36",
     "Application": "CyberArk PAM",
     "Department": "Security",
     "Severity": "P2",
@@ -178,12 +178,12 @@
     "Status": "Active",
     "Impact": "Degraded",
     "Assigned To": "Chris Park",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-015",
-    "Timestamp": "2026-06-27T13:12:00",
+    "Timestamp": "2026-06-27 13:12",
     "Application": "BMC Remedy",
     "Department": "IT",
     "Severity": "P3",
@@ -191,12 +191,12 @@
     "Status": "Resolved",
     "Impact": "Partial",
     "Assigned To": "Pat Murphy",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-016",
-    "Timestamp": "2026-06-27T00:00:00",
+    "Timestamp": "2026-06-27 00:00",
     "Application": "Workday HCM",
     "Department": "HR",
     "Severity": "P2",
@@ -209,7 +209,7 @@
   },
   {
     "Incident ID": "INC-017",
-    "Timestamp": "2026-06-26T12:00:00",
+    "Timestamp": "2026-06-26 12:00",
     "Application": "SAP SuccessFactors",
     "Department": "HR",
     "Severity": "P3",
@@ -217,12 +217,12 @@
     "Status": "Resolved",
     "Impact": "Partial",
     "Assigned To": "Robin Chen",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   },
   {
     "Incident ID": "INC-018",
-    "Timestamp": "2026-06-26T00:00:00",
+    "Timestamp": "2026-06-26 00:00",
     "Application": "HubSpot CRM",
     "Department": "CRM",
     "Severity": "P3",
@@ -230,7 +230,7 @@
     "Status": "Resolved",
     "Impact": "Partial",
     "Assigned To": "Dana Wilson",
-    "Related Release": null,
+    "Related Release": "",
     "Environment": "Prod"
   }
 ]

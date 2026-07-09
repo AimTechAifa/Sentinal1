@@ -14,7 +14,8 @@ import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBa
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { RISK_FACTOR_COLUMNS, RISK_FACTOR_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { RISK_FACTOR_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import {
   apiJson,
@@ -48,7 +49,7 @@ const emptyForm: FormState = { category: "", factorName: "", weight: "", descrip
 type SortKey = "category" | "factorName" | "weight";
 
 export function RiskFactorsBrowse() {
-  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(RISK_FACTORS_FILTER_SCHEMA);
+  const { values, setFilter, setSort, clearAll, hasActive, apiQuery } = useTableFilters(RISK_FACTORS_FILTER_SCHEMA);
   const [rows, setRows] = useState<RiskFactorRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +97,11 @@ export function RiskFactorsBrowse() {
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
 
-  const toggleSort = (key: SortKey) => {
+  const toggleSort = (key: SortKey, dir?: "asc" | "desc") => {
+    if (dir) {
+      setSort(key, dir);
+      return;
+    }
     if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
     else {
       setFilter("sort", key);
@@ -225,7 +230,7 @@ export function RiskFactorsBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={RISK_FACTOR_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -244,13 +249,13 @@ export function RiskFactorsBrowse() {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("category") && (
-                  <SortableTh label="Category" active={sortKey === "category"} dir={sortDir} onClick={() => toggleSort("category")} />
+                  <SortableTh label="Category" active={sortKey === "category"} dir={sortDir} onSort={(dir) => toggleSort("category", dir)} />
                 )}
                 {isColumnVisible("factorName") && (
-                  <SortableTh label="Factor Name" active={sortKey === "factorName"} dir={sortDir} onClick={() => toggleSort("factorName")} />
+                  <SortableTh label="Factor Name" active={sortKey === "factorName"} dir={sortDir} onSort={(dir) => toggleSort("factorName", dir)} />
                 )}
                 {isColumnVisible("weight") && (
-                  <SortableTh label="Weight" active={sortKey === "weight"} dir={sortDir} onClick={() => toggleSort("weight")} />
+                  <SortableTh label="Weight" active={sortKey === "weight"} dir={sortDir} onSort={(dir) => toggleSort("weight", dir)} />
                 )}
                 {isColumnVisible("description") && <th className={thClass}>Description</th>}
                 {isColumnVisible("active") && <th className={thClass}>Active</th>}

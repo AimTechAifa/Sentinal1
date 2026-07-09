@@ -249,10 +249,24 @@ export function riskWhere(sp: URLSearchParams): Prisma.RiskWhereInput {
   const category = str(sp, "category");
   const owner = str(sp, "owner");
   const release = str(sp, "release");
+  const likelihoodRaw = str(sp, "likelihood");
+  const impactRaw = str(sp, "impact");
   if (status) parts.push({ status });
   if (category) parts.push({ category });
   if (owner) parts.push({ riskOwnerId: owner });
   if (release) parts.push({ releaseId: release });
+  if (likelihoodRaw) {
+    const likelihood = parseInt(likelihoodRaw, 10);
+    if (Number.isFinite(likelihood) && likelihood >= 1 && likelihood <= 5) {
+      parts.push({ likelihood });
+    }
+  }
+  if (impactRaw) {
+    const impact = parseInt(impactRaw, 10);
+    if (Number.isFinite(impact) && impact >= 1 && impact <= 5) {
+      parts.push({ impact });
+    }
+  }
   if (!parts.length) return {};
   if (parts.length === 1) return parts[0];
   return { AND: parts };

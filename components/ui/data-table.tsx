@@ -18,13 +18,14 @@ interface DataTableProps {
 }
 
 export function DataTable({ title, subtitle, icon: Icon, action, toolbar, children, className }: DataTableProps) {
+  const hasToolbarSection = Boolean(title || Icon || toolbar || action);
+
   return (
     <MagicCard
       gradient="from-gray-200/70 via-white to-gray-200/70"
       className={cn("w-full max-w-full", className)}
-      innerClassName="overflow-visible"
     >
-      {(title || Icon || toolbar || action) && (
+      {hasToolbarSection && (
         <div className="flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-6 py-5 dark:border-[var(--border)] dark:bg-[var(--card)]">
           <div className="flex min-w-0 items-center gap-3">
             {Icon && (
@@ -45,17 +46,18 @@ export function DataTable({ title, subtitle, icon: Icon, action, toolbar, childr
           )}
         </div>
       )}
-      <div className="max-h-[calc(100dvh-var(--header-height)-20rem)] overflow-auto">{children}</div>
+      <div className="data-table-body max-h-[calc(100dvh-var(--header-height)-14rem)]">{children}</div>
     </MagicCard>
   );
 }
 
-export const tableHeadRow =
-  "bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-[var(--border)]";
+export const dataTableTableClass = "w-full min-w-max border-separate border-spacing-0 text-sm";
 
-/** Sticky within DataTable scroll container (top-0 of overflow-auto wrapper). */
+export const tableHeadRow = "border-b border-gray-200 dark:border-[var(--border)]";
+
+/** Sticky column headings at the top of the table scroll area (aligned with body columns). */
 export const stickyHeadCell =
-  "sticky top-0 z-20 bg-gray-50 shadow-[0_1px_0_0_rgb(229_231_235)] dark:bg-gray-800/95 dark:shadow-[0_1px_0_0_var(--border)]";
+  "sticky top-0 z-20 bg-gray-50 shadow-[0_1px_0_0_rgb(229_231_235)] dark:bg-[var(--card)] dark:shadow-[0_1px_0_0_var(--border)]";
 
 export const tableHeadCell = cn(
   stickyHeadCell,
@@ -70,33 +72,95 @@ export function TableToolbar({ children, className }: { children: React.ReactNod
   return <div className={cn("flex items-center justify-end gap-2", className)}>{children}</div>;
 }
 
+function SortIndicators({
+  active,
+  dir,
+  onAsc,
+  onDesc,
+}: {
+  active: boolean;
+  dir: SortDirection;
+  onAsc: () => void;
+  onDesc: () => void;
+}) {
+  return (
+    <span className="inline-flex shrink-0 flex-col items-center justify-center leading-none">
+      <button
+        type="button"
+        title="Ascending"
+        aria-label="Ascending"
+        onClick={(e) => {
+          e.stopPropagation();
+          onAsc();
+        }}
+        className="rounded p-0.5 hover:bg-gray-200/80 dark:hover:bg-white/10"
+      >
+        <ChevronUp
+          className={cn(
+            "h-2.5 w-2.5 -mb-px",
+            active && dir === "asc"
+              ? "text-brand-600 dark:text-brand-400"
+              : "text-gray-400 dark:text-gray-500"
+          )}
+        />
+      </button>
+      <button
+        type="button"
+        title="Descending"
+        aria-label="Descending"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDesc();
+        }}
+        className="rounded p-0.5 hover:bg-gray-200/80 dark:hover:bg-white/10"
+      >
+        <ChevronDown
+          className={cn(
+            "h-2.5 w-2.5",
+            active && dir === "desc"
+              ? "text-brand-600 dark:text-brand-400"
+              : "text-gray-400 dark:text-gray-500"
+          )}
+        />
+      </button>
+    </span>
+  );
+}
+
 export function SortableTh({
   label,
   active,
   dir,
-  onClick,
+  onSort,
   className,
 }: {
   label: string;
   active: boolean;
   dir: SortDirection;
-  onClick: () => void;
+  onSort: (dir?: SortDirection) => void;
   className?: string;
 }) {
   return (
-    <th className={cn(tableHeadCell, className)} title={label}>
-      <button
-        type="button"
-        onClick={onClick}
-        className="inline-flex max-w-full items-center gap-1 hover:text-gray-900 dark:hover:text-white"
-      >
-        <span>{label}</span>
-        {active ? (
-          dir === "asc" ? <ChevronUp className="h-3.5 w-3.5 shrink-0" /> : <ChevronDown className="h-3.5 w-3.5 shrink-0" />
-        ) : (
-          <span className="inline-block h-3.5 w-3.5 shrink-0 opacity-0 group-hover:opacity-30" />
-        )}
-      </button>
+    <th
+      className={cn(tableHeadCell, className)}
+      title={label}
+      aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
+    >
+      <div className="inline-flex max-w-full items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => onSort()}
+          className="min-w-0 truncate hover:text-gray-900 dark:hover:text-white"
+        >
+          {label}
+        </button>
+        <SortIndicators
+          active={active}
+          dir={dir}
+          onAsc={() => onSort("asc")}
+          onDesc={() => onSort("desc")}
+        />
+      </div>
     </th>
   );
 }
@@ -114,12 +178,12 @@ export function DataTableHeadRow({
   isColumnVisible: (key: string) => boolean;
   sortKey: string;
   sortDir: SortDirection;
-  onSort: (key: string) => void;
+  onSort: (key: string, dir?: SortDirection) => void;
   sortableKeys?: Set<string>;
   extraHeaders?: React.ReactNode;
 }) {
   return (
-    <tr className={cn(tableHeadRow, "group")}>
+    <tr className={cn(tableHeadRow, "group bg-gray-50 dark:bg-[var(--card)]")}>
       {columns
         .filter((c) => isColumnVisible(c.key))
         .map((col) => {
@@ -137,7 +201,7 @@ export function DataTableHeadRow({
               label={col.label}
               active={sortKey === col.key}
               dir={sortDir}
-              onClick={() => onSort(col.key)}
+              onSort={(dir) => onSort(col.key, dir)}
             />
           );
         })}

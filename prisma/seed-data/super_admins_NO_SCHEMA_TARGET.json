@@ -6,10 +6,10 @@
     "Title": "Chief Information Officer",
     "Department": "IT",
     "Access Scope": "Global - All Systems",
-    "Granted Date": "2022-03-15T00:00:00",
+    "Granted Date": "2022-03-15",
     "Granted By": "CEO Office",
     "Status": "Active",
-    "Expiry Date": "2027-03-15T00:00:00",
+    "Expiry Date": "2027-03-15",
     "Notes": "Executive sponsor for all IT initiatives"
   },
   {
@@ -19,10 +19,10 @@
     "Title": "VP of Enterprise Applications",
     "Department": "IT",
     "Access Scope": "Global - All Systems",
-    "Granted Date": "2023-01-10T00:00:00",
+    "Granted Date": "2023-01-10",
     "Granted By": "Michael Stevens",
     "Status": "Active",
-    "Expiry Date": "2027-01-10T00:00:00",
+    "Expiry Date": "2027-01-10",
     "Notes": "Oversight of all enterprise systems"
   },
   {
@@ -32,10 +32,10 @@
     "Title": "Director of IT Operations",
     "Department": "IT",
     "Access Scope": "Global - Infrastructure",
-    "Granted Date": "2023-06-20T00:00:00",
+    "Granted Date": "2023-06-20",
     "Granted By": "Jennifer Walsh",
     "Status": "Active",
-    "Expiry Date": "2026-12-31T00:00:00",
+    "Expiry Date": "2026-12-31",
     "Notes": "24/7 operations oversight"
   },
   {
@@ -45,10 +45,10 @@
     "Title": "Head of Cybersecurity",
     "Department": "Security",
     "Access Scope": "Global - All Systems",
-    "Granted Date": "2022-08-01T00:00:00",
+    "Granted Date": "2022-08-01",
     "Granted By": "Michael Stevens",
     "Status": "Active",
-    "Expiry Date": "2027-08-01T00:00:00",
+    "Expiry Date": "2027-08-01",
     "Notes": "Security incident response authority"
   },
   {
@@ -58,10 +58,10 @@
     "Title": "Chief Technology Officer",
     "Department": "IT",
     "Access Scope": "Global - All Systems",
-    "Granted Date": "2021-05-10T00:00:00",
+    "Granted Date": "2021-05-10",
     "Granted By": "CEO Office",
     "Status": "Active",
-    "Expiry Date": "2027-05-10T00:00:00",
+    "Expiry Date": "2027-05-10",
     "Notes": "Technical architecture decisions"
   },
   {
@@ -71,10 +71,10 @@
     "Title": "Director of Release Management",
     "Department": "IT",
     "Access Scope": "Global - Release Systems",
-    "Granted Date": "2024-02-15T00:00:00",
+    "Granted Date": "2024-02-15",
     "Granted By": "Jennifer Walsh",
     "Status": "Active",
-    "Expiry Date": "2026-08-15T00:00:00",
+    "Expiry Date": "2026-08-15",
     "Notes": "Emergency release authority"
   },
   {
@@ -84,10 +84,10 @@
     "Title": "VP of HR Technology",
     "Department": "HR",
     "Access Scope": "HR Systems - Global",
-    "Granted Date": "2023-09-01T00:00:00",
+    "Granted Date": "2023-09-01",
     "Granted By": "Jennifer Walsh",
     "Status": "Active",
-    "Expiry Date": "2026-09-01T00:00:00",
+    "Expiry Date": "2026-09-01",
     "Notes": "HR data governance"
   },
   {
@@ -97,10 +97,10 @@
     "Title": "VP of Finance Systems",
     "Department": "Finance",
     "Access Scope": "Finance Systems - Global",
-    "Granted Date": "2023-04-15T00:00:00",
+    "Granted Date": "2023-04-15",
     "Granted By": "Michael Stevens",
     "Status": "Active",
-    "Expiry Date": "2026-10-15T00:00:00",
+    "Expiry Date": "2026-10-15",
     "Notes": "Financial data authority"
   },
   {
@@ -110,10 +110,10 @@
     "Title": "Cloud Platform Architect",
     "Department": "IT",
     "Access Scope": "Global - Cloud Infrastructure",
-    "Granted Date": "2024-01-05T00:00:00",
+    "Granted Date": "2024-01-05",
     "Granted By": "Robert Chen",
     "Status": "Active",
-    "Expiry Date": "2026-07-05T00:00:00",
+    "Expiry Date": "2026-07-05",
     "Notes": "AWS/Azure/GCP root access"
   },
   {
@@ -123,10 +123,10 @@
     "Title": "Identity & Access Manager",
     "Department": "Security",
     "Access Scope": "Global - IAM Systems",
-    "Granted Date": "2023-11-20T00:00:00",
+    "Granted Date": "2023-11-20",
     "Granted By": "Elizabeth Morgan",
     "Status": "Active",
-    "Expiry Date": "2026-11-20T00:00:00",
+    "Expiry Date": "2026-11-20",
     "Notes": "Identity management authority"
   },
   {
@@ -136,10 +136,10 @@
     "Title": "Disaster Recovery Manager",
     "Department": "IT",
     "Access Scope": "Global - DR Systems",
-    "Granted Date": "2024-03-10T00:00:00",
+    "Granted Date": "2024-03-10",
     "Granted By": "Christopher Blake",
     "Status": "Active",
-    "Expiry Date": "2026-09-10T00:00:00",
+    "Expiry Date": "2026-09-10",
     "Notes": "DR failover authority"
   },
   {
@@ -149,36 +149,10 @@
     "Title": "Database Administrator Lead",
     "Department": "IT",
     "Access Scope": "Global - Databases",
-    "Granted Date": "2023-07-15T00:00:00",
+    "Granted Date": "2023-07-15",
     "Granted By": "Christopher Blake",
     "Status": "Active",
-    "Expiry Date": "2026-07-15T00:00:00",
+    "Expiry Date": "2026-07-15",
     "Notes": "DBA root access all environments"
-  },
-  {
-    "Admin ID": null,
-    "Name": null,
-    "Email": null,
-    "Title": null,
-    "Department": null,
-    "Access Scope": null,
-    "Granted Date": null,
-    "Granted By": null,
-    "Status": null,
-    "Expiry Date": null,
-    "Notes": null
-  },
-  {
-    "Admin ID": "\u26a0\ufe0f RESTRICTED ACCESS: Super Admin privileges require CIO or CEO approval. Access is audited and reviewed quarterly.",
-    "Name": null,
-    "Email": null,
-    "Title": null,
-    "Department": null,
-    "Access Scope": null,
-    "Granted Date": null,
-    "Granted By": null,
-    "Status": null,
-    "Expiry Date": null,
-    "Notes": null
   }
 ]

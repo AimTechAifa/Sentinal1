@@ -1,0 +1,398 @@
+[
+  {
+    "Category": "Technical Complexity",
+    "Factor Name": "Files Changed",
+    "Weight": 0.04,
+    "Description": "Number of modified files",
+    "Score 1 (Best)": "<10",
+    "Score 5 (Worst)": "≥100",
+    "Data Source": "Git/SCM"
+  },
+  {
+    "Category": "Technical Complexity",
+    "Factor Name": "Code Churn (LOC)",
+    "Weight": 0.03,
+    "Description": "Lines of code changed",
+    "Score 1 (Best)": "<200",
+    "Score 5 (Worst)": "≥3000",
+    "Data Source": "Git/SCM"
+  },
+  {
+    "Category": "Technical Complexity",
+    "Factor Name": "DB Schema Changes",
+    "Weight": 0.05,
+    "Description": "Database schema modifications",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥5",
+    "Data Source": "Migration Scripts"
+  },
+  {
+    "Category": "Technical Complexity",
+    "Factor Name": "API Contract Changes",
+    "Weight": 0.04,
+    "Description": "Breaking API changes",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥4",
+    "Data Source": "API Specs"
+  },
+  {
+    "Category": "Technical Complexity",
+    "Factor Name": "New Technology Stack",
+    "Weight": 0.02,
+    "Description": "Unfamiliar tech introduced",
+    "Score 1 (Best)": "Proven stack",
+    "Score 5 (Worst)": "Entirely new",
+    "Data Source": "Architecture Review"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "Test Coverage %",
+    "Weight": 0.06,
+    "Description": "Code coverage percentage",
+    "Score 1 (Best)": ">90%",
+    "Score 5 (Worst)": "<60%",
+    "Data Source": "SonarQube"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "Test Execution Days",
+    "Weight": 0.03,
+    "Description": "Testing duration",
+    "Score 1 (Best)": "<3 days",
+    "Score 5 (Worst)": "≥10 days",
+    "Data Source": "Test Plan"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "Bugs Found (Test)",
+    "Weight": 0.04,
+    "Description": "Defects discovered in testing",
+    "Score 1 (Best)": "<3",
+    "Score 5 (Worst)": "≥15",
+    "Data Source": "Jira"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "Bug Fix Rate %",
+    "Weight": 0.02,
+    "Description": "Defects fixed vs found",
+    "Score 1 (Best)": ">95%",
+    "Score 5 (Worst)": "<60%",
+    "Data Source": "Jira"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "UAT Duration Days",
+    "Weight": 0.03,
+    "Description": "UAT testing period",
+    "Score 1 (Best)": "<3 days",
+    "Score 5 (Worst)": "≥10 days",
+    "Data Source": "UAT Plan"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "UAT Defects",
+    "Weight": 0.04,
+    "Description": "Defects found in UAT",
+    "Score 1 (Best)": "<2",
+    "Score 5 (Worst)": "≥8",
+    "Data Source": "Jira"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "UAT Sign-off",
+    "Weight": 0.02,
+    "Description": "Business sign-off status",
+    "Score 1 (Best)": "Full sign-off",
+    "Score 5 (Worst)": "No sign-off",
+    "Data Source": "UAT Tracker"
+  },
+  {
+    "Category": "Testing Quality",
+    "Factor Name": "Test Env Parity",
+    "Weight": 0.02,
+    "Description": "Test env match with Prod",
+    "Score 1 (Best)": "≥95% match",
+    "Score 5 (Worst)": "<60% match",
+    "Data Source": "Env Config"
+  },
+  {
+    "Category": "Security & Compliance",
+    "Factor Name": "Critical/High Vulns",
+    "Weight": 0.03,
+    "Description": "Open security vulnerabilities",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥5",
+    "Data Source": "SAST/DAST"
+  },
+  {
+    "Category": "Security & Compliance",
+    "Factor Name": "Pen Test Sign-off",
+    "Weight": 0.02,
+    "Description": "Penetration test status",
+    "Score 1 (Best)": "Passed",
+    "Score 5 (Worst)": "Not done",
+    "Data Source": "Security Team"
+  },
+  {
+    "Category": "Security & Compliance",
+    "Factor Name": "Compliance Gate",
+    "Weight": 0.03,
+    "Description": "SOX/GDPR/PCI-DSS status",
+    "Score 1 (Best)": "All passed",
+    "Score 5 (Worst)": "Blocked",
+    "Data Source": "GRC System"
+  },
+  {
+    "Category": "Data Migration",
+    "Factor Name": "Migration Required",
+    "Weight": 1,
+    "Description": "Data migration needed",
+    "Score 1 (Best)": "No",
+    "Score 5 (Worst)": "Yes, complex",
+    "Data Source": "Release Notes"
+  },
+  {
+    "Category": "Data Migration",
+    "Factor Name": "Backup Restore Tested",
+    "Weight": 0.015,
+    "Description": "Backup/restore verified",
+    "Score 1 (Best)": "Yes, verified",
+    "Score 5 (Worst)": "Not tested",
+    "Data Source": "DBA Team"
+  },
+  {
+    "Category": "Data Migration",
+    "Factor Name": "Migration Script Tested",
+    "Weight": 0.015,
+    "Description": "Migration scripts validated",
+    "Score 1 (Best)": "Tested in Pre-prod",
+    "Score 5 (Worst)": "Not tested",
+    "Data Source": "DBA Team"
+  },
+  {
+    "Category": "Resource & Schedule",
+    "Factor Name": "Testers Allocated",
+    "Weight": 0.02,
+    "Description": "QA resource count",
+    "Score 1 (Best)": ">3",
+    "Score 5 (Worst)": "1 or none",
+    "Data Source": "Resource Plan"
+  },
+  {
+    "Category": "Resource & Schedule",
+    "Factor Name": "Key Staff Availability",
+    "Weight": 0.03,
+    "Description": "Critical personnel present",
+    "Score 1 (Best)": "All available",
+    "Score 5 (Worst)": "Key staff OOO",
+    "Data Source": "Leave Calendar"
+  },
+  {
+    "Category": "Resource & Schedule",
+    "Factor Name": "Days Until Release",
+    "Weight": 0.04,
+    "Description": "Time to deployment",
+    "Score 1 (Best)": ">30 days",
+    "Score 5 (Worst)": "<5 days",
+    "Data Source": "Release Schedule"
+  },
+  {
+    "Category": "Resource & Schedule",
+    "Factor Name": "Downstream Releases",
+    "Weight": 0.03,
+    "Description": "Dependent releases count",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥4",
+    "Data Source": "Dependencies"
+  },
+  {
+    "Category": "Resource & Schedule",
+    "Factor Name": "Overlapping Releases",
+    "Weight": 0.02,
+    "Description": "Releases in same window",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥4",
+    "Data Source": "Release Calendar"
+  },
+  {
+    "Category": "Env & Dependencies",
+    "Factor Name": "Drift Issues",
+    "Weight": 0.03,
+    "Description": "Environment drift count",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥4",
+    "Data Source": "Drift Tracker"
+  },
+  {
+    "Category": "Env & Dependencies",
+    "Factor Name": "Dependency Count",
+    "Weight": 0.02,
+    "Description": "External dependencies",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥4",
+    "Data Source": "Dependencies"
+  },
+  {
+    "Category": "Env & Dependencies",
+    "Factor Name": "Dependency Health",
+    "Weight": 0.02,
+    "Description": "Upstream system status",
+    "Score 1 (Best)": "All healthy",
+    "Score 5 (Worst)": "Critical blocked",
+    "Data Source": "Health Dashboard"
+  },
+  {
+    "Category": "Env & Dependencies",
+    "Factor Name": "Feature Flag Cleanup",
+    "Weight": 0.02,
+    "Description": "Stale feature flags",
+    "Score 1 (Best)": "Clean",
+    "Score 5 (Worst)": "≥5 stale flags",
+    "Data Source": "Feature Mgmt"
+  },
+  {
+    "Category": "Operational Readiness",
+    "Factor Name": "Rollback Plan",
+    "Weight": 0.02,
+    "Description": "Rollback documented",
+    "Score 1 (Best)": "Full plan tested",
+    "Score 5 (Worst)": "No plan",
+    "Data Source": "Runbook"
+  },
+  {
+    "Category": "Operational Readiness",
+    "Factor Name": "Go-Live Checklist %",
+    "Weight": 0.02,
+    "Description": "Checklist completion",
+    "Score 1 (Best)": ">90%",
+    "Score 5 (Worst)": "<50%",
+    "Data Source": "Checklist"
+  },
+  {
+    "Category": "Operational Readiness",
+    "Factor Name": "Change Freeze Impact",
+    "Weight": 0.015,
+    "Description": "Freeze window conflict",
+    "Score 1 (Best)": "No conflict",
+    "Score 5 (Worst)": "During freeze",
+    "Data Source": "Calendar"
+  },
+  {
+    "Category": "Operational Readiness",
+    "Factor Name": "Vendor Coordination",
+    "Weight": 0.5,
+    "Description": "Vendor readiness",
+    "Score 1 (Best)": "Confirmed",
+    "Score 5 (Worst)": "Not coordinated",
+    "Data Source": "Vendor Mgmt"
+  },
+  {
+    "Category": "Operational Readiness",
+    "Factor Name": "Rollback Time RTO",
+    "Weight": 0.02,
+    "Description": "Rollback duration (min)",
+    "Score 1 (Best)": "<15 min",
+    "Score 5 (Worst)": ">120 min",
+    "Data Source": "Runbook"
+  },
+  {
+    "Category": "Operational Readiness",
+    "Factor Name": "Deployment Automation %",
+    "Weight": 0.015,
+    "Description": "Automation level",
+    "Score 1 (Best)": ">90%",
+    "Score 5 (Worst)": "<50%",
+    "Data Source": "CI/CD Pipeline"
+  },
+  {
+    "Category": "Performance & Scalability",
+    "Factor Name": "Load Test Status",
+    "Weight": 0.02,
+    "Description": "Load testing result",
+    "Score 1 (Best)": "Passed",
+    "Score 5 (Worst)": "Not done",
+    "Data Source": "Perf Team"
+  },
+  {
+    "Category": "Performance & Scalability",
+    "Factor Name": "Perf Regression %",
+    "Weight": 0.02,
+    "Description": "Performance vs baseline",
+    "Score 1 (Best)": "<5%",
+    "Score 5 (Worst)": ">25%",
+    "Data Source": "APM Tools"
+  },
+  {
+    "Category": "Release History",
+    "Factor Name": "BC Tested",
+    "Weight": 0.015,
+    "Description": "Backward compatibility",
+    "Score 1 (Best)": "Fully tested",
+    "Score 5 (Worst)": "Not tested",
+    "Data Source": "Test Results"
+  },
+  {
+    "Category": "Release History",
+    "Factor Name": "Rollback Flow Tested",
+    "Weight": 0.015,
+    "Description": "Rollback rehearsal done",
+    "Score 1 (Best)": "Tested in Pre-prod",
+    "Score 5 (Worst)": "Never tested",
+    "Data Source": "Deployment Runbook"
+  },
+  {
+    "Category": "Release History",
+    "Factor Name": "Previous Failures",
+    "Weight": 0.5,
+    "Description": "Past failure history",
+    "Score 1 (Best)": "0 failures (12mo)",
+    "Score 5 (Worst)": "≥3 failures",
+    "Data Source": "Incident History"
+  },
+  {
+    "Category": "Release History",
+    "Factor Name": "Release Cadence Dev",
+    "Weight": 0.5,
+    "Description": "Deviation from schedule",
+    "Score 1 (Best)": "On schedule",
+    "Score 5 (Worst)": ">14 days late",
+    "Data Source": "Release Plan"
+  },
+  {
+    "Category": "Release History",
+    "Factor Name": "MTBF Days",
+    "Weight": 0.5,
+    "Description": "Mean time between failures",
+    "Score 1 (Best)": ">180 days",
+    "Score 5 (Worst)": "<14 days",
+    "Data Source": "Incident Metrics"
+  },
+  {
+    "Category": "Release History",
+    "Factor Name": "Recent Incidents",
+    "Weight": 0.5,
+    "Description": "Incidents last 30 days",
+    "Score 1 (Best)": "0",
+    "Score 5 (Worst)": "≥3",
+    "Data Source": "Incident Mgmt"
+  },
+  {
+    "Category": "Business Criticality",
+    "Factor Name": "Revenue Impact",
+    "Weight": 1,
+    "Description": "Revenue risk if failed",
+    "Score 1 (Best)": "Low",
+    "Score 5 (Worst)": "High",
+    "Data Source": "Business Team"
+  },
+  {
+    "Category": "Business Criticality",
+    "Factor Name": "User Blast Radius",
+    "Weight": 1,
+    "Description": "Users/customers affected",
+    "Score 1 (Best)": "<100",
+    "Score 5 (Worst)": ">100K or all",
+    "Data Source": "Product Team"
+  }
+]

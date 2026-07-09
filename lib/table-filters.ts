@@ -155,6 +155,8 @@ export const RISKS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "category", param: "category" },
   { key: "riskOwnerId", param: "owner" },
   { key: "releaseId", param: "release" },
+  { key: "likelihood", param: "likelihood" },
+  { key: "impact", param: "impact" },
 ]);
 
 export const DRIFTS_FILTER_SCHEMA: FilterSchema = withTableSort([

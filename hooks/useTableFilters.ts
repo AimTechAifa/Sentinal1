@@ -66,7 +66,12 @@ export function useTableFilters(schema: FilterSchema) {
     [apiQuery]
   );
 
-  return { values, setFilter, setFilters, clearAll, hasActive, apiQuery, apiUrl };
+  const setSort = useCallback(
+    (sort: string, sortDir: SortDirection) => setFilters({ sort, sortDir }),
+    [setFilters]
+  );
+
+  return { values, setFilter, setFilters, setSort, clearAll, hasActive, apiQuery, apiUrl };
 }
 
 type SortedFetchOptions<T> = {
@@ -77,7 +82,7 @@ type SortedFetchOptions<T> = {
 
 /** Fetch a list API whenever URL-driven filters change. */
 export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema, options: SortedFetchOptions<T> = {}) {
-  const { values, setFilter, setFilters, clearAll, hasActive, apiQuery, apiUrl } = useTableFilters(schema);
+  const { values, setFilter, setFilters, setSort, clearAll, hasActive, apiQuery, apiUrl } = useTableFilters(schema);
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,6 +124,7 @@ export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema, optio
     values,
     setFilter,
     setFilters,
+    setSort,
     clearAll,
     hasActive,
     apiQuery,

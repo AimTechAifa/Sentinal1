@@ -7,7 +7,9 @@ import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { FilterPills, FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { DEPENDENCY_COLUMNS, DEPENDENCY_FILTER_FIELDS } from "@/lib/table-page-columns";
-import { DataTableHeadRow, TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { DEPENDENCY_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { DataTableHeadRow } from "@/components/ui/data-table";
 import { cn } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
@@ -125,6 +127,7 @@ export default function DependencyListContent() {
     loading,
     values,
     setFilter,
+    setSort,
     clearAll,
     hasActive,
     sortKey,
@@ -204,7 +207,7 @@ export default function DependencyListContent() {
       ) : (
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-[var(--card)]">
         <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
-          <TableToolbar>{columnPicker}</TableToolbar>
+          <TablePageToolbar columnPicker={columnPicker} presets={DEPENDENCY_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1400px] text-left text-sm">

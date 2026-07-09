@@ -113,6 +113,13 @@ model Release {
   testEnvRequired       String?
   uatEnvRequired        String?
   conflictFlag          Boolean              @default(false)
+  conflictId            String?
+  conflictingRelease    String?
+  conflictType          String?
+  conflictNotes         String?
+  /** Sheet "Dependencies" column (often "NA") — distinct from Depends On / External Dependencies. */
+  dependencies          String?
+  externalDependencies  String?
   readinessPercent      Float?
   blockers              String?
   vendorMaintenance     String?
@@ -124,6 +131,17 @@ model Release {
   deploymentWindow      String?
   releaseOwnerId        String?
   releaseOwner          User?                @relation("ReleaseOwner", fields: [releaseOwnerId], references: [id])
+  // Go-live checklist / health (from Releases sheet)
+  devSignoff            String?
+  testSignoff           String?
+  uatSignoff            String?
+  securityClearance     String?
+  dressRehearsal        String?
+  hypercarePlan         String?
+  commsPlan             String?
+  trainingStatus        String?
+  supportBriefed        String?
+  releaseHealth         String?
 
   // --- Weighted Risk Score (System 2) ---
   weightedRiskScore     Float?
@@ -204,6 +222,7 @@ model EnvBooking {
   preProdEnd      DateTime?
   preProdDays     Int?
   conflictFlag    Boolean      @default(false)
+  environmentConflictId String?
 
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
@@ -394,6 +413,9 @@ model Risk {
   riskCode           String   @unique
   releaseId          String
   release            Release  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  // Denormalized from Excel Risk sheet (also available via release → apps/dept)
+  applicationName    String?
+  departmentName     String?
   category           String
   description        String
   likelihood         Int
@@ -446,6 +468,8 @@ model Drift {
   release           Release     @relation(fields: [releaseId], references: [id], onDelete: Cascade)
   applicationId     String
   application       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  // Denormalized from Excel Drift sheet
+  departmentName    String?
   environmentName   String
   driftType         String
   driftCategory     String?
@@ -578,6 +602,9 @@ model Approval {
   approvalCode  String    @unique
   releaseId     String
   release       Release   @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  // Denormalized from Excel Approvals sheet (also available via release)
+  applicationName String?
+  departmentName  String?
   approvalType  String
   approverId    String
   approver      User      @relation(fields: [approverId], references: [id])
@@ -626,6 +653,7 @@ model CalendarEvent {
   releaseId      String?
   release        Release?  @relation(fields: [releaseId], references: [id], onDelete: Cascade)
   title          String
+  applicationName String?
   departmentName String?
   sizeImpact     String?
   notes          String?
