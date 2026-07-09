@@ -4,8 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Bell } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { MONITORING_ALERT_COLUMNS, MONITORING_ALERTS_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  MONITORING_ALERT_COLUMNS,
+  MONITORING_ALERTS_DEFAULT_HIDDEN_FILTER_KEYS,
+  MONITORING_ALERTS_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { ALERT_SORT_PRESETS } from "@/lib/table-sort-presets";
@@ -13,6 +17,7 @@ import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/u
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
+import { safeFetchJson } from "@/lib/safe-fetch";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { MONITORING_ALERTS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -70,8 +75,17 @@ export default function MonitoringAlertsContent() {
   const [allAlerts, setAllAlerts] = useState<AlertRow[]>([]);
 
   useEffect(() => {
-    fetch("/api/applications").then((r) => (r.ok ? r.json() : [])).then(setApps);
-    fetch("/api/monitoring-alerts").then((r) => (r.ok ? r.json() : [])).then(setAllAlerts);
+    const ac = new AbortController();
+    void (async () => {
+      const [appsRes, alertsRes] = await Promise.all([
+        safeFetchJson<{ id: string; name: string }[]>("/api/applications", { signal: ac.signal, label: "applications" }),
+        safeFetchJson<AlertRow[]>("/api/monitoring-alerts", { signal: ac.signal, label: "monitoring-alerts" }),
+      ]);
+      if (ac.signal.aborted) return;
+      if (appsRes.ok) setApps(appsRes.data);
+      if (alertsRes.ok) setAllAlerts(alertsRes.data);
+    })();
+    return () => ac.abort();
   }, []);
 
   const severities = useMemo(() => [...new Set(allAlerts.map((a) => a.severity))].sort(), [allAlerts]);
@@ -83,7 +97,10 @@ export default function MonitoringAlertsContent() {
     "monitoring-alerts",
     MONITORING_ALERT_COLUMNS,
     MONITORING_ALERTS_FILTER_FIELDS,
-    { lockedKeys: ["alertCode"] }
+    {
+      lockedKeys: ["alertCode"],
+      defaultHiddenFilters: MONITORING_ALERTS_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -124,6 +141,41 @@ export default function MonitoringAlertsContent() {
               <option value="">All environments</option>
               {envs.map((e) => <option key={e} value={e}>{e}</option>)}
             </FilterSelect>
+          )}
+          {isFilterVisible("assignedToQ") && (
+            <FilterTextInput
+              value={values.assignedToQ}
+              onChange={(v) => setFilter("assignedToQ", v)}
+              placeholder="Assigned to…"
+            />
+          )}
+          {isFilterVisible("alertCodeQ") && (
+            <FilterTextInput
+              value={values.alertCodeQ}
+              onChange={(v) => setFilter("alertCodeQ", v)}
+              placeholder="Alert ID…"
+            />
+          )}
+          {isFilterVisible("metricQ") && (
+            <FilterTextInput
+              value={values.metricQ}
+              onChange={(v) => setFilter("metricQ", v)}
+              placeholder="Metric…"
+            />
+          )}
+          {isFilterVisible("thresholdQ") && (
+            <FilterTextInput
+              value={values.thresholdQ}
+              onChange={(v) => setFilter("thresholdQ", v)}
+              placeholder="Threshold / current…"
+            />
+          )}
+          {isFilterVisible("timestampQ") && (
+            <FilterTextInput
+              value={values.timestampQ}
+              onChange={(v) => setFilter("timestampQ", v)}
+              placeholder="Timestamp (YYYY-MM-DD)…"
+            />
           )}
         </TableFilterBar>
       )}

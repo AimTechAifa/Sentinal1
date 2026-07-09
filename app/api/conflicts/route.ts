@@ -6,17 +6,15 @@ import {
   mapSeedConflictRow,
 } from "@/lib/conflict-view";
 import { prisma } from "@/lib/prisma";
-import { sp } from "@/lib/list-api-filters";
+import { sp, str } from "@/lib/list-api-filters";
 
 export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
   if (error) return error;
 
   const params = sp(req);
-  const deptId = params.get("dept");
-  const appId = params.get("app");
-  const status = params.get("status") ?? undefined;
-  const priority = params.get("priority") ?? undefined;
+  const deptId = str(params, "dept");
+  const appId = str(params, "app");
 
   const [deptRec, appRec, releases] = await Promise.all([
     deptId ? prisma.department.findUnique({ where: { id: deptId }, select: { name: true } }) : null,
@@ -33,8 +31,15 @@ export async function GET(req: Request) {
   const conflicts = filterSeedConflicts(rows, {
     departmentName: deptRec?.name,
     applicationName: appRec?.name,
-    status,
-    priority,
+    status: str(params, "status"),
+    priority: str(params, "priority"),
+    assignedToQ: str(params, "assignedTo"),
+    conflictCodeQ: str(params, "conflictCode"),
+    release1CodeQ: str(params, "release1"),
+    release2CodeQ: str(params, "release2"),
+    conflictingEnvironmentQ: str(params, "conflictEnv"),
+    environmentConflictType: str(params, "conflictType"),
+    notesQ: str(params, "notes"),
   });
 
   return NextResponse.json(conflicts);

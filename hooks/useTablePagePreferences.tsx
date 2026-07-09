@@ -11,12 +11,14 @@ export function useTablePagePreferences(
   pageKey: string,
   allColumns: ColumnDef[] | undefined,
   filterFields: FilterFieldDef[] | undefined,
-  options: { lockedKeys?: string[] } = {}
+  options: { lockedKeys?: string[]; defaultHiddenFilters?: string[] } = {}
 ) {
   const columns = Array.isArray(allColumns) ? allColumns : [];
   const filters = Array.isArray(filterFields) ? filterFields : [];
   const columnPrefs = useColumnPreferences(pageKey, columns, options);
-  const filterPrefs = useFilterPreferences(pageKey, filters);
+  const filterPrefs = useFilterPreferences(pageKey, filters, {
+    defaultHiddenFilters: options.defaultHiddenFilters,
+  });
 
   const columnPicker = useMemo(
     () => (

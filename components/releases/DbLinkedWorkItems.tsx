@@ -6,6 +6,7 @@ import { AdvancedCard } from "@/components/ui/advanced-card";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { formatDateTime } from "@/lib/utils";
 import type { WorkItemSummary } from "@/lib/dependency-impact";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 type WorkItem = {
   externalId: string;
@@ -24,14 +25,15 @@ export function DbLinkedWorkItems({ releaseId }: { releaseId: string }) {
   const [lastSynced, setLastSynced] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`/api/releases/${releaseId}/work-items`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (!d) return;
+    return loadJsonEffect<{ items?: WorkItem[]; summary?: WorkItemSummary; lastSynced?: string }>(
+      `/api/releases/${releaseId}/work-items`,
+      (d) => {
         setItems(d.items ?? []);
         setSummary(d.summary ?? null);
         setLastSynced(d.lastSynced ?? null);
-      });
+      },
+      { label: "release-work-items" },
+    );
   }, [releaseId]);
 
   return (

@@ -14,6 +14,7 @@ import { AnalyseRiskSection } from "@/components/system-mapping/AnalyseRiskSecti
 import { ArchitectureInfoPanel } from "@/components/system-mapping/ArchitectureInfoPanel";
 import type { MappingGroupRow } from "@/lib/system-mapping-types";
 import type { SessionUser } from "@/lib/auth/roles";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 import { DepartmentNode } from "@/components/system-mapping/DepartmentNode";
 
@@ -42,20 +43,30 @@ export function SystemMappingContent() {
   const canEdit = user?.role === "editor" || user?.role === "admin";
 
   const loadGroups = useCallback(() => {
-    fetch("/api/system-mapping/groups")
-      .then((r) => r.json())
-      .then((d) => {
+    return loadJsonEffect<{ groups?: MappingGroupRow[] }>(
+      "/api/system-mapping/groups",
+      (d) => {
         const loaded = d.groups ?? [];
         setGroups(loaded);
         if (loaded.length > 0 && !values.groupId) {
           setFilter("groupId", loaded[0].id);
         }
-      });
+      },
+      { label: "system-mapping-groups" },
+    );
   }, [setFilter, values.groupId]);
 
   useEffect(() => {
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => setUser(d.user));
-    loadGroups();
+    const cleanupAuth = loadJsonEffect<{ user: SessionUser }>(
+      "/api/auth/me",
+      (d) => setUser(d.user),
+      { label: "auth-me" },
+    );
+    const cleanupGroups = loadGroups();
+    return () => {
+      cleanupAuth();
+      cleanupGroups();
+    };
   }, [loadGroups]);
 
   const activeGroup = groups.find(g => g.id === activeGroupId) || groups[0];

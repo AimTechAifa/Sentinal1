@@ -11,7 +11,11 @@ import { ReleaseFormModal, type ReleaseFormData } from "@/components/releases/Re
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
-import { RELEASE_COLUMNS, RELEASE_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  RELEASE_COLUMNS,
+  RELEASE_DEFAULT_HIDDEN_FILTER_KEYS,
+  RELEASE_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { DataTable, DataTableHeadRow, dataTableTableClass, tableCell, tableHeadCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -30,6 +34,7 @@ import { RELEASE_TABLE_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { readSortFromValues, sortRows } from "@/lib/table-sort";
 import { taBtnPrimary } from "@/lib/styles";
 import type { SessionUser } from "@/lib/auth/roles";
+import { loadJsonEffect, safeFetchJson } from "@/lib/safe-fetch";
 
 
 
@@ -78,34 +83,78 @@ export default function ReleasesPageContent() {
   const [readinessByKey, setReadinessByKey] = useState<
     Record<string, { readiness: number; blockerCount: number }>
   >({});
-  const [filterOptions, setFilterOptions] = useState<{ statuses: string[]; priorities: string[]; impacts: string[] }>({
+  type FilterOptionsState = {
+    statuses: string[];
+    priorities: string[];
+    impacts: string[];
+    approvalStatuses: string[];
+    rollbackPlans: string[];
+    deploymentWindows: string[];
+    changeFreezes: string[];
+    regulatories: string[];
+    vendorMaintenances: string[];
+    releaseSizes: string[];
+  };
+
+  const [filterOptions, setFilterOptions] = useState<FilterOptionsState>({
     statuses: [],
     priorities: [],
     impacts: [],
+    approvalStatuses: [],
+    rollbackPlans: [],
+    deploymentWindows: [],
+    changeFreezes: [],
+    regulatories: [],
+    vendorMaintenances: [],
+    releaseSizes: [],
   });
 
   useEffect(() => {
-    fetch("/api/releases")
-      .then((r) => (r.ok ? r.json() : []))
-      .then((rows: ReleaseRow[]) => {
-        setFilterOptions({
-          statuses: [...new Set(rows.map((r) => r.status))].sort(),
-          priorities: [...new Set(rows.map((r) => r.priority))].sort(),
-          impacts: [...new Set(rows.map((r) => r.impact))].sort(),
-        });
+    type ApiRelease = ReleaseRow & {
+      approvalStatus?: string | null;
+      rollbackPlan?: string | null;
+      deploymentWindow?: string | null;
+      changeFreeze?: string | null;
+      regulatory?: string | null;
+      vendorMaintenance?: string | null;
+      releaseSize?: string | null;
+    };
+
+    const uniq = (vals: (string | null | undefined)[]) =>
+      [...new Set(vals.map((v) => (v ?? "").trim()).filter(Boolean))].sort();
+
+    // Enum option lists only — Owner/Stakeholder are free-text against live User.name
+    // (no client-side name list; see releaseListWhere name contains).
+    return loadJsonEffect<ApiRelease[]>("/api/releases", (rows) => {
+      setFilterOptions({
+        statuses: uniq(rows.map((r) => r.status)),
+        priorities: uniq(rows.map((r) => r.priority)),
+        impacts: uniq(rows.map((r) => r.impact)),
+        approvalStatuses: uniq(rows.map((r) => r.approvalStatus)),
+        rollbackPlans: uniq(rows.map((r) => r.rollbackPlan)),
+        deploymentWindows: uniq(rows.map((r) => r.deploymentWindow)),
+        changeFreezes: uniq(rows.map((r) => r.changeFreeze)),
+        regulatories: uniq(rows.map((r) => r.regulatory)),
+        vendorMaintenances: uniq(rows.map((r) => r.vendorMaintenance)),
+        releaseSizes: uniq(rows.map((r) => r.releaseSize)),
       });
+    }, { label: "releases-filter-options" });
   }, []);
 
   useEffect(() => {
-    fetch("/api/releases/readiness")
-      .then((r) => (r.ok ? r.json() : { byKey: {} }))
-      .then((d) => setReadinessByKey(d.byKey ?? {}));
+    return loadJsonEffect<{ byKey?: Record<string, { readiness: number; blockerCount: number }> }>(
+      "/api/releases/readiness",
+      (d) => setReadinessByKey(d.byKey ?? {}),
+      { label: "releases-readiness" },
+    );
   }, []);
 
-
-
   useEffect(() => {
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => setUser(d.user));
+    return loadJsonEffect<{ user: SessionUser }>(
+      "/api/auth/me",
+      (d) => setUser(d.user),
+      { label: "auth-me" },
+    );
   }, []);
 
   useEffect(() => {
@@ -113,13 +162,15 @@ export default function ReleasesPageContent() {
       setAttentionItems([]);
       return;
     }
-    fetch(`/api/needs-attention?period=month${filterQuery}`)
-      .then((r) => r.json())
-      .then((d) => {
+    return loadJsonEffect<{ items?: NeedsAttentionItem[] }>(
+      `/api/needs-attention?period=month${filterQuery}`,
+      (d) => {
         let items: NeedsAttentionItem[] = d.items ?? [];
         if (attentionStatusFilter) items = items.filter((i) => i.status === attentionStatusFilter);
         setAttentionItems(items);
-      });
+      },
+      { label: "needs-attention" },
+    );
   }, [attentionMode, filterQuery, attentionStatusFilter]);
 
   const scopeLabel = useMemo(
@@ -167,14 +218,17 @@ export default function ReleasesPageContent() {
     "releases",
     RELEASE_COLUMNS,
     RELEASE_FILTER_FIELDS,
-    { lockedKeys: ["releaseCode", "actions"] }
+    {
+      lockedKeys: ["releaseCode", "actions"],
+      defaultHiddenFilters: RELEASE_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(filtersLoading, prefsLoaded);
 
   const remove = async (id: string) => {
     if (!confirm("Delete this release?")) return;
-    await fetch(`/api/releases/${id}`, { method: "DELETE" });
+    await safeFetchJson(`/api/releases/${id}`, { method: "DELETE", label: "release-delete" });
     refreshLookups();
   };
 
@@ -223,6 +277,7 @@ export default function ReleasesPageContent() {
         statusOptions={filterOptions.statuses}
         priorityOptions={filterOptions.priorities}
         impactOptions={filterOptions.impacts}
+        options={filterOptions}
         manageFilters={!attentionMode ? filterPicker : undefined}
         isFilterVisible={isFilterVisible}
       >

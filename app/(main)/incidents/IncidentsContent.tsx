@@ -5,8 +5,12 @@ import { AlertOctagon } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { INCIDENT_COLUMNS, INCIDENT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  INCIDENT_COLUMNS,
+  INCIDENT_DEFAULT_HIDDEN_FILTER_KEYS,
+  INCIDENT_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { INCIDENT_SORT_PRESETS } from "@/lib/table-sort-presets";
@@ -17,6 +21,7 @@ import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { INCIDENTS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 type IncidentRow = {
   id: string;
@@ -74,21 +79,19 @@ export default function IncidentsContent() {
     "incidents",
     INCIDENT_COLUMNS,
     INCIDENT_FILTER_FIELDS,
-    { lockedKeys: ["incidentCode"] }
+    {
+      lockedKeys: ["incidentCode"],
+      defaultHiddenFilters: INCIDENT_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   useEffect(() => {
-    fetch("/api/applications")
-      .then((r) => (r.ok ? r.json() : []))
-      .then(setApps);
+    return loadJsonEffect<{ id: string; name: string }[]>("/api/applications", setApps, { label: "applications" });
   }, []);
 
   const severities = useMemo(() => [...new Set(incidents.map((i) => i.severity))].sort(), [incidents]);
   const statuses = useMemo(() => [...new Set(incidents.map((i) => i.status))].sort(), [incidents]);
-  const departments = useMemo(
-    () => [...new Set(incidents.map((i) => i.departmentName).filter(Boolean))].sort() as string[],
-    [incidents]
-  );
+  const impacts = useMemo(() => [...new Set(incidents.map((i) => i.impact).filter(Boolean))].sort(), [incidents]);
   const envs = useMemo(() => [...new Set(incidents.map((i) => i.environmentName))].sort(), [incidents]);
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -127,14 +130,6 @@ export default function IncidentsContent() {
               ))}
             </FilterSelect>
           )}
-          {isFilterVisible("departmentName") && (
-            <FilterSelect value={values.departmentName} onChange={(v) => setFilter("departmentName", v)}>
-              <option value="">All departments</option>
-              {departments.map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </FilterSelect>
-          )}
           {isFilterVisible("environmentName") && (
             <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
               <option value="">All environments</option>
@@ -142,6 +137,49 @@ export default function IncidentsContent() {
                 <option key={e} value={e}>{e}</option>
               ))}
             </FilterSelect>
+          )}
+          {isFilterVisible("assignedToQ") && (
+            <FilterTextInput
+              value={values.assignedToQ}
+              onChange={(v) => setFilter("assignedToQ", v)}
+              placeholder="Assigned to…"
+            />
+          )}
+          {isFilterVisible("titleQ") && (
+            <FilterTextInput
+              value={values.titleQ}
+              onChange={(v) => setFilter("titleQ", v)}
+              placeholder="Title…"
+            />
+          )}
+          {isFilterVisible("incidentCodeQ") && (
+            <FilterTextInput
+              value={values.incidentCodeQ}
+              onChange={(v) => setFilter("incidentCodeQ", v)}
+              placeholder="Incident ID…"
+            />
+          )}
+          {isFilterVisible("impact") && (
+            <FilterSelect value={values.impact} onChange={(v) => setFilter("impact", v)}>
+              <option value="">All impacts</option>
+              {impacts.map((i) => (
+                <option key={i} value={i}>{i}</option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("relatedReleaseQ") && (
+            <FilterTextInput
+              value={values.relatedReleaseQ}
+              onChange={(v) => setFilter("relatedReleaseQ", v)}
+              placeholder="Related release…"
+            />
+          )}
+          {isFilterVisible("timestampQ") && (
+            <FilterTextInput
+              value={values.timestampQ}
+              onChange={(v) => setFilter("timestampQ", v)}
+              placeholder="Timestamp (YYYY-MM-DD)…"
+            />
           )}
         </TableFilterBar>
       )}

@@ -10,10 +10,14 @@ import {
 } from "@/lib/master-data/table-utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { RISK_FACTORS_FILTER_SCHEMA } from "@/lib/table-filters";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { FilterRangeInputs, FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { RISK_FACTOR_COLUMNS, RISK_FACTOR_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  RISK_FACTOR_COLUMNS,
+  RISK_FACTOR_DEFAULT_HIDDEN_FILTER_KEYS,
+  RISK_FACTOR_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { RISK_FACTOR_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
@@ -92,7 +96,10 @@ export function RiskFactorsBrowse() {
     "risk-factors",
     RISK_FACTOR_COLUMNS,
     RISK_FACTOR_FILTER_FIELDS,
-    { lockedKeys: ["factorName", "actions"] }
+    {
+      lockedKeys: ["factorName", "actions"],
+      defaultHiddenFilters: RISK_FACTOR_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -227,6 +234,31 @@ export function RiskFactorsBrowse() {
             <option value="true">Active only</option>
             <option value="false">Inactive only</option>
           </FilterSelect>
+        )}
+        {isFilterVisible("factorNameQ") && (
+          <FilterTextInput
+            value={values.factorNameQ}
+            onChange={(v) => setFilter("factorNameQ", v)}
+            placeholder="Factor name…"
+          />
+        )}
+        {isFilterVisible("weight") && (
+          <div className="inline-flex items-center gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Weight</span>
+            <FilterRangeInputs
+              minValue={values.weightMin}
+              maxValue={values.weightMax}
+              onMinChange={(v) => setFilter("weightMin", v)}
+              onMaxChange={(v) => setFilter("weightMax", v)}
+            />
+          </div>
+        )}
+        {isFilterVisible("descriptionQ") && (
+          <FilterTextInput
+            value={values.descriptionQ}
+            onChange={(v) => setFilter("descriptionQ", v)}
+            placeholder="Description…"
+          />
         )}
       </TableFilterBar>
 

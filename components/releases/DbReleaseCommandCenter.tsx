@@ -13,6 +13,7 @@ import type { DbBlocker, DbNextAction } from "@/lib/db-release-command";
 import type { DbReleasePrediction } from "@/lib/db-predictive";
 import type { LifecycleStageView } from "@/lib/types";
 import { ArrowRight, ListChecks } from "lucide-react";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 type CommandCenterData = {
   readiness: number;
@@ -27,9 +28,11 @@ export function DbReleaseCommandCenter({ releaseId }: { releaseId: string }) {
   const [data, setData] = useState<CommandCenterData | null>(null);
 
   useEffect(() => {
-    fetch(`/api/releases/${releaseId}/command-center`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setData);
+    return loadJsonEffect<CommandCenterData>(
+      `/api/releases/${releaseId}/command-center`,
+      setData,
+      { label: "release-command-center" },
+    );
   }, [releaseId]);
 
   if (!data) return null;

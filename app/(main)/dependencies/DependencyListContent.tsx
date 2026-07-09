@@ -4,9 +4,13 @@ import { useMemo } from "react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { FilterPills, FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { FilterPills, FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-import { DEPENDENCY_COLUMNS, DEPENDENCY_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  DEPENDENCY_COLUMNS,
+  DEPENDENCY_DEFAULT_HIDDEN_FILTER_KEYS,
+  DEPENDENCY_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { DEPENDENCY_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { DataTableHeadRow } from "@/components/ui/data-table";
@@ -153,7 +157,10 @@ export default function DependencyListContent() {
     "dependencies",
     DEPENDENCY_COLUMNS,
     DEPENDENCY_FILTER_FIELDS,
-    { lockedKeys: ["depCode"] }
+    {
+      lockedKeys: ["depCode"],
+      defaultHiddenFilters: DEPENDENCY_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -199,6 +206,48 @@ export default function DependencyListContent() {
                 </option>
               ))}
             </FilterSelect>
+          )}
+          {isFilterVisible("releaseCodeQ") && (
+            <FilterTextInput
+              value={values.releaseCodeQ}
+              onChange={(v) => setFilter("releaseCodeQ", v)}
+              placeholder="Release ID…"
+            />
+          )}
+          {isFilterVisible("dependsOnCodeQ") && (
+            <FilterTextInput
+              value={values.dependsOnCodeQ}
+              onChange={(v) => setFilter("dependsOnCodeQ", v)}
+              placeholder="Depends on release…"
+            />
+          )}
+          {isFilterVisible("depCodeQ") && (
+            <FilterTextInput
+              value={values.depCodeQ}
+              onChange={(v) => setFilter("depCodeQ", v)}
+              placeholder="Dep ID…"
+            />
+          )}
+          {isFilterVisible("releaseNameQ") && (
+            <FilterTextInput
+              value={values.releaseNameQ}
+              onChange={(v) => setFilter("releaseNameQ", v)}
+              placeholder="Release name…"
+            />
+          )}
+          {isFilterVisible("dependsOnNameQ") && (
+            <FilterTextInput
+              value={values.dependsOnNameQ}
+              onChange={(v) => setFilter("dependsOnNameQ", v)}
+              placeholder="Depends on name…"
+            />
+          )}
+          {isFilterVisible("notesQ") && (
+            <FilterTextInput
+              value={values.notesQ}
+              onChange={(v) => setFilter("notesQ", v)}
+              placeholder="Notes…"
+            />
           )}
         </TableFilterBar>
       )}

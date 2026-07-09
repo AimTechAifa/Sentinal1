@@ -87,6 +87,12 @@ export const DEPENDENCIES_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "dependencyType", param: "type" },
   { key: "impact", param: "impact" },
+  { key: "releaseCodeQ", param: "release" },
+  { key: "dependsOnCodeQ", param: "dependsOn" },
+  { key: "depCodeQ", param: "depCode" },
+  { key: "releaseNameQ", param: "releaseName" },
+  { key: "dependsOnNameQ", param: "dependsOnName" },
+  { key: "notesQ", param: "notes" },
 ]);
 
 export const CONFLICTS_FILTER_SCHEMA: FilterSchema = withTableSort([
@@ -94,69 +100,141 @@ export const CONFLICTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "applicationId", param: "app" },
   { key: "status", param: "status" },
   { key: "priority", param: "priority" },
+  { key: "assignedToQ", param: "assignedTo" },
+  { key: "conflictCodeQ", param: "conflictCode" },
+  { key: "release1CodeQ", param: "release1" },
+  { key: "release2CodeQ", param: "release2" },
+  { key: "conflictingEnvironmentQ", param: "conflictEnv" },
+  { key: "environmentConflictType", param: "conflictType" },
+  { key: "notesQ", param: "notes" },
 ]);
 
 export const BOOKING_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "departmentId", param: "dept" },
   { key: "applicationId", param: "app" },
   { key: "environmentId", param: "env" },
-  { key: "releaseId", param: "release" },
   { key: "conflictFlag", param: "conflict" },
+  { key: "releaseCodeQ", param: "release" },
+  { key: "releaseSize", param: "releaseSize" },
+  { key: "bookingCodeQ", param: "bookingCode" },
+  { key: "dependenciesQ", param: "dependencies" },
+  { key: "prodReleaseDateQ", param: "prodDate" },
+  { key: "cabDateQ", param: "cabDate" },
+  { key: "testEnvCodeQ", param: "testEnv" },
+  { key: "testStartQ", param: "testStart" },
+  { key: "testEndQ", param: "testEnd" },
+  { key: "testDaysMin", param: "testDaysMin" },
+  { key: "testDaysMax", param: "testDaysMax" },
+  { key: "uatEnvCodeQ", param: "uatEnv" },
+  { key: "uatStartQ", param: "uatStart" },
+  { key: "uatEndQ", param: "uatEnd" },
+  { key: "uatDaysMin", param: "uatDaysMin" },
+  { key: "uatDaysMax", param: "uatDaysMax" },
+  { key: "preProdEnvCodeQ", param: "preProdEnv" },
+  { key: "preProdStartQ", param: "preProdStart" },
+  { key: "preProdEndQ", param: "preProdEnd" },
+  { key: "preProdDaysMin", param: "preProdDaysMin" },
+  { key: "preProdDaysMax", param: "preProdDaysMax" },
+  { key: "notesQ", param: "notes" },
 ]);
 
 export const APPROVALS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "decision", param: "decision" },
   { key: "approvalType", param: "type" },
-  { key: "approverId", param: "approver" },
-  { key: "releaseId", param: "release" },
+  { key: "approverQ", param: "approver" },
+  { key: "releaseCodeQ", param: "release" },
+  { key: "releaseNameQ", param: "releaseName" },
+  { key: "approvalCodeQ", param: "approvalCode" },
+  { key: "approverRole", param: "approverRole" },
+  { key: "submittedDateQ", param: "submitted" },
+  { key: "decisionDateQ", param: "decided" },
+  { key: "commentsQ", param: "comments" },
+  { key: "cabMeetingIdQ", param: "cab" },
 ]);
 
 export const LEAVES_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "leaveType", param: "type" },
   { key: "department", param: "dept" },
   { key: "riskLevel", param: "risk" },
+  { key: "staffMemberQ", param: "staff" },
+  { key: "affectedReleaseQ", param: "affectedRelease" },
+  { key: "leaveCodeQ", param: "leaveCode" },
+  { key: "datesQ", param: "dates" },
+  { key: "daysMin", param: "daysMin" },
+  { key: "daysMax", param: "daysMax" },
 ]);
 
 export const INCIDENTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "severity", param: "severity" },
   { key: "status", param: "status" },
   { key: "applicationId", param: "app" },
-  { key: "departmentName", param: "dept" },
   { key: "environmentName", param: "env" },
+  { key: "assignedToQ", param: "assignedTo" },
+  { key: "titleQ", param: "title" },
+  { key: "incidentCodeQ", param: "incidentCode" },
+  { key: "impact", param: "impact" },
+  { key: "relatedReleaseQ", param: "relatedRelease" },
+  { key: "timestampQ", param: "timestamp" },
 ]);
 
 export const MONITORING_ALERTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "severity", param: "severity" },
   { key: "status", param: "status" },
   { key: "applicationId", param: "app" },
-  { key: "departmentName", param: "dept" },
   { key: "environmentName", param: "env" },
   { key: "alertType", param: "alertType" },
+  { key: "assignedToQ", param: "assignedTo" },
+  { key: "alertCodeQ", param: "alertCode" },
+  { key: "metricQ", param: "metric" },
+  { key: "thresholdQ", param: "threshold" },
+  { key: "timestampQ", param: "timestamp" },
 ]);
 
 export const APPLICATION_STATUS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "environmentName", param: "env" },
   { key: "applicationId", param: "app" },
-  { key: "departmentName", param: "dept" },
+  { key: "uptimeMin", param: "uptimeMin" },
+  { key: "uptimeMax", param: "uptimeMax" },
+  { key: "notesQ", param: "notes" },
+  { key: "lastCheckQ", param: "lastCheck" },
 ]);
 
 export const PLANNED_MAINTENANCE_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "type", param: "type" },
   { key: "approvalStatus", param: "approvalStatus" },
   { key: "applicationId", param: "app" },
-  { key: "departmentName", param: "dept" },
   { key: "environmentName", param: "env" },
   { key: "impact", param: "impact" },
+  { key: "requestorQ", param: "requestor" },
+  { key: "scheduledQ", param: "scheduled" },
+  { key: "notesQ", param: "notes" },
+]);
+
+export const INTEGRATION_FLOWS_FILTER_SCHEMA: FilterSchema = withTableSort([
+  { key: "integrationType", param: "type" },
+  { key: "frequency", param: "frequency" },
+  { key: "sourceSystemQ", param: "source" },
+  { key: "targetSystemQ", param: "target" },
+  { key: "dataElementsQ", param: "dataElements" },
+  { key: "businessPurposeQ", param: "purpose" },
+  { key: "flowCodeQ", param: "flowCode" },
 ]);
 
 export const RISKS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "category", param: "category" },
-  { key: "riskOwnerId", param: "owner" },
-  { key: "releaseId", param: "release" },
   { key: "likelihood", param: "likelihood" },
   { key: "impact", param: "impact" },
+  { key: "riskOwnerQ", param: "owner" },
+  { key: "riskScoreMin", param: "scoreMin" },
+  { key: "riskScoreMax", param: "scoreMax" },
+  { key: "riskCodeQ", param: "riskCode" },
+  { key: "releaseCodeQ", param: "release" },
+  { key: "descriptionQ", param: "description" },
+  { key: "affectedAreaQ", param: "affectedArea" },
+  { key: "mitigationStrategyQ", param: "mitigation" },
+  { key: "notesQ", param: "notes" },
 ]);
 
 export const DRIFTS_FILTER_SCHEMA: FilterSchema = withTableSort([
@@ -164,13 +242,20 @@ export const DRIFTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "severity", param: "severity" },
   { key: "status", param: "status" },
   { key: "applicationId", param: "app" },
-  { key: "releaseId", param: "release" },
+  { key: "releaseCodeQ", param: "release" },
+  { key: "driftCodeQ", param: "driftCode" },
+  { key: "environmentName", param: "env" },
+  { key: "detectedDateQ", param: "detected" },
 ]);
 
 export const RISK_FACTORS_FILTER_SCHEMA: FilterSchema = [
   { key: "q", param: "q" },
   { key: "category", param: "category" },
   { key: "active", param: "active" },
+  { key: "factorNameQ", param: "factorName" },
+  { key: "weightMin", param: "weightMin" },
+  { key: "weightMax", param: "weightMax" },
+  { key: "descriptionQ", param: "description" },
   { key: "sort", param: "sort" },
   { key: "sortDir", param: "sortDir" },
   { key: "page", param: "page" },
@@ -178,6 +263,10 @@ export const RISK_FACTORS_FILTER_SCHEMA: FilterSchema = [
 
 export const DEPARTMENTS_FILTER_SCHEMA: FilterSchema = [
   { key: "q", param: "q" },
+  { key: "nameQ", param: "name" },
+  { key: "headQ", param: "head" },
+  { key: "appCountMin", param: "appMin" },
+  { key: "appCountMax", param: "appMax" },
   { key: "sort", param: "sort" },
   { key: "sortDir", param: "sortDir" },
   { key: "page", param: "page" },
@@ -188,6 +277,11 @@ export const APPLICATIONS_FILTER_SCHEMA: FilterSchema = [
   { key: "departmentId", param: "dept" },
   { key: "criticality", param: "criticality" },
   { key: "type", param: "type" },
+  { key: "productOwnerQ", param: "productOwner" },
+  { key: "techLeadQ", param: "techLead" },
+  { key: "nameQ", param: "name" },
+  { key: "envCountMin", param: "envMin" },
+  { key: "envCountMax", param: "envMax" },
   { key: "manageApp", param: "manageApp" },
   { key: "sort", param: "sort" },
   { key: "sortDir", param: "sortDir" },
@@ -200,6 +294,9 @@ export const USERS_FILTER_SCHEMA: FilterSchema = [
   { key: "role", param: "role" },
   { key: "accessLevel", param: "access" },
   { key: "status", param: "status" },
+  { key: "nameQ", param: "name" },
+  { key: "emailQ", param: "email" },
+  { key: "lastLoginQ", param: "lastLogin" },
   { key: "sort", param: "sort" },
   { key: "sortDir", param: "sortDir" },
   { key: "page", param: "page" },
@@ -207,11 +304,23 @@ export const USERS_FILTER_SCHEMA: FilterSchema = [
 
 export const ENVIRONMENTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "applicationId", param: "app" },
+  { key: "departmentId", param: "dept" },
+  { key: "environmentName", param: "env" },
+  { key: "status", param: "status" },
+  { key: "versionQ", param: "version" },
+  { key: "envOwnerQ", param: "envOwner" },
+  { key: "buildNumberQ", param: "build" },
+  { key: "deployDateQ", param: "deployDate" },
+  { key: "deployedByQ", param: "deployedBy" },
+  { key: "notesQ", param: "notes" },
 ]);
 
 export const REFERENCE_DATA_FILTER_SCHEMA: FilterSchema = [
   { key: "category", param: "cat" },
   { key: "active", param: "active" },
+  { key: "valueQ", param: "value" },
+  { key: "sortOrderMin", param: "sortMin" },
+  { key: "sortOrderMax", param: "sortMax" },
 ];
 
 export const SYSTEM_MAPPING_FILTER_SCHEMA: FilterSchema = [

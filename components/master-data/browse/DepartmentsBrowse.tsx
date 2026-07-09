@@ -5,9 +5,14 @@ import { TopBar } from "@/components/layout/TopBar";
 import { DEFAULT_PAGE_SIZE, pageCount, paginateRows, type SortDir } from "@/lib/master-data/table-utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { DEPARTMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { FilterRangeInputs, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { DEPARTMENT_COLUMNS, DEPARTMENT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  DEPARTMENT_COLUMNS,
+  DEPARTMENT_DEFAULT_HIDDEN_FILTER_KEYS,
+  DEPARTMENT_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { DEPARTMENT_SORT_PRESETS } from "@/lib/table-sort-presets";
 import {
@@ -71,11 +76,14 @@ export function DepartmentsBrowse() {
   const totalPages = pageCount(rows.length, DEFAULT_PAGE_SIZE);
   const pageRows = paginateRows(rows, page, DEFAULT_PAGE_SIZE);
 
-  const { isColumnVisible, columnPicker, prefsLoaded } = useTablePagePreferences(
+  const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "departments",
     DEPARTMENT_COLUMNS,
     DEPARTMENT_FILTER_FIELDS,
-    { lockedKeys: ["name", "actions"] }
+    {
+      lockedKeys: ["name", "actions"],
+      defaultHiddenFilters: DEPARTMENT_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -161,6 +169,34 @@ export function DepartmentsBrowse() {
       </div>
 
       {error && <MasterDataError message={error} onRetry={load} />}
+
+      <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
+        {isFilterVisible("nameQ") && (
+          <FilterTextInput
+            value={values.nameQ}
+            onChange={(v) => setFilter("nameQ", v)}
+            placeholder="Department…"
+          />
+        )}
+        {isFilterVisible("headQ") && (
+          <FilterTextInput
+            value={values.headQ}
+            onChange={(v) => setFilter("headQ", v)}
+            placeholder="Head…"
+          />
+        )}
+        {isFilterVisible("applicationCount") && (
+          <div className="inline-flex items-center gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Apps</span>
+            <FilterRangeInputs
+              minValue={values.appCountMin}
+              maxValue={values.appCountMax}
+              onMinChange={(v) => setFilter("appCountMin", v)}
+              onMaxChange={(v) => setFilter("appCountMax", v)}
+            />
+          </div>
+        )}
+      </TableFilterBar>
 
       <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={DEPARTMENT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar

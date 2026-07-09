@@ -11,6 +11,7 @@ import type { RiskFlag } from "@/lib/types";
 import { RefreshCw, ShieldAlert } from "lucide-react";
 import { taBtnSecondary } from "@/lib/styles";
 import { cn } from "@/lib/utils";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 const FLAG_STYLES = {
   high: {
@@ -41,10 +42,11 @@ export function DbAIRiskPanel({ releaseId }: { releaseId: string }) {
     setError(null);
     setUsedFallback(false);
     setContextLoading(true);
-    fetch(`/api/releases/${releaseId}/ai-context`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setContext)
-      .finally(() => setContextLoading(false));
+    return loadJsonEffect<DbRiskAgentContext>(
+      `/api/releases/${releaseId}/ai-context`,
+      setContext,
+      { label: "release-ai-context", onFinally: () => setContextLoading(false) },
+    );
   }, [releaseId]);
 
   const runAnalysis = useCallback(async () => {

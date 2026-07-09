@@ -337,6 +337,7 @@ export default function CommandDashboardContent() {
           href="/releases"
           accent="bg-indigo-400"
           className="mb-7"
+          titleAlign="center"
           onNavigate={onNavigate}
         >
           <DualDonutRow
@@ -345,12 +346,14 @@ export default function CommandDashboardContent() {
               data: data.pipelineDetail.byStatus,
               center: data.pipelineDetail.total,
               sub: "total",
+              info: "Share of releases in each lifecycle status for the selected period. Click a segment or legend item to open the filtered releases list.",
             }}
             right={{
               title: "Priority mix",
               data: data.pipelineDetail.byPriority,
               center: data.pipelineDetail.byPriority.reduce((s, p) => s + p.value, 0),
               sub: "prioritized",
+              info: "Share of releases by priority (P1–P4) for the selected period. Click a segment or legend item to open the filtered releases list.",
             }}
             chartTheme={chartTheme}
             onNavigate={onNavigate}

@@ -6,6 +6,16 @@ import {
   type UnifiedRelease,
 } from "./unified-releases";
 
+/** Filters that ship visible by default (existing Releases UX). */
+export const RELEASE_DEFAULT_VISIBLE_FILTER_KEYS = [
+  "departmentId",
+  "applicationId",
+  "environmentId",
+  "status",
+  "priority",
+  "impact",
+] as const;
+
 export type ReleaseListFilters = {
   departmentId: string;
   applicationId: string;
@@ -13,6 +23,31 @@ export type ReleaseListFilters = {
   status: string;
   priority: string;
   impact: string;
+  // Low-cardinality enums
+  approvalStatus: string;
+  rollbackPlan: string;
+  deploymentWindow: string;
+  changeFreeze: string;
+  regulatory: string;
+  vendorMaintenance: string;
+  releaseSize: string;
+  // Numeric ranges (empty = unset)
+  readinessMin: string;
+  readinessMax: string;
+  goLiveMin: string;
+  goLiveMax: string;
+  // Boolean / presence: "" | "1" | "0"
+  conflictFlag: string;
+  hasBlockers: string;
+  hasDependsOn: string;
+  // Free-text contains
+  releaseCodeQ: string;
+  nameQ: string;
+  notesQ: string;
+  // High-cardinality linked
+  releaseOwnerId: string;
+  stakeholderId: string;
+  // Sort / calendar (unchanged)
   sort: string;
   sortDir: string;
   period: string;
@@ -27,6 +62,25 @@ export const EMPTY_RELEASE_FILTERS: ReleaseListFilters = {
   status: "",
   priority: "",
   impact: "",
+  approvalStatus: "",
+  rollbackPlan: "",
+  deploymentWindow: "",
+  changeFreeze: "",
+  regulatory: "",
+  vendorMaintenance: "",
+  releaseSize: "",
+  readinessMin: "",
+  readinessMax: "",
+  goLiveMin: "",
+  goLiveMax: "",
+  conflictFlag: "",
+  hasBlockers: "",
+  hasDependsOn: "",
+  releaseCodeQ: "",
+  nameQ: "",
+  notesQ: "",
+  releaseOwnerId: "",
+  stakeholderId: "",
   sort: "",
   sortDir: "",
   period: "",
@@ -34,38 +88,62 @@ export const EMPTY_RELEASE_FILTERS: ReleaseListFilters = {
   tab: "",
 };
 
-export function filtersFromSearchParams(sp: URLSearchParams): ReleaseListFilters {
-  return {
-    departmentId: sp.get("dept") ?? "",
-    applicationId: sp.get("app") ?? "",
-    environmentId: sp.get("env") ?? "",
-    status: sp.get("status") ?? "",
-    priority: sp.get("priority") ?? "",
-    impact: sp.get("impact") ?? "",
-    sort: sp.get("sort") ?? "",
-    sortDir: sp.get("dir") ?? sp.get("sortDir") ?? "",
-    period: sp.get("period") ?? "",
-    anchor: sp.get("anchor") ?? "",
-    tab: sp.get("tab") ?? "",
-  };
-}
+/** URL param ↔ filter key (excludes sort/period which are not Manage Filters fields). */
+export const RELEASE_FILTER_URL_MAP: { key: keyof ReleaseListFilters; param: string }[] = [
+  { key: "departmentId", param: "dept" },
+  { key: "applicationId", param: "app" },
+  { key: "environmentId", param: "env" },
+  { key: "status", param: "status" },
+  { key: "priority", param: "priority" },
+  { key: "impact", param: "impact" },
+  { key: "approvalStatus", param: "approvalStatus" },
+  { key: "rollbackPlan", param: "rollbackPlan" },
+  { key: "deploymentWindow", param: "deploymentWindow" },
+  { key: "changeFreeze", param: "changeFreeze" },
+  { key: "regulatory", param: "regulatory" },
+  { key: "vendorMaintenance", param: "vendorMaintenance" },
+  { key: "releaseSize", param: "releaseSize" },
+  { key: "readinessMin", param: "readinessMin" },
+  { key: "readinessMax", param: "readinessMax" },
+  { key: "goLiveMin", param: "goLiveMin" },
+  { key: "goLiveMax", param: "goLiveMax" },
+  { key: "conflictFlag", param: "conflict" },
+  { key: "hasBlockers", param: "hasBlockers" },
+  { key: "hasDependsOn", param: "hasDependsOn" },
+  { key: "releaseCodeQ", param: "releaseCode" },
+  { key: "nameQ", param: "name" },
+  { key: "notesQ", param: "notes" },
+  { key: "releaseOwnerId", param: "owner" },
+  { key: "stakeholderId", param: "stakeholder" },
+];
 
-const RELEASE_FILTER_PARAMS = ["dept", "app", "env", "status", "priority", "impact", "sort", "dir", "sortDir", "period", "anchor", "tab"] as const;
+const META_PARAMS = ["sort", "dir", "sortDir", "period", "anchor", "tab"] as const;
+
+export function filtersFromSearchParams(sp: URLSearchParams): ReleaseListFilters {
+  const base = { ...EMPTY_RELEASE_FILTERS };
+  for (const { key, param } of RELEASE_FILTER_URL_MAP) {
+    base[key] = sp.get(param) ?? "";
+  }
+  base.sort = sp.get("sort") ?? "";
+  base.sortDir = sp.get("dir") ?? sp.get("sortDir") ?? "";
+  base.period = sp.get("period") ?? "";
+  base.anchor = sp.get("anchor") ?? "";
+  base.tab = sp.get("tab") ?? "";
+  return base;
+}
 
 export function filtersToSearchParams(
   filters: ReleaseListFilters,
   base?: URLSearchParams
 ): URLSearchParams {
   const params = new URLSearchParams(base?.toString() ?? "");
-  for (const key of RELEASE_FILTER_PARAMS) {
-    params.delete(key);
+  for (const { param } of RELEASE_FILTER_URL_MAP) params.delete(param);
+  for (const key of META_PARAMS) params.delete(key);
+
+  for (const { key, param } of RELEASE_FILTER_URL_MAP) {
+    const v = filters[key]?.trim();
+    if (v) params.set(param, v);
   }
-  if (filters.departmentId) params.set("dept", filters.departmentId);
-  if (filters.applicationId) params.set("app", filters.applicationId);
-  if (filters.environmentId) params.set("env", filters.environmentId);
-  if (filters.status) params.set("status", filters.status);
-  if (filters.priority) params.set("priority", filters.priority);
-  if (filters.impact) params.set("impact", filters.impact);
   if (filters.sort) params.set("sort", filters.sort);
   if (filters.sortDir) params.set("dir", filters.sortDir);
   if (filters.period) params.set("period", filters.period);
@@ -89,18 +167,39 @@ export function appendFilterQuery(url: string, filters: ReleaseListFilters): str
   return `${url}${sep}${extra.toString()}`;
 }
 
+const REFINEMENT_KEYS: (keyof ReleaseListFilters)[] = [
+  "departmentId",
+  "applicationId",
+  "environmentId",
+  "status",
+  "priority",
+  "impact",
+  "approvalStatus",
+  "rollbackPlan",
+  "deploymentWindow",
+  "changeFreeze",
+  "regulatory",
+  "vendorMaintenance",
+  "releaseSize",
+  "readinessMin",
+  "readinessMax",
+  "goLiveMin",
+  "goLiveMax",
+  "conflictFlag",
+  "hasBlockers",
+  "hasDependsOn",
+  "releaseCodeQ",
+  "nameQ",
+  "notesQ",
+  "releaseOwnerId",
+  "stakeholderId",
+  "period",
+  "anchor",
+  "tab",
+];
+
 export function hasActiveFilters(filters: ReleaseListFilters): boolean {
-  return !!(
-    filters.departmentId ||
-    filters.applicationId ||
-    filters.environmentId ||
-    filters.status ||
-    filters.priority ||
-    filters.impact ||
-    filters.period ||
-    filters.anchor ||
-    filters.tab
-  );
+  return REFINEMENT_KEYS.some((k) => !!filters[k]?.trim());
 }
 
 export type DbReleaseFilterRow = {
@@ -203,7 +302,17 @@ export function filterLabel(
     const env = environments.find((e) => e.id === filters.environmentId);
     parts.push(env ? `${env.application.name} — ${env.name}` : "Environment");
   }
-  return parts.join(" · ");
+  if (filters.status) parts.push(filters.status);
+  if (filters.priority) parts.push(filters.priority);
+  if (filters.impact) parts.push(`Impact: ${filters.impact}`);
+  if (filters.approvalStatus) parts.push(filters.approvalStatus);
+  if (filters.conflictFlag === "1") parts.push("Conflicts");
+  if (filters.conflictFlag === "0") parts.push("No conflicts");
+  if (filters.hasBlockers === "1") parts.push("Has blockers");
+  if (filters.hasDependsOn === "1") parts.push("Has depends-on");
+  if (filters.releaseCodeQ) parts.push(`ID: ${filters.releaseCodeQ}`);
+  if (filters.nameQ) parts.push(`Name: ${filters.nameQ}`);
+  return parts.join(" · ") || null;
 }
 
 export { DEMO_TEAM_DEPARTMENT, DEMO_TEAM_APPLICATIONS };

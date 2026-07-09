@@ -5,8 +5,12 @@ import { GitCompareArrows } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { DRIFT_COLUMNS, DRIFT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  DRIFT_COLUMNS,
+  DRIFT_DEFAULT_HIDDEN_FILTER_KEYS,
+  DRIFT_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { DRIFT_SORT_PRESETS } from "@/lib/table-sort-presets";
@@ -17,6 +21,7 @@ import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { DRIFTS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { safeFetchJson } from "@/lib/safe-fetch";
 
 type ReferenceDataRow = { id: string; category: string; value: string; sortOrder: number; active: boolean };
 
@@ -75,25 +80,36 @@ export default function DriftDashboardContent() {
   const [allDrifts, setAllDrifts] = useState<DriftRow[]>([]);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/reference-data?category=drift_type").then((r) => (r.ok ? r.json() : [])),
-      fetch("/api/applications").then((r) => (r.ok ? r.json() : [])),
-      fetch("/api/drifts").then((r) => (r.ok ? r.json() : [])),
-    ]).then(([t, a, d]) => {
-      setDriftTypes(t);
-      setApps(a);
-      setAllDrifts(d);
-    });
+    const ac = new AbortController();
+    void (async () => {
+      const [typesRes, appsRes, driftsRes] = await Promise.all([
+        safeFetchJson<ReferenceDataRow[]>("/api/reference-data?category=drift_type", { signal: ac.signal, label: "drift-types" }),
+        safeFetchJson<{ id: string; name: string }[]>("/api/applications", { signal: ac.signal, label: "applications" }),
+        safeFetchJson<DriftRow[]>("/api/drifts", { signal: ac.signal, label: "drifts" }),
+      ]);
+      if (ac.signal.aborted) return;
+      if (typesRes.ok) setDriftTypes(typesRes.data);
+      if (appsRes.ok) setApps(appsRes.data);
+      if (driftsRes.ok) setAllDrifts(driftsRes.data);
+    })();
+    return () => ac.abort();
   }, []);
 
   const severities = useMemo(() => [...new Set(allDrifts.map((d) => d.severity))].sort(), [allDrifts]);
   const statuses = useMemo(() => [...new Set(allDrifts.map((d) => d.status))].sort(), [allDrifts]);
+  const environments = useMemo(
+    () => [...new Set(allDrifts.map((d) => d.environmentName).filter(Boolean))].sort(),
+    [allDrifts]
+  );
 
   const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "drifts",
     DRIFT_COLUMNS,
     DRIFT_FILTER_FIELDS,
-    { lockedKeys: ["driftCode"] }
+    {
+      lockedKeys: ["driftCode"],
+      defaultHiddenFilters: DRIFT_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -130,6 +146,35 @@ export default function DriftDashboardContent() {
               <option value="">All applications</option>
               {apps.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </FilterSelect>
+          )}
+          {isFilterVisible("releaseCodeQ") && (
+            <FilterTextInput
+              value={values.releaseCodeQ}
+              onChange={(v) => setFilter("releaseCodeQ", v)}
+              placeholder="Release…"
+            />
+          )}
+          {isFilterVisible("driftCodeQ") && (
+            <FilterTextInput
+              value={values.driftCodeQ}
+              onChange={(v) => setFilter("driftCodeQ", v)}
+              placeholder="Drift ID…"
+            />
+          )}
+          {isFilterVisible("environmentName") && (
+            <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
+              <option value="">All environments</option>
+              {environments.map((e) => (
+                <option key={e} value={e}>{e}</option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("detectedDateQ") && (
+            <FilterTextInput
+              value={values.detectedDateQ}
+              onChange={(v) => setFilter("detectedDateQ", v)}
+              placeholder="Detected (YYYY-MM-DD)…"
+            />
           )}
         </TableFilterBar>
       )}

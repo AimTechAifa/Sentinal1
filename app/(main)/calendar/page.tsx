@@ -11,7 +11,7 @@ import { FilterSelect } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { useFilterPreferences } from "@/hooks/useFilterPreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
-import { RELEASE_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { CALENDAR_FILTER_FIELDS } from "@/lib/table-page-columns";
 import { periodTitle, shiftPeriodAnchor } from "@/lib/calendar-schedule";
 import { filterCalendarEvents, type CalendarEventApi } from "@/lib/calendar-table";
 import { inPeriod, periodRange, type Period } from "@/lib/period-range";
@@ -25,7 +25,6 @@ import {
 import { cn } from "@/lib/utils";
 
 type CalendarDisplay = "calendar" | "timeline" | "table";
-type TabMode = "releases" | "environments";
 
 export default function CalendarPage() {
   const {
@@ -39,13 +38,11 @@ export default function CalendarPage() {
     calendarEvents,
     setPeriod,
     setAnchor,
-    setTab,
   } = useReleaseFilters();
 
-  const { filterPicker, isFilterVisible } = useFilterPreferences("calendar", RELEASE_FILTER_FIELDS);
+  const { filterPicker, isFilterVisible } = useFilterPreferences("calendar", CALENDAR_FILTER_FIELDS);
 
   const period = (filters.period || "month") as Period;
-  const tab = (filters.tab || "releases") as TabMode;
   const viewDate = useMemo(() => {
     if (filters.anchor) {
       const d = new Date(filters.anchor);
@@ -161,10 +158,7 @@ export default function CalendarPage() {
         <div className="px-5 pb-4 pt-4">
           <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0">
-              <div className="text-[12px] font-semibold text-slate-400 dark:text-white/45">
-                Release Desk / Calendar
-              </div>
-              <div className="mt-0.5 flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">Release Calendar</h1>
                 {countBadge && (
                   <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-200">
@@ -172,7 +166,7 @@ export default function CalendarPage() {
                   </span>
                 )}
               </div>
-              <CalendarStatusLegend className="mt-2" />
+              <CalendarStatusLegend className="mt-2.5" />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -204,7 +198,7 @@ export default function CalendarPage() {
           </div>
 
           {/* A3: keep ◀ ▶ as window shifter; period dropdown above remains grain control */}
-          <div className="mb-4 flex items-center justify-center gap-4">
+          <div className="mb-1 flex items-center justify-center gap-4">
             <button
               type="button"
               onClick={prevPeriod}
@@ -223,33 +217,6 @@ export default function CalendarPage() {
               aria-label="Next period"
             >
               <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-6 border-b border-gray-100 dark:border-slate-700">
-            <button
-              type="button"
-              onClick={() => setTab("releases")}
-              className={cn(
-                "border-b-2 pb-3 text-xs font-bold uppercase tracking-wide transition-colors",
-                tab === "releases"
-                  ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                  : "border-transparent text-gray-400 hover:text-gray-600",
-              )}
-            >
-              Release Calendar
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab("environments")}
-              className={cn(
-                "border-b-2 pb-3 text-xs font-bold uppercase tracking-wide transition-colors",
-                tab === "environments"
-                  ? "border-brand-500 text-brand-600 dark:text-brand-400"
-                  : "border-transparent text-gray-400 hover:text-gray-600",
-              )}
-            >
-              Environment Bookings
             </button>
           </div>
         </div>
@@ -275,24 +242,14 @@ export default function CalendarPage() {
               <MonthGridCalendar events={filteredEvents} viewDate={viewDate} />
             </>
           ) : display === "timeline" ? (
-            tab === "releases" ? (
-              <ReleaseTimelineView
-                releases={timelineReleases}
-                periodStart={periodStart}
-                periodEnd={periodEnd}
-                period={period}
-              />
-            ) : (
-              <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:bg-[var(--card)] dark:text-white/55">
-                Timeline view is available for releases. Switch to the Release Calendar tab.
-              </div>
-            )
-          ) : tab === "releases" ? (
-            <CalendarTableView events={filteredEvents} dataLoading={loading} />
+            <ReleaseTimelineView
+              releases={timelineReleases}
+              periodStart={periodStart}
+              periodEnd={periodEnd}
+              period={period}
+            />
           ) : (
-            <div className="rounded-xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500 dark:border-slate-700 dark:bg-[var(--card)] dark:text-white/55">
-              Table view is available for releases. Switch to the Release Calendar tab.
-            </div>
+            <CalendarTableView events={filteredEvents} dataLoading={loading} />
           )}
         </div>
       </section>

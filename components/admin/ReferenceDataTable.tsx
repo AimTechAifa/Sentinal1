@@ -5,6 +5,7 @@ import { Upload, Plus, Trash2, Save } from "lucide-react";
 import { DataTable, tableCell, tableHeadRow, tableRow } from "@/components/ui/data-table";
 import { cn, formatDate } from "@/lib/utils";
 import { taBtnPrimary, taBtnSecondary } from "@/lib/styles";
+import { loadJsonEffect, safeFetchJson } from "@/lib/safe-fetch";
 
 type Column<T> = {
   key: string;
@@ -56,30 +57,36 @@ export function ReferenceDataTable<T extends { id: string }>({
 
   const saveNew = async () => {
     if (!draft) return;
-    await fetch(apiPath, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) });
+    await safeFetchJson(apiPath, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(draft),
+      label: "reference-data-create",
+    });
     setDraft(null);
     onRefresh();
   };
 
   const saveEdit = async (id: string) => {
-    await fetch(`${apiPath}/${id}`, {
+    await safeFetchJson(`${apiPath}/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editRow),
+      label: "reference-data-update",
     });
     setEditingId(null);
     onRefresh();
   };
 
   const remove = async (id: string) => {
-    await fetch(`${apiPath}/${id}`, { method: "DELETE" });
+    await safeFetchJson(`${apiPath}/${id}`, { method: "DELETE", label: "reference-data-delete" });
     onRefresh();
   };
 
   const uploadCsv = async (file: File) => {
     const form = new FormData();
     form.append("file", file);
-    await fetch(`/api/import/${importEntity}`, { method: "POST", body: form });
+    await safeFetchJson(`/api/import/${importEntity}`, { method: "POST", body: form, label: "reference-data-import" });
     onRefresh();
   };
 
@@ -204,8 +211,10 @@ export function ReferenceDataTable<T extends { id: string }>({
 export function useReferenceData<T>(url: string) {
   const [rows, setRows] = useState<T[]>([]);
   const refresh = useCallback(() => {
-    fetch(url).then((r) => r.json()).then(setRows);
+    return loadJsonEffect<T[]>(url, setRows, { label: "reference-data" });
   }, [url]);
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    return refresh();
+  }, [refresh]);
   return { rows, refresh };
 }

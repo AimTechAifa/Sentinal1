@@ -6,10 +6,14 @@ import { Database, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { REFERENCE_DATA_FILTER_SCHEMA } from "@/lib/table-filters";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { FilterRangeInputs, FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { REFERENCE_DATA_COLUMNS, REFERENCE_DATA_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  REFERENCE_DATA_COLUMNS,
+  REFERENCE_DATA_DEFAULT_HIDDEN_FILTER_KEYS,
+  REFERENCE_DATA_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TableToolbar } from "@/components/ui/data-table";
 import {
   apiJson,
@@ -106,7 +110,10 @@ export function ReferenceDataManager() {
     "reference-data",
     REFERENCE_DATA_COLUMNS,
     REFERENCE_DATA_FILTER_FIELDS,
-    { lockedKeys: ["value", "actions"] }
+    {
+      lockedKeys: ["value", "actions"],
+      defaultHiddenFilters: REFERENCE_DATA_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -258,6 +265,24 @@ export function ReferenceDataManager() {
               <option value="true">Active only</option>
               <option value="false">Inactive only</option>
             </FilterSelect>
+          )}
+          {isFilterVisible("valueQ") && (
+            <FilterTextInput
+              value={values.valueQ}
+              onChange={(v) => setFilter("valueQ", v)}
+              placeholder="Value…"
+            />
+          )}
+          {isFilterVisible("sortOrder") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Sort</span>
+              <FilterRangeInputs
+                minValue={values.sortOrderMin}
+                maxValue={values.sortOrderMax}
+                onMinChange={(v) => setFilter("sortOrderMin", v)}
+                onMaxChange={(v) => setFilter("sortOrderMax", v)}
+              />
+            </div>
           )}
         </TableFilterBar>
 

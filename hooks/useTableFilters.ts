@@ -86,12 +86,15 @@ export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema, optio
   const [rows, setRows] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
   const { sortKey, sortDir, toggleSort } = useTableSort(
     values,
     setFilter,
     options.defaultSortKey ?? "",
     options.defaultSortDir ?? "asc"
   );
+
+  const refetch = useCallback(() => setReloadToken((n) => n + 1), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -105,7 +108,7 @@ export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema, optio
     return () => {
       cancelled = true;
     };
-  }, [apiPath, apiUrl]);
+  }, [apiPath, apiUrl, reloadToken]);
 
   const sortedRows = useMemo(() => {
     if (!options.sortAccessors) return rows;
@@ -131,5 +134,6 @@ export function useFilteredFetch<T>(apiPath: string, schema: FilterSchema, optio
     sortKey,
     sortDir,
     toggleSort,
+    refetch,
   };
 }

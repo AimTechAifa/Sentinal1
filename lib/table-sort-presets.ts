@@ -53,6 +53,12 @@ export const MAINTENANCE_SORT_PRESETS: TableSortPreset[] = [
   { id: "impact-high", label: "Highest impact", sort: "impact", sortDir: "desc" },
 ];
 
+export const INTEGRATION_FLOW_SORT_PRESETS: TableSortPreset[] = [
+  { id: "flow-az", label: "Flow ID (A → Z)", sort: "flowCode", sortDir: "asc" },
+  { id: "source-az", label: "Source system", sort: "sourceSystem", sortDir: "asc" },
+  { id: "frequency", label: "Frequency", sort: "frequency", sortDir: "asc" },
+];
+
 export const RISK_SORT_PRESETS: TableSortPreset[] = [
   { id: "score-high", label: "Highest risk score", sort: "riskScore", sortDir: "desc" },
   { id: "score-low", label: "Lowest risk score", sort: "riskScore", sortDir: "asc" },

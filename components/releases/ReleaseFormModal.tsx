@@ -5,6 +5,7 @@ import { RefreshCw } from "lucide-react";
 import { taBtnPrimary, taBtnSecondary, taInput } from "@/lib/styles";
 import { generateReleaseId, normalizeProgramProject } from "@/lib/release-id";
 import { cn } from "@/lib/utils";
+import { safeFetchJson } from "@/lib/safe-fetch";
 
 export type ReleaseFormData = {
   id?: string;
@@ -101,13 +102,14 @@ export function ReleaseFormModal({
       ...form,
       programProject: normalizeProgramProject(form.programProject) ?? "N/A",
     };
-    const res = await fetch(isEdit ? `/api/releases/${initial!.id}` : "/api/releases", {
+    const result = await safeFetchJson(isEdit ? `/api/releases/${initial!.id}` : "/api/releases", {
       method: isEdit ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      label: "release-form-save",
     });
     setSaving(false);
-    if (res.ok) {
+    if (result.ok) {
       onSaved();
       onClose();
     }

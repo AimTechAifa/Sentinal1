@@ -18,6 +18,7 @@ import {
 import { useThemeMode } from "@/context/ThemeModeContext";
 import { type DashboardPeriod } from "@/lib/dashboard-period";
 import { cn } from "@/lib/utils";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 export type TopIssueSeverity = "rose" | "amber" | "sky";
 export type TopIssueIcon = "Ban" | "ShieldAlert" | "Clock" | "Server" | "Users";
@@ -172,15 +173,12 @@ export function NeedsYourDecisionPanel({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let cancelled = false;
     setLoading(true);
-    fetch(`/api/dashboard?period=${period}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => !cancelled && d && setData({ topIssues: d.topIssues ?? [], pipeline: d.pipeline ?? [] }))
-      .finally(() => !cancelled && setLoading(false));
-    return () => {
-      cancelled = true;
-    };
+    return loadJsonEffect<{ topIssues?: DashboardSlice["topIssues"]; pipeline?: DashboardSlice["pipeline"] }>(
+      `/api/dashboard?period=${period}`,
+      (d) => setData({ topIssues: d.topIssues ?? [], pipeline: d.pipeline ?? [] }),
+      { label: "dashboard", onFinally: () => setLoading(false) },
+    );
   }, [period]);
 
   const issueSeverityMix = useMemo(() => {

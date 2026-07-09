@@ -11,6 +11,7 @@ import { AdvancedCard } from "@/components/ui/advanced-card";
 import { taBtnPrimary, taBtnSecondary, taInput } from "@/lib/styles";
 import { formatDate, formatDateTime, cn } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth/roles";
+import { loadJsonEffect, safeFetchJson } from "@/lib/safe-fetch";
 import { CalendarCheck, GitBranch, History, Network, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -63,46 +64,69 @@ export function DbReleaseDetail({ id }: { id: string }) {
   const [lookups, setLookups] = useState<{ departments: { id: string; name: string }[]; applications: { id: string; name: string }[]; releases: { id: string; releaseCode: string }[] }>({ departments: [], applications: [], releases: [] });
 
   const load = useCallback(() => {
-    fetch(`/api/releases/${id}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        setRelease(data);
-        setLoading(false);
-      });
+    void (async () => {
+      const result = await safeFetchJson<ReleaseDetail>(`/api/releases/${id}`, { label: "release-detail" });
+      setRelease(result.ok ? result.data : null);
+      setLoading(false);
+    })();
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => {
-    fetch("/api/auth/me").then((r) => r.json()).then((d) => setUser(d.user));
-    Promise.all([
-      fetch("/api/departments").then((r) => r.json()),
-      fetch("/api/applications").then((r) => r.json()),
-      fetch("/api/releases").then((r) => r.json()),
-    ]).then(([departments, applications, releases]) => setLookups({ departments, applications, releases }));
+    const cleanupAuth = loadJsonEffect<{ user: SessionUser }>(
+      "/api/auth/me",
+      (d) => setUser(d.user),
+      { label: "auth-me" },
+    );
+    const ac = new AbortController();
+    void (async () => {
+      const [deptRes, appRes, relRes] = await Promise.all([
+        safeFetchJson<{ id: string; name: string }[]>("/api/departments", { signal: ac.signal, label: "departments" }),
+        safeFetchJson<{ id: string; name: string }[]>("/api/applications", { signal: ac.signal, label: "applications" }),
+        safeFetchJson<{ id: string; releaseCode: string }[]>("/api/releases", { signal: ac.signal, label: "releases" }),
+      ]);
+      if (ac.signal.aborted) return;
+      setLookups({
+        departments: deptRes.ok ? deptRes.data : [],
+        applications: appRes.ok ? appRes.data : [],
+        releases: relRes.ok ? relRes.data : [],
+      });
+    })();
+    return () => {
+      cleanupAuth();
+      ac.abort();
+    };
   }, []);
 
   const canEdit = user?.role === "editor" || user?.role === "admin";
 
   const patchStatus = async (status: string) => {
-    await fetch(`/api/releases/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+    await safeFetchJson(`/api/releases/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+      label: "release-patch-status",
+    });
     load();
   };
 
   const recordDecision = async (detail: string) => {
-    await fetch(`/api/releases/${id}/events`, {
+    await safeFetchJson(`/api/releases/${id}/events`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "decision", detail }),
+      label: "release-record-decision",
     });
     load();
   };
 
   const addNote = async () => {
     if (!note.trim()) return;
-    await fetch(`/api/releases/${id}/events`, {
+    await safeFetchJson(`/api/releases/${id}/events`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "note", detail: note }),
+      label: "release-add-note",
     });
     setNote("");
     load();
@@ -110,7 +134,7 @@ export function DbReleaseDetail({ id }: { id: string }) {
 
   const remove = async () => {
     if (!confirm("Delete this release?")) return;
-    await fetch(`/api/releases/${id}`, { method: "DELETE" });
+    await safeFetchJson(`/api/releases/${id}`, { method: "DELETE", label: "release-delete" });
     router.push("/releases");
   };
 

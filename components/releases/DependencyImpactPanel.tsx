@@ -6,15 +6,18 @@ import { StatusBadge } from "@/components/badges/StatusBadge";
 import { AdvancedCard } from "@/components/ui/advanced-card";
 import { formatDate } from "@/lib/utils";
 import type { DependencyImpactReport } from "@/lib/dependency-impact";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 import { AlertTriangle, ArrowRight, Network } from "lucide-react";
 
 export function DependencyImpactPanel({ releaseId }: { releaseId: string }) {
   const [report, setReport] = useState<DependencyImpactReport | null>(null);
 
   useEffect(() => {
-    fetch(`/api/releases/${releaseId}/impact`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setReport);
+    return loadJsonEffect<DependencyImpactReport>(
+      `/api/releases/${releaseId}/impact`,
+      setReport,
+      { label: "release-impact" },
+    );
   }, [releaseId]);
 
   if (!report) return null;

@@ -15,6 +15,7 @@ export async function GET(req: Request) {
       applications: { include: { application: true } },
       dependsOn: { include: { dependsOnRelease: true } },
       stakeholders: { include: { user: true } },
+      releaseOwner: { select: { id: true, userId: true, name: true } },
     },
     orderBy: releaseListOrderBy(params),
   });

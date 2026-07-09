@@ -10,6 +10,7 @@ import { isSyntheticReleaseId } from "@/components/releases/SyntheticReleaseDeta
 import { SyntheticDependenciesPage } from "@/components/releases/SyntheticDependenciesPage";
 import { DependencyImpactPanel } from "@/components/releases/DependencyImpactPanel";
 import { ArrowLeft, Network } from "lucide-react";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 type ReleaseDetail = {
   id: string;
@@ -33,8 +34,20 @@ function DbDependenciesPage({ id }: { id: string }) {
   const [edges, setEdges] = useState<MappingEdge[]>([]);
 
   useEffect(() => {
-    fetch(`/api/releases/${id}`).then((r) => r.json()).then(setRelease);
-    fetch("/api/system-mapping").then((r) => r.json()).then((d) => setEdges(d.edges ?? []));
+    const cleanupRelease = loadJsonEffect<ReleaseDetail>(
+      `/api/releases/${id}`,
+      setRelease,
+      { label: "release-dependencies" },
+    );
+    const cleanupMapping = loadJsonEffect<{ edges?: MappingEdge[] }>(
+      "/api/system-mapping",
+      (d) => setEdges(d.edges ?? []),
+      { label: "system-mapping" },
+    );
+    return () => {
+      cleanupRelease();
+      cleanupMapping();
+    };
   }, [id]);
 
   const { nodes, flowEdges } = useMemo(() => {

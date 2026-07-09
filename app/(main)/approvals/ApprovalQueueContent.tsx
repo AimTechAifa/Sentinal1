@@ -7,8 +7,12 @@ import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { APPROVAL_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { APPROVAL_COLUMNS, APPROVALS_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  APPROVAL_COLUMNS,
+  APPROVALS_DEFAULT_HIDDEN_FILTER_KEYS,
+  APPROVALS_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { formatDate } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
@@ -16,6 +20,7 @@ import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { APPROVALS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { safeFetchJson } from "@/lib/safe-fetch";
 
 type ApprovalRow = {
   id: string;
@@ -69,21 +74,35 @@ export default function ApprovalQueueContent() {
     },
   });
   const [allApprovals, setAllApprovals] = useState<ApprovalRow[]>([]);
-  const [users, setUsers] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/approvals").then((r) => (r.ok ? r.json() : [])).then(setAllApprovals);
-    fetch("/api/users").then((r) => (r.ok ? r.json() : [])).then(setUsers);
+    const ac = new AbortController();
+    void (async () => {
+      const approvalsRes = await safeFetchJson<typeof allApprovals>("/api/approvals", {
+        signal: ac.signal,
+        label: "approvals",
+      });
+      if (ac.signal.aborted) return;
+      if (approvalsRes.ok) setAllApprovals(approvalsRes.data);
+    })();
+    return () => ac.abort();
   }, []);
 
   const decisions = useMemo(() => [...new Set(allApprovals.map((a) => a.decision))].sort(), [allApprovals]);
   const types = useMemo(() => [...new Set(allApprovals.map((a) => a.approvalType))].sort(), [allApprovals]);
+  const roles = useMemo(
+    () => [...new Set(allApprovals.map((a) => a.approver.role).filter(Boolean))].sort(),
+    [allApprovals]
+  );
 
   const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "approvals",
     APPROVAL_COLUMNS,
     APPROVALS_FILTER_FIELDS,
-    { lockedKeys: ["approvalCode"] }
+    {
+      lockedKeys: ["approvalCode"],
+      defaultHiddenFilters: APPROVALS_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -107,11 +126,69 @@ export default function ApprovalQueueContent() {
               {types.map((t) => <option key={t} value={t}>{t}</option>)}
             </FilterSelect>
           )}
-          {isFilterVisible("approverId") && (
-            <FilterSelect value={values.approverId} onChange={(v) => setFilter("approverId", v)}>
-              <option value="">All approvers</option>
-              {users.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
+          {isFilterVisible("approverQ") && (
+            <FilterTextInput
+              value={values.approverQ}
+              onChange={(v) => setFilter("approverQ", v)}
+              placeholder="Approver name…"
+            />
+          )}
+          {isFilterVisible("releaseCodeQ") && (
+            <FilterTextInput
+              value={values.releaseCodeQ}
+              onChange={(v) => setFilter("releaseCodeQ", v)}
+              placeholder="Release ID…"
+            />
+          )}
+          {isFilterVisible("releaseNameQ") && (
+            <FilterTextInput
+              value={values.releaseNameQ}
+              onChange={(v) => setFilter("releaseNameQ", v)}
+              placeholder="Release name…"
+            />
+          )}
+          {isFilterVisible("approvalCodeQ") && (
+            <FilterTextInput
+              value={values.approvalCodeQ}
+              onChange={(v) => setFilter("approvalCodeQ", v)}
+              placeholder="Approval ID…"
+            />
+          )}
+          {isFilterVisible("approverRole") && (
+            <FilterSelect value={values.approverRole} onChange={(v) => setFilter("approverRole", v)}>
+              <option value="">All roles</option>
+              {roles.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
             </FilterSelect>
+          )}
+          {isFilterVisible("submittedDateQ") && (
+            <FilterTextInput
+              value={values.submittedDateQ}
+              onChange={(v) => setFilter("submittedDateQ", v)}
+              placeholder="Submitted (YYYY-MM-DD)…"
+            />
+          )}
+          {isFilterVisible("decisionDateQ") && (
+            <FilterTextInput
+              value={values.decisionDateQ}
+              onChange={(v) => setFilter("decisionDateQ", v)}
+              placeholder="Decision (YYYY-MM-DD)…"
+            />
+          )}
+          {isFilterVisible("commentsQ") && (
+            <FilterTextInput
+              value={values.commentsQ}
+              onChange={(v) => setFilter("commentsQ", v)}
+              placeholder="Comments…"
+            />
+          )}
+          {isFilterVisible("cabMeetingIdQ") && (
+            <FilterTextInput
+              value={values.cabMeetingIdQ}
+              onChange={(v) => setFilter("cabMeetingIdQ", v)}
+              placeholder="CAB meeting…"
+            />
           )}
         </TableFilterBar>
       )}

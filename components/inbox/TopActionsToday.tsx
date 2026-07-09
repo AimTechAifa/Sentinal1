@@ -7,6 +7,7 @@ import { AdvancedCard } from "@/components/ui/advanced-card";
 import type { InboxBriefingContext } from "@/lib/db-ai-context";
 import type { TodayAction } from "@/lib/top-actions";
 import { cn } from "@/lib/utils";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 import { ArrowRight, Zap } from "lucide-react";
 
 const URGENCY_STYLES = {
@@ -22,13 +23,14 @@ export function TopActionsToday({ filterQuery }: { filterQuery?: string }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/actions/today?period=month${filterQuery ?? ""}`)
-      .then((r) => (r.ok ? r.json() : { actions: [] }))
-      .then((d) => {
+    return loadJsonEffect<{ actions?: TodayAction[]; briefingContext?: InboxBriefingContext }>(
+      `/api/actions/today?period=month${filterQuery ?? ""}`,
+      (d) => {
         setActions(d.actions ?? []);
         setBriefingContext(d.briefingContext ?? null);
-      })
-      .finally(() => setLoading(false));
+      },
+      { label: "actions-today", onFinally: () => setLoading(false) },
+    );
   }, [filterQuery]);
 
   if (loading) {

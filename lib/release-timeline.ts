@@ -11,34 +11,48 @@ import type { UnifiedRelease } from "@/lib/unified-releases";
 
 export type TimelineTone = "rose" | "amber" | "emerald" | "indigo" | "violet";
 
+/**
+ * Balloon / legend colors — solid hex so heads never render as white/black
+ * (which disappear on light or dark canvases).
+ */
 export const TIMELINE_TONES: Record<
   TimelineTone,
-  { chip: string; pill: string; track: string }
+  { chip: string; pill: string; track: string; solid: string }
 > = {
   rose: {
-    chip: "bg-rose-500",
-    pill: "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300",
-    track: "from-rose-400 to-rose-500",
+    // Blocked — vivid red (not near-black)
+    chip: "bg-red-500",
+    pill: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300",
+    track: "from-red-400 to-red-500",
+    solid: "#ef4444",
   },
   amber: {
-    chip: "bg-amber-500",
-    pill: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
-    track: "from-amber-400 to-orange-500",
+    // At Risk — orange
+    chip: "bg-orange-500",
+    pill: "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300",
+    track: "from-orange-400 to-amber-500",
+    solid: "#f97316",
   },
   emerald: {
+    // Approved — green
     chip: "bg-emerald-500",
     pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
     track: "from-emerald-400 to-teal-500",
+    solid: "#10b981",
   },
   indigo: {
-    chip: "bg-indigo-500",
-    pill: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
-    track: "from-indigo-400 to-blue-500",
+    // In Testing — bright blue (not pale/white)
+    chip: "bg-sky-500",
+    pill: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300",
+    track: "from-sky-400 to-blue-500",
+    solid: "#0ea5e9",
   },
   violet: {
-    chip: "bg-violet-500",
-    pill: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300",
-    track: "from-violet-400 to-purple-500",
+    // Planning / CAB — purple (not grey)
+    chip: "bg-fuchsia-500",
+    pill: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-300",
+    track: "from-fuchsia-400 to-purple-500",
+    solid: "#d946ef",
   },
 };
 
@@ -103,6 +117,30 @@ export type TimelineMilestone = {
   _x: number;
 };
 
+/** A single release or a density cluster of nearby releases (year / dot timeline). */
+export type TimelineMarker =
+  | {
+      kind: "single";
+      id: string;
+      side: "up" | "down";
+      _x: number;
+      /** Stem length in px — staggered when same-side neighbors are close. */
+      stemHeight: number;
+      milestone: TimelineMilestone;
+    }
+  | {
+      kind: "cluster";
+      id: string;
+      side: "up" | "down";
+      _x: number;
+      stemHeight: number;
+      count: number;
+      /** Dominant / first tone for the cluster dot. */
+      tone: TimelineTone;
+      dateLabel: string;
+      members: TimelineMilestone[];
+    };
+
 export function formatTimelineDate(date: string | Date): string {
   const d = new Date(date);
   return d.toLocaleDateString("en-AU", { day: "numeric", month: "short" });
@@ -121,23 +159,72 @@ export function buildStickyNote(release: UnifiedRelease): string | null {
 }
 
 const CARD_WIDTH = 200;
-const MIN_GAP = CARD_WIDTH + 28;
+const DEFAULT_MIN_GAP = CARD_WIDTH + 28;
+/**
+ * Same-calendar-day releases share one cluster marker (dots would stack).
+ * Remaining markers are then spread evenly across the track so dense months
+ * don't pile up while leaving empty canvas on either side.
+ */
+export const DOT_LABEL_MIN_GAP = 96;
+/** Minimum horizontal slot per marker when sizing a year track. */
+export const DOT_SLOT_WIDTH = 108;
 
-function dateToX(date: string | Date, start: Date, end: Date, innerWidth: number, padding: number): number {
+export function dateToX(
+  date: string | Date,
+  start: Date,
+  end: Date,
+  trackWidth: number,
+  padding = 90,
+): number {
+  const innerWidth = Math.max(trackWidth - padding * 2, 120);
   const msRange = Math.max(end.getTime() - start.getTime(), 1);
   const t = (new Date(date).getTime() - start.getTime()) / msRange;
   return padding + Math.min(1, Math.max(0, t)) * innerWidth;
 }
 
-/** Position milestones on the track; resolve same-day / close-date collisions. */
+export type LayoutTimelineOptions = {
+  /** Minimum horizontal gap between same-side milestones (card layout). */
+  minGap?: number;
+};
+
+function toMilestone(
+  r: UnifiedRelease,
+  periodStart: Date,
+  periodEnd: Date,
+  trackWidth: number,
+  padding: number,
+  side: "up" | "down",
+  x?: number,
+): TimelineMilestone {
+  const mapped = mapReleaseStatusToTimeline(r.status);
+  const _x = x ?? dateToX(r.date, periodStart, periodEnd, trackWidth, padding);
+  return {
+    id: r.id,
+    code: r.code,
+    name: r.name,
+    date: r.date,
+    dateLabel: formatTimelineDate(r.date),
+    period: formatTimelinePeriod(r.date),
+    status: mapped.label,
+    tone: mapped.tone,
+    icon: mapped.icon,
+    side,
+    href: r.href,
+    note: buildStickyNote(r),
+    _x,
+  };
+}
+
+/** Position milestones on the track; resolve same-day / close-date collisions (month/quarter cards). */
 export function layoutTimelineMilestones(
   releases: UnifiedRelease[],
   periodStart: Date,
   periodEnd: Date,
   trackWidth: number,
+  options?: LayoutTimelineOptions,
 ): TimelineMilestone[] {
   const padding = 90;
-  const innerWidth = Math.max(trackWidth - 180, 120);
+  const minGap = options?.minGap ?? DEFAULT_MIN_GAP;
   const sorted = [...releases].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
@@ -145,41 +232,163 @@ export function layoutTimelineMilestones(
   const placed: { x: number; side: "up" | "down" }[] = [];
 
   return sorted.map((r, i) => {
-    const mapped = mapReleaseStatusToTimeline(r.status);
-    let x = dateToX(r.date, periodStart, periodEnd, innerWidth, padding);
+    let x = dateToX(r.date, periodStart, periodEnd, trackWidth, padding);
     let side: "up" | "down" = i % 2 === 0 ? "up" : "down";
 
     const collides = (cx: number, cside: "up" | "down") =>
-      placed.some((p) => Math.abs(p.x - cx) < MIN_GAP && p.side === cside);
+      placed.some((p) => Math.abs(p.x - cx) < minGap && p.side === cside);
 
     let attempts = 0;
     while (collides(x, side) && attempts < 12) {
       if (attempts % 2 === 0) {
         side = side === "up" ? "down" : "up";
       } else {
-        x += MIN_GAP * 0.35;
+        x += minGap * 0.35;
       }
       attempts++;
     }
-
+    x = Math.min(Math.max(x, padding), trackWidth - padding);
     placed.push({ x, side });
+    return toMilestone(r, periodStart, periodEnd, trackWidth, padding, side, x);
+  });
+}
 
+/**
+ * Year / balloon layout:
+ * 1) Cluster same-calendar-day releases
+ * 2) Spread markers evenly across the full track (uses empty canvas; keeps chrono order)
+ * 3) Alternate above/below with light stem stagger
+ */
+export function layoutDotTimelineMarkers(
+  releases: UnifiedRelease[],
+  periodStart: Date,
+  periodEnd: Date,
+  trackWidth: number,
+  options?: { labelMinGap?: number },
+): TimelineMarker[] {
+  const padding = 64;
+  const labelMinGap = options?.labelMinGap ?? DOT_LABEL_MIN_GAP;
+  const sorted = [...releases].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+  );
+
+  const dayKey = (d: string | Date) => {
+    const x = new Date(d);
+    return `${x.getFullYear()}-${x.getMonth()}-${x.getDate()}`;
+  };
+
+  // Cluster same-calendar-day releases first.
+  type Bucket = { members: UnifiedRelease[] };
+  const buckets: Bucket[] = [];
+  for (const r of sorted) {
+    const prev = buckets[buckets.length - 1];
+    if (prev && dayKey(prev.members[0].date) === dayKey(r.date)) {
+      prev.members.push(r);
+    } else {
+      buckets.push({ members: [r] });
+    }
+  }
+
+  const n = buckets.length;
+  const inner = Math.max(trackWidth - padding * 2, 120);
+  // Evenly distribute across the full canvas so dense months don't crush together.
+  const spreadX = (i: number) =>
+    n <= 1 ? padding + inner / 2 : padding + (i / (n - 1)) * inner;
+
+  type Node = { members: UnifiedRelease[]; x: number; side: "up" | "down" };
+  const merged: Node[] = buckets.map((b, i) => ({
+    members: b.members,
+    x: spreadX(i),
+    side: (i % 2 === 0 ? "up" : "down") as "up" | "down",
+  }));
+
+  // Flip side if same-side neighbor is still too close after spread.
+  for (let i = 0; i < merged.length; i++) {
+    let side = merged[i].side;
+    const hit = merged
+      .slice(0, i)
+      .some((p) => p.side === side && Math.abs(p.x - merged[i].x) < labelMinGap);
+    if (hit) side = side === "up" ? "down" : "up";
+    merged[i].side = side;
+  }
+
+  const STEM_BASE = 52;
+  const STEM_STEP = 22;
+  const stemHeights = merged.map((_, i) => STEM_BASE + (i % 4 < 2 ? 0 : STEM_STEP));
+
+  return merged.map((node, i) => {
+    const members = node.members.map((r) =>
+      toMilestone(r, periodStart, periodEnd, trackWidth, padding, node.side, node.x),
+    );
+    const stemHeight = stemHeights[i];
+    if (members.length === 1) {
+      return {
+        kind: "single" as const,
+        id: members[0].id,
+        side: node.side,
+        _x: node.x,
+        stemHeight,
+        milestone: { ...members[0], side: node.side, _x: node.x },
+      };
+    }
+    const first = members[0];
+    const last = members[members.length - 1];
+    const dateLabel =
+      first.dateLabel === last.dateLabel
+        ? first.dateLabel
+        : `${first.dateLabel} – ${last.dateLabel}`;
     return {
-      id: r.id,
-      code: r.code,
-      name: r.name,
-      date: r.date,
-      dateLabel: formatTimelineDate(r.date),
-      period: formatTimelinePeriod(r.date),
-      status: mapped.label,
-      tone: mapped.tone,
-      icon: mapped.icon,
-      side,
-      href: r.href,
-      note: buildStickyNote(r),
-      _x: x,
+      kind: "cluster" as const,
+      id: `cluster-${members.map((m) => m.id).join("-")}`,
+      side: node.side,
+      _x: node.x,
+      stemHeight,
+      count: members.length,
+      tone: members[0].tone,
+      dateLabel,
+      members,
     };
   });
+}
+
+/** Month tick marks: "1 May", "1 Jun", … at the 1st of each month. */
+export function buildMonthAxisLabels(
+  periodStart: Date,
+  periodEnd: Date,
+  trackWidth: number,
+): { label: string; x: number }[] {
+  const padding = 56;
+  const labels: { label: string; x: number }[] = [];
+  const cursor = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
+  if (cursor < periodStart) cursor.setMonth(cursor.getMonth() + 1);
+  const end = periodEnd.getTime();
+  while (cursor.getTime() <= end) {
+    const day = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+    labels.push({
+      label: `1 ${day.toLocaleDateString("en-AU", { month: "short" })}`,
+      x: dateToX(day, periodStart, periodEnd, trackWidth, padding),
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return labels;
+}
+
+/** Expand View track: at least viewport-wide; grow with release count so slots stay readable. */
+export function fitYearTrackWidth(viewportWidth: number, releaseCount: number): number {
+  const usable = Math.max(viewportWidth - 96, 640);
+  const byCount = Math.max(usable, releaseCount * DOT_SLOT_WIDTH + 128);
+  return byCount;
+}
+
+/** Card-view year track: sized so markers can spread without crushing. */
+export function yearTimelineTrackWidth(count: number): number {
+  return Math.max(1600, count * DOT_SLOT_WIDTH + 160);
+}
+
+export function formatTodayMarkerLabel(date = new Date()): string {
+  const day = String(date.getDate()).padStart(2, "0");
+  const mon = date.toLocaleDateString("en-AU", { month: "short" });
+  return `TODAY ${day}-${mon}`;
 }
 
 export type TimelinePeriodSegment = {
@@ -209,6 +418,8 @@ export function timelineTrackWidth(count: number): number {
 export const TIMELINE_TRACK_HEIGHT = 520;
 /** Axis at vertical center of the track. */
 export const TIMELINE_AXIS_PERCENT = 50;
+/** Default year-dot track height (taller to fit staggered stems). */
+export const YEAR_DOT_TRACK_HEIGHT = 460;
 
 export function timelineRangeLabel(start: Date, end: Date): string {
   const sameMonth =

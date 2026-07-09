@@ -12,10 +12,14 @@ import {
 } from "@/lib/master-data/table-utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { APPLICATIONS_FILTER_SCHEMA } from "@/lib/table-filters";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { FilterRangeInputs, FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { APPLICATION_COLUMNS, APPLICATION_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  APPLICATION_COLUMNS,
+  APPLICATION_DEFAULT_HIDDEN_FILTER_KEYS,
+  APPLICATION_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { APPLICATION_SORT_PRESETS } from "@/lib/table-sort-presets";
 import {
@@ -183,7 +187,10 @@ export function ApplicationsBrowse() {
     "applications",
     APPLICATION_COLUMNS,
     APPLICATION_FILTER_FIELDS,
-    { lockedKeys: ["name", "actions"] }
+    {
+      lockedKeys: ["name", "actions"],
+      defaultHiddenFilters: APPLICATION_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -443,6 +450,14 @@ export function ApplicationsBrowse() {
             ))}
           </FilterSelect>
         )}
+        {isFilterVisible("type") && (
+          <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
+            <option value="">All types</option>
+            {[...new Set(apps.map((a) => a.type).filter(Boolean))].sort().map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </FilterSelect>
+        )}
         {isFilterVisible("criticality") && (
           <FilterSelect value={values.criticality} onChange={(v) => setFilter("criticality", v)}>
             <option value="">All criticality</option>
@@ -451,13 +466,37 @@ export function ApplicationsBrowse() {
             ))}
           </FilterSelect>
         )}
-        {isFilterVisible("type") && (
-          <FilterSelect value={values.type} onChange={(v) => setFilter("type", v)}>
-            <option value="">All types</option>
-            {[...new Set(apps.map((a) => a.type).filter(Boolean))].sort().map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </FilterSelect>
+        {isFilterVisible("productOwnerQ") && (
+          <FilterTextInput
+            value={values.productOwnerQ}
+            onChange={(v) => setFilter("productOwnerQ", v)}
+            placeholder="Product owner…"
+          />
+        )}
+        {isFilterVisible("techLeadQ") && (
+          <FilterTextInput
+            value={values.techLeadQ}
+            onChange={(v) => setFilter("techLeadQ", v)}
+            placeholder="Tech lead…"
+          />
+        )}
+        {isFilterVisible("nameQ") && (
+          <FilterTextInput
+            value={values.nameQ}
+            onChange={(v) => setFilter("nameQ", v)}
+            placeholder="Application…"
+          />
+        )}
+        {isFilterVisible("envCount") && (
+          <div className="inline-flex items-center gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Envs</span>
+            <FilterRangeInputs
+              minValue={values.envCountMin}
+              maxValue={values.envCountMax}
+              onMinChange={(v) => setFilter("envCountMin", v)}
+              onMaxChange={(v) => setFilter("envCountMax", v)}
+            />
+          </div>
         )}
       </TableFilterBar>
 

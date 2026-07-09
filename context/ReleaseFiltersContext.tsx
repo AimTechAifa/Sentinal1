@@ -40,6 +40,7 @@ type ReleaseFiltersContextValue = {
   setStatus: (status: string) => void;
   setPriority: (priority: string) => void;
   setImpact: (impact: string) => void;
+  setFilter: <K extends keyof ReleaseListFilters>(key: K, value: ReleaseListFilters[K]) => void;
   setSort: (sort: string, sortDir?: string) => void;
   toggleSort: (key: string, dir?: SortDirection) => void;
   setPeriod: (period: string) => void;
@@ -72,7 +73,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
   const [calendarEvents, setCalendarEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const refreshLookups = useCallback(() => {
+  const refreshLookups = useCallback((signal?: AbortSignal) => {
     if (!isLoaded) return;
     if (!isSignedIn) {
       setLoading(false);
@@ -81,42 +82,67 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const listQs = filtersToSearchParams(filters).toString();
     const url = `/api/release-lookups${listQs ? `?${listQs}` : ""}`;
-    fetch(url)
-      .then(async (res) => {
+
+    const load = async (attempt = 0): Promise<void> => {
+      if (signal?.aborted) return;
+      try {
+        const res = await fetch(url, { signal });
+        // 503 = Neon cold-start / transient; retry a few times before giving up.
+        if ((res.status === 503 || res.status === 500) && attempt < 3) {
+          const delay = 1000 * 2 ** attempt;
+          console.warn(`ReleaseFilters: ${url} → ${res.status}, retry ${attempt + 1}/3 in ${delay}ms`);
+          await new Promise((r) => setTimeout(r, delay));
+          return load(attempt + 1);
+        }
         if (!res.ok) {
           console.error(`ReleaseFilters: ${url} failed with ${res.status}`);
-          return null;
+          return;
         }
         const text = await res.text();
-        if (!text) return null;
+        if (!text || signal?.aborted) return;
+        let data: {
+          departments?: { id: string; name: string }[];
+          applications?: { id: string; name: string; departmentId: string }[];
+          environments?: EnvFilterRow[];
+          bookings?: BookingFilterRow[];
+          releases?: DbReleaseFilterRow[];
+          calendarEvents?: unknown[];
+        };
         try {
-          return JSON.parse(text) as {
-            departments?: { id: string; name: string }[];
-            applications?: { id: string; name: string; departmentId: string }[];
-            environments?: EnvFilterRow[];
-            bookings?: BookingFilterRow[];
-            releases?: DbReleaseFilterRow[];
-            calendarEvents?: unknown[];
-          };
+          data = JSON.parse(text);
         } catch {
           console.error(`ReleaseFilters: ${url} returned invalid JSON`);
-          return null;
+          return;
         }
-      })
-      .then((data) => {
-        if (!data) return;
+        if (signal?.aborted) return;
         setDepartments(data.departments ?? []);
         setApplications(data.applications ?? []);
         setEnvironments(data.environments ?? []);
         setBookings(data.bookings ?? []);
         setDbRows(data.releases ?? []);
         setCalendarEvents(data.calendarEvents ?? []);
-      })
-      .finally(() => setLoading(false));
+      } catch (err: unknown) {
+        if (signal?.aborted) return;
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        if (attempt < 3) {
+          const delay = 1000 * 2 ** attempt;
+          console.warn(`ReleaseFilters: fetch error, retry ${attempt + 1}/3 in ${delay}ms`, err);
+          await new Promise((r) => setTimeout(r, delay));
+          return load(attempt + 1);
+        }
+        console.warn("ReleaseFilters: lookup fetch failed", err);
+      }
+    };
+
+    load().finally(() => {
+      if (!signal?.aborted) setLoading(false);
+    });
   }, [filters, isLoaded, isSignedIn]);
 
   useEffect(() => {
-    refreshLookups();
+    const ac = new AbortController();
+    refreshLookups(ac.signal);
+    return () => ac.abort();
   }, [refreshLookups]);
 
   const pushFilters = useCallback(
@@ -126,6 +152,13 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
     [pathname, router, searchParams]
+  );
+
+  const setFilter = useCallback(
+    <K extends keyof ReleaseListFilters>(key: K, value: ReleaseListFilters[K]) => {
+      pushFilters({ ...filters, [key]: value });
+    },
+    [filters, pushFilters]
   );
 
   const setDepartmentId = useCallback(
@@ -196,7 +229,17 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
     [filters, pushFilters]
   );
 
-  const clearFilters = useCallback(() => pushFilters(EMPTY_RELEASE_FILTERS), [pushFilters]);
+  const clearFilters = useCallback(() => {
+    // Preserve sort/period/tab chrome when clearing list filters
+    pushFilters({
+      ...EMPTY_RELEASE_FILTERS,
+      sort: filters.sort,
+      sortDir: filters.sortDir,
+      period: filters.period,
+      anchor: filters.anchor,
+      tab: filters.tab,
+    });
+  }, [pushFilters, filters.sort, filters.sortDir, filters.period, filters.anchor, filters.tab]);
 
   const envOptions = useMemo(() => {
     if (!filters.applicationId) return environments;
@@ -227,6 +270,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       setStatus,
       setPriority,
       setImpact,
+      setFilter,
       setSort,
       toggleSort,
       setPeriod,
@@ -252,6 +296,7 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       setStatus,
       setPriority,
       setImpact,
+      setFilter,
       setSort,
       toggleSort,
       setPeriod,

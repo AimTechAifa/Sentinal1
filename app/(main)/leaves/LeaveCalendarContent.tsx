@@ -7,12 +7,17 @@ import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { LEAVE_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { LEAVE_COLUMNS, LEAVE_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterRangeInputs, FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  LEAVE_COLUMNS,
+  LEAVE_DEFAULT_HIDDEN_FILTER_KEYS,
+  LEAVE_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { cn, formatDate } from "@/lib/utils";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { LEAVES_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -73,7 +78,7 @@ export default function LeaveCalendarContent() {
   const [allLeaves, setAllLeaves] = useState<LeaveRow[]>([]);
 
   useEffect(() => {
-    fetch("/api/leaves").then((r) => (r.ok ? r.json() : [])).then(setAllLeaves);
+    return loadJsonEffect<LeaveRow[]>("/api/leaves", setAllLeaves, { label: "leaves" });
   }, []);
 
   const leaveTypes = useMemo(() => [...new Set(allLeaves.map((l) => l.leaveType))].sort(), [allLeaves]);
@@ -84,7 +89,10 @@ export default function LeaveCalendarContent() {
     "leaves",
     LEAVE_COLUMNS,
     LEAVE_FILTER_FIELDS,
-    { lockedKeys: ["leaveCode"] }
+    {
+      lockedKeys: ["leaveCode"],
+      defaultHiddenFilters: LEAVE_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -117,6 +125,45 @@ export default function LeaveCalendarContent() {
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </FilterSelect>
+          )}
+          {isFilterVisible("staffMemberQ") && (
+            <FilterTextInput
+              value={values.staffMemberQ}
+              onChange={(v) => setFilter("staffMemberQ", v)}
+              placeholder="Staff member…"
+            />
+          )}
+          {isFilterVisible("affectedReleaseQ") && (
+            <FilterTextInput
+              value={values.affectedReleaseQ}
+              onChange={(v) => setFilter("affectedReleaseQ", v)}
+              placeholder="Affected release…"
+            />
+          )}
+          {isFilterVisible("leaveCodeQ") && (
+            <FilterTextInput
+              value={values.leaveCodeQ}
+              onChange={(v) => setFilter("leaveCodeQ", v)}
+              placeholder="Leave ID…"
+            />
+          )}
+          {isFilterVisible("datesQ") && (
+            <FilterTextInput
+              value={values.datesQ}
+              onChange={(v) => setFilter("datesQ", v)}
+              placeholder="Dates (YYYY-MM-DD)…"
+            />
+          )}
+          {isFilterVisible("days") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Days</span>
+              <FilterRangeInputs
+                minValue={values.daysMin}
+                maxValue={values.daysMax}
+                onMinChange={(v) => setFilter("daysMin", v)}
+                onMaxChange={(v) => setFilter("daysMax", v)}
+              />
+            </div>
           )}
         </TableFilterBar>
       )}

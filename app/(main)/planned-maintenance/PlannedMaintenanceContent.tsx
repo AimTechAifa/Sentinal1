@@ -4,8 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { CalendarClock } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { PLANNED_MAINTENANCE_COLUMNS, PLANNED_MAINTENANCE_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  PLANNED_MAINTENANCE_COLUMNS,
+  PLANNED_MAINTENANCE_DEFAULT_HIDDEN_FILTER_KEYS,
+  PLANNED_MAINTENANCE_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { formatDate } from "@/lib/utils";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { MAINTENANCE_SORT_PRESETS } from "@/lib/table-sort-presets";
@@ -13,6 +17,7 @@ import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/u
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
+import { safeFetchJson } from "@/lib/safe-fetch";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { PLANNED_MAINTENANCE_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -63,8 +68,17 @@ export default function PlannedMaintenanceContent() {
   const [apps, setApps] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/planned-maintenance").then((r) => (r.ok ? r.json() : [])).then(setAllRows);
-    fetch("/api/applications").then((r) => (r.ok ? r.json() : [])).then(setApps);
+    const ac = new AbortController();
+    void (async () => {
+      const [rowsRes, appsRes] = await Promise.all([
+        safeFetchJson<typeof allRows>("/api/planned-maintenance", { signal: ac.signal, label: "planned-maintenance" }),
+        safeFetchJson<{ id: string; name: string }[]>("/api/applications", { signal: ac.signal, label: "applications" }),
+      ]);
+      if (ac.signal.aborted) return;
+      if (rowsRes.ok) setAllRows(rowsRes.data);
+      if (appsRes.ok) setApps(appsRes.data);
+    })();
+    return () => ac.abort();
   }, []);
 
   const types = useMemo(() => [...new Set(allRows.map((r) => r.type))].sort(), [allRows]);
@@ -76,7 +90,10 @@ export default function PlannedMaintenanceContent() {
     "planned-maintenance",
     PLANNED_MAINTENANCE_COLUMNS,
     PLANNED_MAINTENANCE_FILTER_FIELDS,
-    { lockedKeys: ["scheduled"] }
+    {
+      lockedKeys: ["scheduled"],
+      defaultHiddenFilters: PLANNED_MAINTENANCE_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -117,6 +134,27 @@ export default function PlannedMaintenanceContent() {
               <option value="">All impacts</option>
               {impacts.map((i) => <option key={i} value={i}>{i}</option>)}
             </FilterSelect>
+          )}
+          {isFilterVisible("requestorQ") && (
+            <FilterTextInput
+              value={values.requestorQ}
+              onChange={(v) => setFilter("requestorQ", v)}
+              placeholder="Requestor…"
+            />
+          )}
+          {isFilterVisible("scheduledQ") && (
+            <FilterTextInput
+              value={values.scheduledQ}
+              onChange={(v) => setFilter("scheduledQ", v)}
+              placeholder="Scheduled (YYYY-MM-DD)…"
+            />
+          )}
+          {isFilterVisible("notesQ") && (
+            <FilterTextInput
+              value={values.notesQ}
+              onChange={(v) => setFilter("notesQ", v)}
+              placeholder="Notes…"
+            />
           )}
         </TableFilterBar>
       )}

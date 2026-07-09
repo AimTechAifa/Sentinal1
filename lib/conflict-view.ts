@@ -54,20 +54,46 @@ export function mapSeedConflictRow(
   };
 }
 
+function contains(hay: string | null | undefined, needle: string | undefined) {
+  if (!needle) return true;
+  return (hay ?? "").toLowerCase().includes(needle.trim().toLowerCase());
+}
+
+export type ConflictSeedFilters = {
+  departmentName?: string;
+  applicationName?: string;
+  status?: string;
+  priority?: string;
+  assignedToQ?: string;
+  conflictCodeQ?: string;
+  release1CodeQ?: string;
+  release2CodeQ?: string;
+  conflictingEnvironmentQ?: string;
+  environmentConflictType?: string;
+  notesQ?: string;
+};
+
 export function filterSeedConflicts(
   rows: ConflictViewRow[],
-  filters: {
-    departmentName?: string;
-    applicationName?: string;
-    status?: string;
-    priority?: string;
-  }
+  filters: ConflictSeedFilters
 ): ConflictViewRow[] {
   return rows.filter((row) => {
     if (filters.status && row.status !== filters.status) return false;
     if (filters.priority && row.priority !== filters.priority) return false;
     if (filters.departmentName && !row.department.includes(filters.departmentName)) return false;
     if (filters.applicationName && !row.application.includes(filters.applicationName)) return false;
+    if (!contains(row.assignedTo, filters.assignedToQ)) return false;
+    if (!contains(row.conflictCode, filters.conflictCodeQ)) return false;
+    if (!contains(row.release1Code, filters.release1CodeQ)) return false;
+    if (!contains(row.release2Code, filters.release2CodeQ)) return false;
+    if (!contains(row.conflictingEnvironment, filters.conflictingEnvironmentQ)) return false;
+    if (
+      filters.environmentConflictType &&
+      row.environmentConflictType !== filters.environmentConflictType
+    ) {
+      return false;
+    }
+    if (!contains(row.notes, filters.notesQ)) return false;
     return true;
   });
 }

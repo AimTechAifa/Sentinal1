@@ -33,6 +33,8 @@ export function SectionCard({
   onNavigate,
   children,
   className,
+  /** Center the title block (e.g. Release Pipeline sitting between two charts). */
+  titleAlign = "left",
 }: {
   title: string;
   subtitle?: string;
@@ -43,7 +45,10 @@ export function SectionCard({
   onNavigate: (href: string) => void;
   children: React.ReactNode;
   className?: string;
+  titleAlign?: "left" | "center";
 }) {
+  const centered = titleAlign === "center";
+
   return (
     <div
       className={cn(
@@ -53,15 +58,27 @@ export function SectionCard({
       )}
     >
       {accent && <div className={cn("absolute inset-x-0 top-0 h-[3px]", accent)} />}
-      <div className="mb-3 flex items-start justify-between gap-2">
-        <div className="min-w-0">
+      <div
+        className={cn(
+          "mb-3 flex items-start gap-2",
+          centered ? "relative justify-center text-center" : "justify-between"
+        )}
+      >
+        <div className={cn("min-w-0", centered && "flex flex-col items-center")}>
           <div className="flex items-center gap-1.5">
             <h3 className="text-[15px] font-bold text-slate-800 dark:text-white">{title}</h3>
             {info && <SectionInfo text={info} />}
           </div>
-          {subtitle && <p className="mt-0.5 text-[12px] text-slate-400 dark:text-white/50">{subtitle}</p>}
+          {subtitle && (
+            <p className="mt-0.5 text-[12px] text-slate-400 dark:text-white/50">{subtitle}</p>
+          )}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div
+          className={cn(
+            "flex shrink-0 items-center gap-2",
+            centered && "absolute right-0 top-0"
+          )}
+        >
           {badge}
           {href && (
             <button
@@ -460,16 +477,42 @@ export function DualDonutRow({
   chartTheme,
   onNavigate,
 }: {
-  left: { title: string; data: ChartDatum[]; center?: string | number; sub?: string };
-  right: { title: string; data: ChartDatum[]; center?: string | number; sub?: string };
+  left: {
+    title: string;
+    data: ChartDatum[];
+    center?: string | number;
+    sub?: string;
+    /** Optional tooltip shown via the ? info control next to the heading. */
+    info?: string;
+  };
+  right: {
+    title: string;
+    data: ChartDatum[];
+    center?: string | number;
+    sub?: string;
+    info?: string;
+  };
   chartTheme: ChartTheme;
   onNavigate: (href: string) => void;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {[left, right].map((side) => (
-        <div key={side.title}>
-          <p className="mb-1 text-[12px] font-semibold text-slate-500 dark:text-white/55">{side.title}</p>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-0">
+      {[left, right].map((side, i) => (
+        <div
+          key={side.title}
+          className={
+            i === 1
+              ? // Darker vertical divider between Status mix and Priority mix
+                "sm:border-l-2 sm:border-slate-300 sm:pl-5 dark:sm:border-white/25"
+              : "sm:pr-5"
+          }
+        >
+          <div className="mb-1.5 flex items-center gap-1.5">
+            <h4 className="text-[12px] font-bold uppercase tracking-wide text-slate-600 dark:text-white/70">
+              {side.title}
+            </h4>
+            {side.info && <SectionInfo text={side.info} />}
+          </div>
           <DonutVisual
             data={side.data}
             height={140}

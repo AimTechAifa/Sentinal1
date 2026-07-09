@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Database, Users, Server, Package } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 import { cn, formatDate } from "@/lib/utils";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 type LivePayload = {
   counts: Record<string, number>;
@@ -77,10 +78,11 @@ export function ReferenceDataLiveSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/reference-data/live")
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setData)
-      .finally(() => setLoading(false));
+    return loadJsonEffect<LivePayload>(
+      "/api/reference-data/live",
+      setData,
+      { label: "reference-data-live", onFinally: () => setLoading(false) },
+    );
   }, []);
 
   if (loading) {

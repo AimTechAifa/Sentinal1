@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -15,6 +16,59 @@ interface DataTableProps {
   toolbar?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+}
+
+/** Shared scrollport: visible scrollbars + edge-fade cues when more content is off-screen. */
+function DataTableScrollArea({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [fade, setFade] = useState({ left: false, right: false, top: false, bottom: false });
+
+  const updateFade = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const { scrollLeft, scrollTop, scrollWidth, scrollHeight, clientWidth, clientHeight } = el;
+    const eps = 2;
+    setFade({
+      left: scrollLeft > eps,
+      right: scrollLeft + clientWidth < scrollWidth - eps,
+      top: scrollTop > eps,
+      bottom: scrollTop + clientHeight < scrollHeight - eps,
+    });
+  }, []);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    updateFade();
+    const ro = new ResizeObserver(updateFade);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    window.addEventListener("resize", updateFade);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", updateFade);
+    };
+  }, [updateFade, children]);
+
+  return (
+    <div
+      className="data-table-scroll-shell"
+      data-fade-left={fade.left ? "true" : "false"}
+      data-fade-right={fade.right ? "true" : "false"}
+      data-fade-top={fade.top ? "true" : "false"}
+      data-fade-bottom={fade.bottom ? "true" : "false"}
+    >
+      <div className="data-table-fade-top" aria-hidden />
+      <div className="data-table-fade-bottom" aria-hidden />
+      <div
+        ref={ref}
+        onScroll={updateFade}
+        className="data-table-body max-h-[calc(100dvh-var(--header-height)-14rem)]"
+      >
+        {children}
+      </div>
+    </div>
+  );
 }
 
 export function DataTable({ title, subtitle, icon: Icon, action, toolbar, children, className }: DataTableProps) {
@@ -46,7 +100,7 @@ export function DataTable({ title, subtitle, icon: Icon, action, toolbar, childr
           )}
         </div>
       )}
-      <div className="data-table-body max-h-[calc(100dvh-var(--header-height)-14rem)]">{children}</div>
+      <DataTableScrollArea>{children}</DataTableScrollArea>
     </MagicCard>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FileText, Package, Search, Sparkles, Ticket } from "lucide-react";
 import { searchAll } from "@/lib/search";
 import type { SearchResult } from "@/lib/dummy-data";
+import { safeFetchJson, isFetchAbort } from "@/lib/safe-fetch";
 
 interface GlobalSearchProps {
   open: boolean;
@@ -56,16 +57,26 @@ export function GlobalSearch({ open, onClose }: GlobalSearchProps) {
       setRedirectHref(null);
       return;
     }
+    const ac = new AbortController();
     const t = setTimeout(() => {
-      fetch(`/api/search?q=${encodeURIComponent(q)}`)
-        .then((r) => r.json())
-        .then((d) => {
-          setApiResults(d.results ?? []);
-          setInterpreted(d.interpreted ?? null);
-          setRedirectHref(d.redirectHref ?? null);
-        });
+      void (async () => {
+        const result = await safeFetchJson<{
+          results?: SearchResult[];
+          interpreted?: string;
+          redirectHref?: string;
+        }>(`/api/search?q=${encodeURIComponent(q)}`, { signal: ac.signal, label: "global-search" });
+        if (ac.signal.aborted || isFetchAbort(result)) return;
+        if (result.ok) {
+          setApiResults(result.data.results ?? []);
+          setInterpreted(result.data.interpreted ?? null);
+          setRedirectHref(result.data.redirectHref ?? null);
+        }
+      })();
     }, 200);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      ac.abort();
+    };
   }, [query]);
 
   if (!open) return null;

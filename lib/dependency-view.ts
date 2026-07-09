@@ -50,14 +50,37 @@ export function mapSeedDependencyRow(
   };
 }
 
+function contains(hay: string | null | undefined, needle: string | undefined) {
+  if (!needle) return true;
+  return (hay ?? "").toLowerCase().includes(needle.trim().toLowerCase());
+}
+
+export type DependencySeedFilters = {
+  status?: string;
+  dependencyType?: string;
+  impact?: string;
+  releaseCodeQ?: string;
+  dependsOnCodeQ?: string;
+  depCodeQ?: string;
+  releaseNameQ?: string;
+  dependsOnNameQ?: string;
+  notesQ?: string;
+};
+
 export function filterSeedDependencies(
   rows: DependencyViewRow[],
-  filters: { status?: string; dependencyType?: string; impact?: string }
+  filters: DependencySeedFilters
 ): DependencyViewRow[] {
   return rows.filter((row) => {
     if (filters.status && row.status !== filters.status) return false;
     if (filters.dependencyType && row.dependencyType !== filters.dependencyType) return false;
     if (filters.impact && row.impactIfBlocked !== filters.impact) return false;
+    if (!contains(row.releaseCode, filters.releaseCodeQ)) return false;
+    if (!contains(row.dependsOnCode, filters.dependsOnCodeQ)) return false;
+    if (!contains(row.depCode, filters.depCodeQ)) return false;
+    if (!contains(row.releaseName, filters.releaseNameQ)) return false;
+    if (!contains(row.dependsOnName, filters.dependsOnNameQ)) return false;
+    if (!contains(row.notes, filters.notesQ)) return false;
     return true;
   });
 }

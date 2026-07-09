@@ -3,6 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { DbReleaseDetail } from "@/components/releases/DbReleaseDetail";
 import { isSyntheticReleaseId, SyntheticReleaseDetail } from "@/components/releases/SyntheticReleaseDetail";
+import { safeFetchJson } from "@/lib/safe-fetch";
 
 export default function ReleaseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -13,9 +14,17 @@ export default function ReleaseDetailPage({ params }: { params: Promise<{ id: st
       setMode("synthetic");
       return;
     }
-    fetch(`/api/releases/${id}`)
-      .then((r) => setMode(r.ok ? "db" : "missing"))
-      .catch(() => setMode("missing"));
+    const ac = new AbortController();
+    void (async () => {
+      const result = await safeFetchJson(`/api/releases/${id}`, {
+        signal: ac.signal,
+        label: "release-detail-mode",
+        rejectHttpErrors: false,
+      });
+      if (ac.signal.aborted) return;
+      setMode(result.ok && result.status >= 200 && result.status < 300 ? "db" : "missing");
+    })();
+    return () => ac.abort();
   }, [id]);
 
   if (mode === "loading") return <p className="text-gray-500">Loading release…</p>;

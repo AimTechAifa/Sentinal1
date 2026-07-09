@@ -13,10 +13,14 @@ import {
 } from "@/lib/master-data/table-utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { USERS_FILTER_SCHEMA } from "@/lib/table-filters";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
-import { USER_COLUMNS, USER_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  USER_COLUMNS,
+  USER_DEFAULT_HIDDEN_FILTER_KEYS,
+  USER_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { USER_SORT_PRESETS } from "@/lib/table-sort-presets";
 import {
@@ -117,7 +121,10 @@ export function UsersBrowse() {
     "users",
     USER_COLUMNS,
     USER_FILTER_FIELDS,
-    { lockedKeys: ["name", "actions"] }
+    {
+      lockedKeys: ["name", "actions"],
+      defaultHiddenFilters: USER_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -247,6 +254,27 @@ export function UsersBrowse() {
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </FilterSelect>
+        )}
+        {isFilterVisible("nameQ") && (
+          <FilterTextInput
+            value={values.nameQ}
+            onChange={(v) => setFilter("nameQ", v)}
+            placeholder="Name…"
+          />
+        )}
+        {isFilterVisible("emailQ") && (
+          <FilterTextInput
+            value={values.emailQ}
+            onChange={(v) => setFilter("emailQ", v)}
+            placeholder="Email…"
+          />
+        )}
+        {isFilterVisible("lastLoginQ") && (
+          <FilterTextInput
+            value={values.lastLoginQ}
+            onChange={(v) => setFilter("lastLoginQ", v)}
+            placeholder="Last login (YYYY-MM-DD)…"
+          />
         )}
       </TableFilterBar>
 

@@ -259,22 +259,165 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  /* Scroll container: sticky headers stay aligned; vertical bar hidden, horizontal kept. */
+  /*
+   * Shared data-table scrollport — always-visible thin scrollbars (both axes),
+   * sticky header + sticky first column, nested overflow wrappers neutralized.
+   */
   .data-table-body {
     overflow: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175 / 0.75) rgb(243 244 246 / 0.9);
+  }
+  .theme-dark .data-table-body,
+  :is(.dark) .data-table-body {
+    scrollbar-color: rgb(148 163 184 / 0.55) rgb(30 41 59 / 0.85);
   }
   .data-table-body::-webkit-scrollbar {
-    width: 0;
-    height: 6px;
+    width: 10px;
+    height: 10px;
+  }
+  .data-table-body::-webkit-scrollbar-track {
+    background: rgb(243 244 246 / 0.95);
+    border-radius: 9999px;
+  }
+  .theme-dark .data-table-body::-webkit-scrollbar-track,
+  :is(.dark) .data-table-body::-webkit-scrollbar-track {
+    background: rgb(30 41 59 / 0.9);
   }
   .data-table-body::-webkit-scrollbar-thumb {
     border-radius: 9999px;
-    background: rgb(156 163 175 / 0.55);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    background-color: rgb(156 163 175 / 0.85);
+  }
+  .theme-dark .data-table-body::-webkit-scrollbar-thumb,
+  :is(.dark) .data-table-body::-webkit-scrollbar-thumb {
+    background-color: rgb(148 163 184 / 0.55);
   }
   .data-table-body::-webkit-scrollbar-thumb:hover {
-    background: rgb(107 114 128 / 0.7);
+    background-color: rgb(107 114 128 / 0.95);
+  }
+  .theme-dark .data-table-body::-webkit-scrollbar-thumb:hover,
+  :is(.dark) .data-table-body::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(148 163 184 / 0.8);
+  }
+  .data-table-body::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Collapse page-level overflow wrappers so one shared scrollport owns both axes. */
+  .data-table-body > .overflow-x-auto,
+  .data-table-body > .overflow-auto,
+  .data-table-body > [class*="overflow-x-auto"],
+  .data-table-body > [class*="max-h-"] {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Sticky first column (identifying value stays visible while scrolling horizontally). */
+  .data-table-body table > thead > tr > th:first-child,
+  .data-table-body table > tbody > tr > td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 15;
+    background-color: #f9fafb;
+    box-shadow: 1px 0 0 0 rgb(229 231 235);
+  }
+  .theme-dark .data-table-body table > thead > tr > th:first-child,
+  .theme-dark .data-table-body table > tbody > tr > td:first-child,
+  :is(.dark) .data-table-body table > thead > tr > th:first-child,
+  :is(.dark) .data-table-body table > tbody > tr > td:first-child {
+    background-color: var(--card);
+    box-shadow: 1px 0 0 0 var(--border);
+  }
+  .data-table-body table > thead > tr > th:first-child {
+    z-index: 30; /* above body sticky cells; still under/with top sticky header */
+    background-color: #f9fafb;
+  }
+  .theme-dark .data-table-body table > thead > tr > th:first-child,
+  :is(.dark) .data-table-body table > thead > tr > th:first-child {
+    background-color: var(--card);
+  }
+  .data-table-body table > tbody > tr > td:first-child {
+    background-color: #ffffff;
+  }
+  .theme-dark .data-table-body table > tbody > tr > td:first-child,
+  :is(.dark) .data-table-body table > tbody > tr > td:first-child {
+    background-color: var(--card);
+  }
+  .data-table-body table > tbody > tr:hover > td:first-child {
+    background-color: #f9fafb;
+  }
+  .theme-dark .data-table-body table > tbody > tr:hover > td:first-child,
+  :is(.dark) .data-table-body table > tbody > tr:hover > td:first-child {
+    background-color: rgb(31 41 55 / 0.85);
+  }
+
+  /* Edge-fade cues — toggled by DataTableScrollArea via data attributes. */
+  .data-table-scroll-shell {
+    position: relative;
+  }
+  .data-table-scroll-shell::before,
+  .data-table-scroll-shell::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    z-index: 25;
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+  .data-table-scroll-shell[data-fade-left="true"]::before {
+    opacity: 1;
+    inset: 0 auto 0 0;
+    width: 1.25rem;
+    background: linear-gradient(to right, rgb(17 24 39 / 0.12), transparent);
+  }
+  .theme-dark .data-table-scroll-shell[data-fade-left="true"]::before,
+  :is(.dark) .data-table-scroll-shell[data-fade-left="true"]::before {
+    background: linear-gradient(to right, rgb(0 0 0 / 0.45), transparent);
+  }
+  .data-table-scroll-shell[data-fade-right="true"]::after {
+    opacity: 1;
+    inset: 0 0 0 auto;
+    width: 1.25rem;
+    background: linear-gradient(to left, rgb(17 24 39 / 0.12), transparent);
+  }
+  .theme-dark .data-table-scroll-shell[data-fade-right="true"]::after,
+  :is(.dark) .data-table-scroll-shell[data-fade-right="true"]::after {
+    background: linear-gradient(to left, rgb(0 0 0 / 0.45), transparent);
+  }
+  .data-table-scroll-shell[data-fade-top="true"] > .data-table-fade-top,
+  .data-table-scroll-shell[data-fade-bottom="true"] > .data-table-fade-bottom {
+    opacity: 1;
+  }
+  .data-table-fade-top,
+  .data-table-fade-bottom {
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 25;
+    height: 0.9rem;
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+  .data-table-fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, rgb(17 24 39 / 0.1), transparent);
+  }
+  .data-table-fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, rgb(17 24 39 / 0.1), transparent);
+  }
+  .theme-dark .data-table-fade-top,
+  :is(.dark) .data-table-fade-top {
+    background: linear-gradient(to bottom, rgb(0 0 0 / 0.4), transparent);
+  }
+  .theme-dark .data-table-fade-bottom,
+  :is(.dark) .data-table-fade-bottom {
+    background: linear-gradient(to top, rgb(0 0 0 / 0.4), transparent);
   }
   .border-beam-spin {
     background: conic-gradient(from 0deg, transparent 0 340deg, var(--color-from) 360deg);
@@ -458,7 +601,7 @@ body {
     border-color: rgba(186, 26, 26, 0.28) !important;
   }
 
-  /* Auth pages: host layout only — Clerk styling via appearance + @clerk/ui */
+  /* Auth pages: host layout only — Clerk styling via appearance prop */
   .auth-shell .clerk-sign-in-host {
     width: 100%;
     min-height: 420px;

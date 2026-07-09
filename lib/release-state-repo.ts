@@ -14,6 +14,7 @@ import type {
   ReleaseDecisionRecord,
 } from "./types";
 import type { ReleaseStoreState, QuickStartSeedId } from "./release-store";
+import { emptyReleaseStore } from "./release-store";
 
 const DEFAULT_NOTIFICATIONS: Omit<AppNotification, "id">[] = [
   {
@@ -64,18 +65,23 @@ function toDecisionRecord(row: {
 }
 
 async function ensureDefaultNotifications() {
-  const count = await prisma.appNotificationRow.count();
-  if (count > 0) return;
-  await prisma.appNotificationRow.createMany({
-    data: DEFAULT_NOTIFICATIONS.map((n) => ({
-      title: n.title,
-      message: n.message,
-      releaseId: n.releaseId,
-      read: n.read,
-      type: n.type,
-      timestamp: new Date(n.timestamp),
-    })),
-  });
+  try {
+    const count = await prisma.appNotificationRow.count();
+    if (count > 0) return;
+    await prisma.appNotificationRow.createMany({
+      data: DEFAULT_NOTIFICATIONS.map((n) => ({
+        title: n.title,
+        message: n.message,
+        releaseId: n.releaseId,
+        read: n.read,
+        type: n.type,
+        timestamp: new Date(n.timestamp),
+      })),
+    });
+  } catch (err) {
+    // Neon P1001 / pooler wake — skip seeding; live-state can still serve empty/stale.
+    console.warn("[live-state] ensureDefaultNotifications skipped:", err);
+  }
 }
 
 async function appendHistory(
@@ -556,10 +562,17 @@ export async function getLiveState(): Promise<ReleaseStoreState> {
   }
   if (liveStateInflight) return liveStateInflight;
 
+  // Neon serverless can briefly return P1001 (can't reach) while waking / pooler blip.
+  // Prefer stale cache over a hard 500 so the UI keeps polling instead of crashing.
   liveStateInflight = loadLiveState()
     .then((data) => {
       liveStateCache = { at: Date.now(), data };
       return data;
+    })
+    .catch((err) => {
+      console.warn("[live-state] load failed; serving stale/empty store", err);
+      if (liveStateCache) return liveStateCache.data;
+      return emptyReleaseStore();
     })
     .finally(() => {
       liveStateInflight = null;

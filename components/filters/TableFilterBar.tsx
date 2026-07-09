@@ -50,4 +50,12 @@ export function TableFilterBar({
   );
 }
 
-export { FilterSelect, FilterPills, filterSelectClass } from "@/components/filters/TableFilterControls";
+export {
+  FilterSelect,
+  FilterPills,
+  FilterTextInput,
+  FilterRangeInputs,
+  FilterTriState,
+  FilterSearchableSelect,
+  filterSelectClass,
+} from "@/components/filters/TableFilterControls";

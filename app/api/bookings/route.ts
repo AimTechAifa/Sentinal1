@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireRole } from "@/lib/auth/api";
 import { checkBookingAvailability } from "@/lib/booking";
-import {
-  filterSeedEnvBookings,
-  loadSeedEnvBookings,
-  mapSeedEnvBookingRow,
-} from "@/lib/env-booking-view";
 import { prisma } from "@/lib/prisma";
-import { sp } from "@/lib/list-api-filters";
+import { bookingWhere, mapDbEnvBookingRow, sp } from "@/lib/list-api-filters";
+
+/** Availability check only (readonly+). */
 export async function POST(req: Request) {
   const { user, error } = await requireRole("readonly");
   if (error) return error;
@@ -25,6 +22,7 @@ export async function POST(req: Request) {
   return NextResponse.json({ ...result, checkedBy: user!.email });
 }
 
+/** Create booking(s) — editor/admin. Reuses checkBookingAvailability for conflicts. */
 export async function PUT(req: Request) {
   const { user, error } = await requireRole("editor");
   if (error) return error;
@@ -33,6 +31,17 @@ export async function PUT(req: Request) {
   const applicationIds: string[] = body.applicationIds ?? [];
   const fromDate = new Date(body.fromDate);
   const toDate = new Date(body.toDate);
+  const environmentId: string | undefined = body.environmentId || undefined;
+  const releaseId: string | undefined = body.releaseId || undefined;
+  const purpose: string | undefined = body.purpose || undefined;
+  const teamOverride: string | undefined = body.team || undefined;
+
+  if (!applicationIds.length || Number.isNaN(fromDate.getTime()) || Number.isNaN(toDate.getTime())) {
+    return NextResponse.json({ error: "applicationIds, fromDate, and toDate are required" }, { status: 400 });
+  }
+  if (toDate < fromDate) {
+    return NextResponse.json({ error: "toDate must be on or after fromDate" }, { status: 400 });
+  }
 
   const check = await checkBookingAvailability(applicationIds, fromDate, toDate);
   if (!check.available) {
@@ -44,27 +53,60 @@ export async function PUT(req: Request) {
     include: { department: true, environments: true },
   });
 
+  if (!apps.length) {
+    return NextResponse.json({ error: "No matching applications" }, { status: 400 });
+  }
+
+  const existingCodes = await prisma.envBooking.findMany({
+    where: { bookingCode: { not: null } },
+    select: { bookingCode: true },
+  });
+  let nextNum =
+    existingCodes
+      .map((r) => Number(String(r.bookingCode ?? "").replace(/^ENV-/i, "")))
+      .filter((n) => Number.isFinite(n))
+      .reduce((max, n) => Math.max(max, n), 0) + 1;
+
+  const dayMs = 24 * 60 * 60 * 1000;
+  const spanDays = Math.max(1, Math.round((toDate.getTime() - fromDate.getTime()) / dayMs) + 1);
+
   const created = await Promise.all(
-    apps.map((app) =>
-      prisma.envBooking.create({
+    apps.map(async (app) => {
+      const env =
+        (environmentId
+          ? app.environments.find((e) => e.id === environmentId)
+          : undefined) ?? app.environments[0];
+      const bookingCode = `ENV-${String(nextNum++).padStart(4, "0")}`;
+      const team = teamOverride?.trim() || app.department.name;
+
+      return prisma.envBooking.create({
         data: {
+          bookingCode,
           applicationId: app.id,
-          environmentId: app.environments[0]?.id,
+          environmentId: env?.id,
           bookedBy: user!.name,
-          team: app.department.name,
+          team,
           departmentName: app.department.name,
           fromDate,
           toDate,
-          purpose: body.purpose ?? "End-to-end test window",
-          releaseId: body.releaseId,
+          purpose: purpose ?? "End-to-end test window",
+          releaseId: releaseId || null,
           status: "BOOKED",
+          conflictFlag: false,
+          testEnvCode: env?.name ?? null,
+          testStart: fromDate,
+          testEnd: toDate,
+          testDays: spanDays,
         },
-        include: { application: true, environment: true },
-      })
-    )
+        include: {
+          application: { include: { department: true } },
+          release: { select: { id: true, releaseCode: true } },
+        },
+      });
+    }),
   );
 
-  return NextResponse.json({ bookings: created }, { status: 201 });
+  return NextResponse.json({ bookings: created.map(mapDbEnvBookingRow) }, { status: 201 });
 }
 
 export async function GET(req: Request) {
@@ -72,30 +114,14 @@ export async function GET(req: Request) {
   if (error) return error;
 
   const params = sp(req);
-  const deptId = params.get("dept");
-  const appId = params.get("app");
-  const releaseParam = params.get("release");
-  const conflict = params.get("conflict");
-
-  const [deptRec, appRec, releaseRec] = await Promise.all([
-    deptId ? prisma.department.findUnique({ where: { id: deptId }, select: { name: true } }) : null,
-    appId ? prisma.application.findUnique({ where: { id: appId }, select: { name: true } }) : null,
-    releaseParam
-      ? prisma.release.findFirst({
-          where: { OR: [{ id: releaseParam }, { releaseCode: releaseParam }] },
-          select: { releaseCode: true },
-        })
-      : null,
-  ]);
-
-  const seedRows = loadSeedEnvBookings().map(mapSeedEnvBookingRow);
-  const filtered = filterSeedEnvBookings(seedRows, {
-    departmentName: deptRec?.name,
-    applicationName: appRec?.name,
-    releaseId: releaseRec?.releaseCode ?? (releaseParam?.startsWith("REL-") ? releaseParam : undefined),
-    conflictFlag: conflict === "1" ? true : conflict === "0" ? false : undefined,
+  const rows = await prisma.envBooking.findMany({
+    where: bookingWhere(params),
+    include: {
+      application: { include: { department: true } },
+      release: { select: { id: true, releaseCode: true } },
+    },
+    orderBy: { bookingCode: "asc" },
   });
 
-  filtered.sort((a, b) => a.bookingCode.localeCompare(b.bookingCode, undefined, { numeric: true }));
-  return NextResponse.json(filtered);
+  return NextResponse.json(rows.map(mapDbEnvBookingRow));
 }

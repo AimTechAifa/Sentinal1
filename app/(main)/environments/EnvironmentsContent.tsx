@@ -2,8 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { EnvironmentDetailsTable } from "@/components/environments/EnvironmentDetailsTable";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
-import { ENVIRONMENT_COLUMNS, ENVIRONMENT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  ENVIRONMENT_COLUMNS,
+  ENVIRONMENT_DEFAULT_HIDDEN_FILTER_KEYS,
+  ENVIRONMENT_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TableToolbar } from "@/components/ui/data-table";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
@@ -11,11 +15,18 @@ import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ENVIRONMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 
 type DeskPayload = {
   versionMatrix: unknown[];
-  versions: Array<{ application?: { id?: string; name?: string } }>;
-  applications?: Array<{ id: string; name: string }>;
+  versions: Array<{
+    status?: string | null;
+    environment?: { name?: string; type?: string; owner?: string };
+    application?: { id?: string; name?: string; department?: { id?: string; name?: string } };
+  }>;
+  applications?: Array<{ id: string; name: string; departmentId?: string }>;
+  departments?: Array<{ id: string; name: string }>;
+  environments?: Array<{ id: string; name: string; type: string }>;
 };
 
 export function EnvironmentsContent() {
@@ -25,14 +36,15 @@ export function EnvironmentsContent() {
 
   const loadDesk = useCallback(() => {
     setDeskLoading(true);
-    fetch(`/api/environment-desk${apiQuery}`)
-      .then((r) => r.json())
-      .then(setDesk)
-      .finally(() => setDeskLoading(false));
+    return loadJsonEffect<DeskPayload>(
+      `/api/environment-desk${apiQuery}`,
+      setDesk,
+      { label: "environment-desk", onFinally: () => setDeskLoading(false) },
+    );
   }, [apiQuery]);
 
   useEffect(() => {
-    loadDesk();
+    return loadDesk();
   }, [loadDesk]);
 
   const appOptions = useMemo(() => {
@@ -45,8 +57,35 @@ export function EnvironmentsContent() {
       }
       return [...seen.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
     }
-    return [...desk.applications].sort((a, b) => a.name.localeCompare(b.name));
+    const list = values.departmentId
+      ? desk.applications.filter((a) => a.departmentId === values.departmentId)
+      : desk.applications;
+    return [...list].sort((a, b) => a.name.localeCompare(b.name));
+  }, [desk, values.departmentId]);
+
+  const departmentOptions = useMemo(() => {
+    if (desk?.departments?.length) return desk.departments;
+    const seen = new Map<string, string>();
+    for (const v of desk?.versions ?? []) {
+      const name = v.application?.department?.name;
+      if (name) seen.set(name, name);
+    }
+    return [...seen.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
   }, [desk]);
+
+  const environmentNames = useMemo(() => {
+    const fromEnvs = (desk?.environments ?? []).flatMap((e) => [e.type, e.name].filter(Boolean));
+    const fromVersions = (desk?.versions ?? []).flatMap((v) =>
+      [v.environment?.type, v.environment?.name].filter(Boolean) as string[]
+    );
+    return [...new Set([...fromEnvs, ...fromVersions])].sort();
+  }, [desk]);
+
+  const statusOptions = useMemo(
+    () =>
+      [...new Set((desk?.versions ?? []).map((v) => (v.status ?? "").trim()).filter(Boolean))].sort(),
+    [desk]
+  );
 
   const selectedAppName = useMemo(() => {
     if (!values.applicationId) return null;
@@ -57,7 +96,10 @@ export function EnvironmentsContent() {
     "environments",
     ENVIRONMENT_COLUMNS,
     ENVIRONMENT_FILTER_FIELDS,
-    { lockedKeys: ["application"] }
+    {
+      lockedKeys: ["application"],
+      defaultHiddenFilters: ENVIRONMENT_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(deskLoading, prefsLoaded);
@@ -97,6 +139,72 @@ export function EnvironmentsContent() {
               <option key={a.id} value={a.id}>{a.name}</option>
             ))}
           </FilterSelect>
+        )}
+        {isFilterVisible("departmentId") && (
+          <FilterSelect value={values.departmentId} onChange={(v) => setFilter("departmentId", v)}>
+            <option value="">All departments</option>
+            {departmentOptions.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("environmentName") && (
+          <FilterSelect value={values.environmentName} onChange={(v) => setFilter("environmentName", v)}>
+            <option value="">All environments</option>
+            {environmentNames.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("status") && (
+          <FilterSelect value={values.status} onChange={(v) => setFilter("status", v)}>
+            <option value="">All statuses</option>
+            {statusOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </FilterSelect>
+        )}
+        {isFilterVisible("versionQ") && (
+          <FilterTextInput
+            value={values.versionQ}
+            onChange={(v) => setFilter("versionQ", v)}
+            placeholder="Version…"
+          />
+        )}
+        {isFilterVisible("envOwnerQ") && (
+          <FilterTextInput
+            value={values.envOwnerQ}
+            onChange={(v) => setFilter("envOwnerQ", v)}
+            placeholder="Env owner…"
+          />
+        )}
+        {isFilterVisible("buildNumberQ") && (
+          <FilterTextInput
+            value={values.buildNumberQ}
+            onChange={(v) => setFilter("buildNumberQ", v)}
+            placeholder="Build number…"
+          />
+        )}
+        {isFilterVisible("deployDateQ") && (
+          <FilterTextInput
+            value={values.deployDateQ}
+            onChange={(v) => setFilter("deployDateQ", v)}
+            placeholder="Deploy date…"
+          />
+        )}
+        {isFilterVisible("deployedByQ") && (
+          <FilterTextInput
+            value={values.deployedByQ}
+            onChange={(v) => setFilter("deployedByQ", v)}
+            placeholder="Deployed by…"
+          />
+        )}
+        {isFilterVisible("notesQ") && (
+          <FilterTextInput
+            value={values.notesQ}
+            onChange={(v) => setFilter("notesQ", v)}
+            placeholder="Notes…"
+          />
         )}
       </TableFilterBar>
 

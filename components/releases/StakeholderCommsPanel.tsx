@@ -6,6 +6,7 @@ import { AIPanel } from "@/components/ui/ai-panel";
 import { AdvancedCard } from "@/components/ui/advanced-card";
 import { callAgent } from "@/lib/agent-client";
 import { buildFallbackComms, type StakeholderCommsContext } from "@/lib/stakeholder-comms";
+import { safeFetchJson } from "@/lib/safe-fetch";
 import { taBtnSecondary } from "@/lib/styles";
 
 export function StakeholderCommsPanel({
@@ -20,39 +21,43 @@ export function StakeholderCommsPanel({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadContext = useCallback(async () => {
+  const loadContext = useCallback(async (signal?: AbortSignal) => {
     const [releaseRes, ccRes, impactRes, workRes] = await Promise.all([
-      fetch(`/api/releases/${releaseId}`),
-      fetch(`/api/releases/${releaseId}/command-center`),
-      fetch(`/api/releases/${releaseId}/impact`),
-      fetch(`/api/releases/${releaseId}/work-items`),
+      safeFetchJson<Record<string, unknown>>(`/api/releases/${releaseId}`, { signal, label: "stakeholder-release" }),
+      safeFetchJson<Record<string, unknown>>(`/api/releases/${releaseId}/command-center`, { signal, label: "stakeholder-command-center" }),
+      safeFetchJson<Record<string, unknown>>(`/api/releases/${releaseId}/impact`, { signal, label: "stakeholder-impact" }),
+      safeFetchJson<{ summary?: { open?: number } }>(`/api/releases/${releaseId}/work-items`, { signal, label: "stakeholder-work-items" }),
     ]);
 
     if (!releaseRes.ok) return null;
 
-    const release = await releaseRes.json();
-    const cc = ccRes.ok ? await ccRes.json() : {};
-    const impact = impactRes.ok ? await impactRes.json() : {};
-    const work = workRes.ok ? await workRes.json() : { summary: { open: 0 } };
+    const release = releaseRes.data;
+    const cc = ccRes.ok ? ccRes.data : {};
+    const impact = impactRes.ok ? impactRes.data : {};
+    const work = workRes.ok ? workRes.data : { summary: { open: 0 } };
 
     return {
-      releaseCode: release.releaseCode,
-      name: release.name,
-      owner: release.owner,
-      status: release.status,
-      releaseDate: release.releaseDate,
-      department: release.department?.name ?? "—",
-      readiness: cc.readiness ?? 0,
-      blockerCount: cc.blockers?.length ?? 0,
-      decision: release.decision ?? null,
-      downstreamCount: impact.transitiveDownstreamCount ?? 0,
+      releaseCode: release.releaseCode as string,
+      name: release.name as string,
+      owner: release.owner as string,
+      status: release.status as string,
+      releaseDate: release.releaseDate as string,
+      department: (release.department as { name?: string } | undefined)?.name ?? "—",
+      readiness: (cc.readiness as number | undefined) ?? 0,
+      blockerCount: ((cc.blockers as unknown[] | undefined)?.length) ?? 0,
+      decision: (release.decision as string | null) ?? null,
+      downstreamCount: (impact.transitiveDownstreamCount as number | undefined) ?? 0,
       openWorkItems: work.summary?.open ?? 0,
-      slipSummary: impact.summary ?? null,
+      slipSummary: (impact.summary as string | null) ?? null,
     } satisfies StakeholderCommsContext;
   }, [releaseId]);
 
   useEffect(() => {
-    loadContext().then(setContext);
+    const ac = new AbortController();
+    void loadContext(ac.signal).then((ctx) => {
+      if (!ac.signal.aborted && ctx) setContext(ctx);
+    });
+    return () => ac.abort();
   }, [loadContext]);
 
   const generate = async () => {

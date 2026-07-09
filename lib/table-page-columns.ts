@@ -158,6 +158,16 @@ export const PLANNED_MAINTENANCE_COLUMNS: ColumnDef[] = [
   { key: "notes", label: "Notes" },
 ];
 
+export const INTEGRATION_FLOW_COLUMNS: ColumnDef[] = [
+  { key: "flowCode", label: "Flow ID" },
+  { key: "sourceSystem", label: "Source System" },
+  { key: "targetSystem", label: "Target System" },
+  { key: "integrationType", label: "Integration Type" },
+  { key: "frequency", label: "Frequency" },
+  { key: "dataElements", label: "Data Elements" },
+  { key: "businessPurpose", label: "Business Purpose" },
+];
+
 export const DEPARTMENT_COLUMNS: ColumnDef[] = [
   { key: "name", label: "Department" },
   { key: "head", label: "Head" },
@@ -263,6 +273,7 @@ export const TABLE_PAGE_KEYS = [
   "incidents",
   "application-status",
   "planned-maintenance",
+  "integration-flows",
   "departments",
   "applications",
   "users",
@@ -271,45 +282,148 @@ export const TABLE_PAGE_KEYS = [
   "calendar-table",
 ] as const;
 
+/**
+ * Incidents — own schema only (columns only; departmentName dropped — not a table column).
+ * Default-visible: severity / status / application / environment / assigned to / title.
+ */
 export const INCIDENT_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "severity", label: "Severity" },
   { key: "status", label: "Status" },
   { key: "applicationId", label: "Application" },
-  { key: "departmentName", label: "Department" },
   { key: "environmentName", label: "Environment" },
+  { key: "assignedToQ", label: "Assigned To" },
+  { key: "titleQ", label: "Title" },
+  { key: "incidentCodeQ", label: "Incident" },
+  { key: "impact", label: "Impact" },
+  { key: "relatedReleaseQ", label: "Related Release" },
+  { key: "timestampQ", label: "Timestamp" },
 ];
 
+export const INCIDENT_DEFAULT_HIDDEN_FILTER_KEYS: string[] = INCIDENT_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "severity",
+        "status",
+        "applicationId",
+        "environmentName",
+        "assignedToQ",
+        "titleQ",
+      ].includes(k)
+  );
+
+/**
+ * Drift — own schema only.
+ * Default-visible: type / severity / status / application / release.
+ * Orphan `releaseId` registry key is replaced by releaseCodeQ (wired in UI).
+ */
 export const DRIFT_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "driftType", label: "Drift type" },
   { key: "severity", label: "Severity" },
   { key: "status", label: "Status" },
   { key: "applicationId", label: "Application" },
-  { key: "releaseId", label: "Release" },
+  { key: "releaseCodeQ", label: "Release" },
+  { key: "driftCodeQ", label: "Drift" },
+  { key: "environmentName", label: "Env" },
+  { key: "detectedDateQ", label: "Detected" },
 ];
 
+export const DRIFT_DEFAULT_HIDDEN_FILTER_KEYS: string[] = DRIFT_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["driftType", "severity", "status", "applicationId", "releaseCodeQ"].includes(k)
+  );
+
+/**
+ * Monitoring Alerts — own schema only.
+ * Default-visible: severity / status / application / alert type / environment / assigned to.
+ * Orphan `departmentName` removed (not a table column; was never wired in UI).
+ */
 export const MONITORING_ALERTS_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "severity", label: "Severity" },
   { key: "status", label: "Status" },
   { key: "applicationId", label: "Application" },
-  { key: "departmentName", label: "Department" },
-  { key: "environmentName", label: "Environment" },
   { key: "alertType", label: "Alert type" },
+  { key: "environmentName", label: "Environment" },
+  { key: "assignedToQ", label: "Assigned To" },
+  { key: "alertCodeQ", label: "Alert" },
+  { key: "metricQ", label: "Metric" },
+  { key: "thresholdQ", label: "Threshold vs Current" },
+  { key: "timestampQ", label: "Timestamp" },
 ];
 
+export const MONITORING_ALERTS_DEFAULT_HIDDEN_FILTER_KEYS: string[] = MONITORING_ALERTS_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "severity",
+        "status",
+        "applicationId",
+        "alertType",
+        "environmentName",
+        "assignedToQ",
+      ].includes(k)
+  );
+
+/**
+ * Application Status — own schema only (6 table columns).
+ * Default-visible: status / application / environment / uptime % / notes.
+ * Orphan `departmentName` removed (not a table column; was never wired in UI).
+ */
 export const APPLICATION_STATUS_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "status", label: "Status" },
-  { key: "environmentName", label: "Environment" },
   { key: "applicationId", label: "Application" },
-  { key: "departmentName", label: "Department" },
+  { key: "environmentName", label: "Environment" },
+  { key: "uptimePercent", label: "Uptime %" },
+  { key: "notesQ", label: "Notes" },
+  { key: "lastCheckQ", label: "Last Check" },
 ];
 
+export const APPLICATION_STATUS_DEFAULT_HIDDEN_FILTER_KEYS: string[] = APPLICATION_STATUS_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["status", "applicationId", "environmentName", "uptimePercent", "notesQ"].includes(k)
+  );
+
+/**
+ * Approvals — own schema only.
+ * Default-visible: decision / type / approver (text) / release ID / release name.
+ * Orphan `releaseId` is wired as releaseCodeQ; approver is text (not ID dropdown).
+ */
 export const APPROVALS_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "decision", label: "Decision" },
   { key: "approvalType", label: "Approval type" },
-  { key: "approverId", label: "Approver" },
-  { key: "releaseId", label: "Release" },
+  { key: "approverQ", label: "Approver" },
+  { key: "releaseCodeQ", label: "Release ID" },
+  { key: "releaseNameQ", label: "Release Name" },
+  { key: "approvalCodeQ", label: "Approval ID" },
+  { key: "approverRole", label: "Approver Role" },
+  { key: "submittedDateQ", label: "Submitted Date" },
+  { key: "decisionDateQ", label: "Decision Date" },
+  { key: "commentsQ", label: "Comments" },
+  { key: "cabMeetingIdQ", label: "CAB Meeting ID" },
 ];
 
+export const APPROVALS_DEFAULT_HIDDEN_FILTER_KEYS: string[] = APPROVALS_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["decision", "approvalType", "approverQ", "releaseCodeQ", "releaseNameQ"].includes(k)
+  );
+
+/**
+ * Manage Filters registry for Releases.
+ * Default-visible: the original 6. Everything else defaults to hidden
+ * (see RELEASE_DEFAULT_HIDDEN_FILTER_KEYS / useFilterPreferences).
+ * Dependencies column is intentionally omitted — seed/DB values are always "NA".
+ *
+ * IMPORTANT: Do not reuse this full list on Calendar/Inbox. Those pages share
+ * ReleaseFiltersBar but must pass their own scoped field list (see CALENDAR_FILTER_FIELDS).
+ */
 export const RELEASE_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "departmentId", label: "Department" },
   { key: "applicationId", label: "Application" },
@@ -317,73 +431,368 @@ export const RELEASE_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "status", label: "Status" },
   { key: "priority", label: "Priority" },
   { key: "impact", label: "Impact" },
+  // Low-cardinality
+  { key: "approvalStatus", label: "Approval Status" },
+  { key: "rollbackPlan", label: "Rollback Plan" },
+  { key: "deploymentWindow", label: "Deployment Window" },
+  { key: "changeFreeze", label: "Change Freeze" },
+  { key: "regulatory", label: "Regulatory" },
+  { key: "vendorMaintenance", label: "Vendor Maintenance" },
+  { key: "releaseSize", label: "Release Size" },
+  // Numeric ranges
+  { key: "readinessPercent", label: "Readiness %" },
+  { key: "goLiveChecklistPercent", label: "Go-Live Checklist %" },
+  // Boolean / presence
+  { key: "conflictFlag", label: "Conflict Flag" },
+  { key: "hasBlockers", label: "Blockers" },
+  { key: "hasDependsOn", label: "Depends On" },
+  // Free-text
+  { key: "releaseCodeQ", label: "Release ID" },
+  { key: "nameQ", label: "Release Name" },
+  { key: "notesQ", label: "Notes" },
+  // Free-text name search against live User records (not a fixed dropdown)
+  { key: "releaseOwnerId", label: "Release Owner" },
+  { key: "stakeholderId", label: "Stakeholders" },
 ];
 
+/** New Releases filters — hidden until the user enables them in Manage Filters. */
+export const RELEASE_DEFAULT_HIDDEN_FILTER_KEYS: string[] = RELEASE_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "departmentId",
+        "applicationId",
+        "environmentId",
+        "status",
+        "priority",
+        "impact",
+      ].includes(k)
+  );
+
+/**
+ * Calendar shares ReleaseFiltersBar + ReleaseFiltersContext, but must NOT inherit
+ * Releases-only columns (Rollback Plan, Go-Live %, Owner text search, etc.).
+ * Only release-family scope filters that apply to calendar events / timeline.
+ */
+export const CALENDAR_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "departmentId", label: "Department" },
+  { key: "applicationId", label: "Application" },
+  { key: "environmentId", label: "Environment" },
+  { key: "status", label: "Status" },
+  { key: "priority", label: "Priority" },
+  { key: "impact", label: "Impact" },
+];
+
+/**
+ * Leave Calendar — own schema only.
+ * Default-visible: leave type / department / risk / staff member / affected releases.
+ */
 export const LEAVE_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "leaveType", label: "Leave type" },
   { key: "department", label: "Department" },
   { key: "riskLevel", label: "Risk level" },
+  { key: "staffMemberQ", label: "Staff Member" },
+  { key: "affectedReleaseQ", label: "Affected Releases" },
+  { key: "leaveCodeQ", label: "Leave ID" },
+  { key: "datesQ", label: "Dates" },
+  { key: "days", label: "Days" },
 ];
 
+export const LEAVE_DEFAULT_HIDDEN_FILTER_KEYS: string[] = LEAVE_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["leaveType", "department", "riskLevel", "staffMemberQ", "affectedReleaseQ"].includes(k)
+  );
+
+/**
+ * Risk Register — own schema only.
+ * Default-visible: status / category / likelihood / impact / risk owner / risk score.
+ */
 export const RISK_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "status", label: "Status" },
   { key: "category", label: "Category" },
+  { key: "likelihood", label: "Likelihood" },
+  { key: "impact", label: "Impact" },
+  { key: "riskOwnerQ", label: "Risk Owner" },
+  { key: "riskScore", label: "Risk Score" },
+  { key: "riskCodeQ", label: "Risk ID" },
+  { key: "releaseCodeQ", label: "Release" },
+  { key: "descriptionQ", label: "Description" },
+  { key: "affectedAreaQ", label: "Affected Area" },
+  { key: "mitigationStrategyQ", label: "Mitigation Strategy" },
+  { key: "notesQ", label: "Notes" },
 ];
 
+export const RISK_DEFAULT_HIDDEN_FILTER_KEYS: string[] = RISK_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["status", "category", "likelihood", "impact", "riskOwnerQ", "riskScore"].includes(k)
+  );
+
+/**
+ * Conflicts — own schema only.
+ * Default-visible: status / priority / department / application / assigned to.
+ */
 export const CONFLICT_FILTER_FIELDS: FilterFieldDef[] = [
-  { key: "departmentId", label: "Department" },
-  { key: "applicationId", label: "Application" },
   { key: "status", label: "Status" },
   { key: "priority", label: "Priority" },
+  { key: "departmentId", label: "Department" },
+  { key: "applicationId", label: "Application" },
+  { key: "assignedToQ", label: "Assigned To" },
+  { key: "conflictCodeQ", label: "Conflict ID" },
+  { key: "release1CodeQ", label: "Release 1" },
+  { key: "release2CodeQ", label: "Release 2" },
+  { key: "conflictingEnvironmentQ", label: "Conflicting Environment" },
+  { key: "environmentConflictType", label: "Environment Conflict Type" },
+  { key: "notesQ", label: "Notes" },
 ];
 
+export const CONFLICT_DEFAULT_HIDDEN_FILTER_KEYS: string[] = CONFLICT_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["status", "priority", "departmentId", "applicationId", "assignedToQ"].includes(k)
+  );
+
+/**
+ * Dependencies — own schema only.
+ * Default-visible: status / type / impact / release ID / depends-on release.
+ */
 export const DEPENDENCY_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "status", label: "Status" },
-  { key: "dependencyType", label: "Dependency type" },
-  { key: "impact", label: "Impact" },
+  { key: "dependencyType", label: "Dependency Type" },
+  { key: "impact", label: "Impact if Blocked" },
+  { key: "releaseCodeQ", label: "Release ID" },
+  { key: "dependsOnCodeQ", label: "Depends On Release" },
+  { key: "depCodeQ", label: "Dep ID" },
+  { key: "releaseNameQ", label: "Release Name" },
+  { key: "dependsOnNameQ", label: "Depends On Name" },
+  { key: "notesQ", label: "Notes" },
 ];
 
+export const DEPENDENCY_DEFAULT_HIDDEN_FILTER_KEYS: string[] = DEPENDENCY_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["status", "dependencyType", "impact", "releaseCodeQ", "dependsOnCodeQ"].includes(k)
+  );
+
+/**
+ * Env Booking — own schema only (never reuse Releases/Calendar fields).
+ * Default-visible: dept / app / env / conflict / release ID / release size.
+ */
 export const BOOKING_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "departmentId", label: "Department" },
   { key: "applicationId", label: "Application" },
   { key: "environmentId", label: "Environment" },
-  { key: "conflictFlag", label: "Conflict flag" },
+  { key: "conflictFlag", label: "Conflict Flag" },
+  { key: "releaseCodeQ", label: "Release ID" },
+  { key: "releaseSize", label: "Release Size" },
+  { key: "bookingCodeQ", label: "Booking ID" },
+  { key: "dependenciesQ", label: "Dependencies" },
+  { key: "prodReleaseDateQ", label: "Prod Release Date" },
+  { key: "cabDateQ", label: "CAB Date" },
+  { key: "testEnvCodeQ", label: "Test Env" },
+  { key: "testStartQ", label: "Test Start" },
+  { key: "testEndQ", label: "Test End" },
+  { key: "testDays", label: "Test Days" },
+  { key: "uatEnvCodeQ", label: "UAT Env" },
+  { key: "uatStartQ", label: "UAT Start" },
+  { key: "uatEndQ", label: "UAT End" },
+  { key: "uatDays", label: "UAT Days" },
+  { key: "preProdEnvCodeQ", label: "Pre-Prod Env" },
+  { key: "preProdStartQ", label: "Pre-Prod Start" },
+  { key: "preProdEndQ", label: "Pre-Prod End" },
+  { key: "preProdDays", label: "Pre-Prod Days" },
+  { key: "notesQ", label: "Notes" },
 ];
 
+export const BOOKING_DEFAULT_HIDDEN_FILTER_KEYS: string[] = BOOKING_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "departmentId",
+        "applicationId",
+        "environmentId",
+        "conflictFlag",
+        "releaseCodeQ",
+        "releaseSize",
+      ].includes(k)
+  );
+
+/**
+ * Versions & Config (Environments) — own schema only.
+ * Default-visible: application / department / environment / status / version / env owner.
+ * App ID column is a display-only sequential label — filter via Application instead.
+ */
 export const ENVIRONMENT_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "applicationId", label: "Application" },
+  { key: "departmentId", label: "Department" },
+  { key: "environmentName", label: "Environment" },
+  { key: "status", label: "Status" },
+  { key: "versionQ", label: "Version" },
+  { key: "envOwnerQ", label: "Env Owner" },
+  { key: "buildNumberQ", label: "Build Number" },
+  { key: "deployDateQ", label: "Deploy Date" },
+  { key: "deployedByQ", label: "Deployed By" },
+  { key: "notesQ", label: "Notes" },
 ];
 
+export const ENVIRONMENT_DEFAULT_HIDDEN_FILTER_KEYS: string[] = ENVIRONMENT_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "applicationId",
+        "departmentId",
+        "environmentName",
+        "status",
+        "versionQ",
+        "envOwnerQ",
+      ].includes(k)
+  );
+
+/**
+ * Planned Maintenance — own schema only.
+ * Default-visible: type / approval / application / environment / impact / requestor.
+ * `departmentName` dropped from Manage Filters (not a table column).
+ */
 export const PLANNED_MAINTENANCE_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "type", label: "Type" },
   { key: "approvalStatus", label: "Approval status" },
   { key: "applicationId", label: "Application" },
   { key: "environmentName", label: "Environment" },
   { key: "impact", label: "Impact" },
+  { key: "requestorQ", label: "Requestor" },
+  { key: "scheduledQ", label: "Scheduled" },
+  { key: "notesQ", label: "Notes" },
 ];
 
+export const PLANNED_MAINTENANCE_DEFAULT_HIDDEN_FILTER_KEYS: string[] = PLANNED_MAINTENANCE_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "type",
+        "approvalStatus",
+        "applicationId",
+        "environmentName",
+        "impact",
+        "requestorQ",
+      ].includes(k)
+  );
+
+/**
+ * Integration Flows — own schema only.
+ * Default-visible: integration type / frequency / source / target / business purpose.
+ */
+export const INTEGRATION_FLOW_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "integrationType", label: "Integration Type" },
+  { key: "frequency", label: "Frequency" },
+  { key: "sourceSystemQ", label: "Source System" },
+  { key: "targetSystemQ", label: "Target System" },
+  { key: "businessPurposeQ", label: "Business Purpose" },
+  { key: "dataElementsQ", label: "Data Elements" },
+  { key: "flowCodeQ", label: "Flow ID" },
+];
+
+export const INTEGRATION_FLOW_DEFAULT_HIDDEN_FILTER_KEYS: string[] = INTEGRATION_FLOW_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      ![
+        "integrationType",
+        "frequency",
+        "sourceSystemQ",
+        "targetSystemQ",
+        "businessPurposeQ",
+      ].includes(k)
+  );
+
+/**
+ * Applications (master data) — own schema only.
+ * Default-visible: department / type / criticality / product owner / tech lead.
+ * Toolbar `q` remains for quick search; dedicated owner fields are text → live data.
+ */
 export const APPLICATION_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "departmentId", label: "Department" },
-  { key: "criticality", label: "Criticality" },
   { key: "type", label: "Type" },
+  { key: "criticality", label: "Criticality" },
+  { key: "productOwnerQ", label: "Product Owner" },
+  { key: "techLeadQ", label: "Tech Lead" },
+  { key: "nameQ", label: "Application" },
+  { key: "envCount", label: "Environments" },
 ];
 
+export const APPLICATION_DEFAULT_HIDDEN_FILTER_KEYS: string[] = APPLICATION_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) =>
+      !["departmentId", "type", "criticality", "productOwnerQ", "techLeadQ"].includes(k)
+  );
+
+/**
+ * Users — own schema only.
+ * Default-visible: department / role / access / status / name.
+ */
 export const USER_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "department", label: "Department" },
   { key: "role", label: "Role" },
   { key: "accessLevel", label: "Access level" },
   { key: "status", label: "Status" },
+  { key: "nameQ", label: "Name" },
+  { key: "emailQ", label: "Email" },
+  { key: "lastLoginQ", label: "Last Login" },
 ];
 
+export const USER_DEFAULT_HIDDEN_FILTER_KEYS: string[] = USER_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter(
+    (k) => !["department", "role", "accessLevel", "status", "nameQ"].includes(k)
+  );
+
+/**
+ * Risk Factors — own schema only (5 columns).
+ * Default-visible: category / active / factor name / weight.
+ */
 export const RISK_FACTOR_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "category", label: "Category" },
   { key: "active", label: "Active" },
+  { key: "factorNameQ", label: "Factor Name" },
+  { key: "weight", label: "Weight" },
+  { key: "descriptionQ", label: "Description" },
 ];
 
+export const RISK_FACTOR_DEFAULT_HIDDEN_FILTER_KEYS: string[] = RISK_FACTOR_FILTER_FIELDS
+  .map((f) => f.key)
+  .filter((k) => !["category", "active", "factorNameQ", "weight"].includes(k));
+
+/**
+ * Reference Data — own schema only (3 columns + category sidebar).
+ * Default-visible: all three (small page).
+ */
 export const REFERENCE_DATA_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "active", label: "Active" },
+  { key: "valueQ", label: "Value" },
+  { key: "sortOrder", label: "Sort Order" },
 ];
 
-export const DEPARTMENT_FILTER_FIELDS: FilterFieldDef[] = [];
+export const REFERENCE_DATA_DEFAULT_HIDDEN_FILTER_KEYS: string[] = [];
+
+/**
+ * Departments — own schema only (3 columns).
+ * Default-visible: all three.
+ */
+export const DEPARTMENT_FILTER_FIELDS: FilterFieldDef[] = [
+  { key: "nameQ", label: "Department" },
+  { key: "headQ", label: "Head" },
+  { key: "applicationCount", label: "Applications" },
+];
+
+export const DEPARTMENT_DEFAULT_HIDDEN_FILTER_KEYS: string[] = [];
 
 export const CALENDAR_TABLE_FILTER_FIELDS: FilterFieldDef[] = [];

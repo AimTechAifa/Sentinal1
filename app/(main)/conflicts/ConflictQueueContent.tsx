@@ -4,9 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { TopBar } from "@/components/layout/TopBar";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-import { CONFLICT_COLUMNS, CONFLICT_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  CONFLICT_COLUMNS,
+  CONFLICT_DEFAULT_HIDDEN_FILTER_KEYS,
+  CONFLICT_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { CONFLICT_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { DataTableHeadRow } from "@/components/ui/data-table";
@@ -16,6 +20,7 @@ import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { CONFLICTS_FILTER_SCHEMA } from "@/lib/table-filters";
+import { safeFetchJson } from "@/lib/safe-fetch";
 
 type ConflictRow = {
   id: string;
@@ -144,13 +149,17 @@ export default function ConflictQueueContent() {
   const [apps, setApps] = useState<{ id: string; name: string; departmentId: string }[]>([]);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/departments").then((r) => (r.ok ? r.json() : [])),
-      fetch("/api/applications").then((r) => (r.ok ? r.json() : [])),
-    ]).then(([d, a]) => {
-      setDepartments(d);
-      setApps(a);
-    });
+    const ac = new AbortController();
+    void (async () => {
+      const [deptRes, appsRes] = await Promise.all([
+        safeFetchJson<{ id: string; name: string }[]>("/api/departments", { signal: ac.signal, label: "departments" }),
+        safeFetchJson<{ id: string; name: string; departmentId: string }[]>("/api/applications", { signal: ac.signal, label: "applications" }),
+      ]);
+      if (ac.signal.aborted) return;
+      if (deptRes.ok) setDepartments(deptRes.data);
+      if (appsRes.ok) setApps(appsRes.data);
+    })();
+    return () => ac.abort();
   }, []);
 
   const appOptions = useMemo(
@@ -160,11 +169,19 @@ export default function ConflictQueueContent() {
 
   const openCount = conflicts.filter((c) => c.status === "Open" || c.status === "Escalated").length;
 
+  const conflictTypes = useMemo(
+    () => [...new Set(conflicts.map((c) => c.environmentConflictType).filter(Boolean))].sort(),
+    [conflicts]
+  );
+
   const { visibleColumns, isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "conflicts",
     CONFLICT_COLUMNS,
     CONFLICT_FILTER_FIELDS,
-    { lockedKeys: ["conflictCode"] }
+    {
+      lockedKeys: ["conflictCode"],
+      defaultHiddenFilters: CONFLICT_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -222,6 +239,61 @@ export default function ConflictQueueContent() {
                 </option>
               ))}
             </FilterSelect>
+          )}
+          {isFilterVisible("assignedToQ") && (
+            <FilterTextInput
+              value={values.assignedToQ}
+              onChange={(v) => setFilter("assignedToQ", v)}
+              placeholder="Assigned to…"
+            />
+          )}
+          {isFilterVisible("conflictCodeQ") && (
+            <FilterTextInput
+              value={values.conflictCodeQ}
+              onChange={(v) => setFilter("conflictCodeQ", v)}
+              placeholder="Conflict ID…"
+            />
+          )}
+          {isFilterVisible("release1CodeQ") && (
+            <FilterTextInput
+              value={values.release1CodeQ}
+              onChange={(v) => setFilter("release1CodeQ", v)}
+              placeholder="Release 1…"
+            />
+          )}
+          {isFilterVisible("release2CodeQ") && (
+            <FilterTextInput
+              value={values.release2CodeQ}
+              onChange={(v) => setFilter("release2CodeQ", v)}
+              placeholder="Release 2…"
+            />
+          )}
+          {isFilterVisible("conflictingEnvironmentQ") && (
+            <FilterTextInput
+              value={values.conflictingEnvironmentQ}
+              onChange={(v) => setFilter("conflictingEnvironmentQ", v)}
+              placeholder="Conflicting env…"
+            />
+          )}
+          {isFilterVisible("environmentConflictType") && (
+            <FilterSelect
+              value={values.environmentConflictType}
+              onChange={(v) => setFilter("environmentConflictType", v)}
+            >
+              <option value="">All conflict types</option>
+              {conflictTypes.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("notesQ") && (
+            <FilterTextInput
+              value={values.notesQ}
+              onChange={(v) => setFilter("notesQ", v)}
+              placeholder="Notes…"
+            />
           )}
         </TableFilterBar>
       )}

@@ -1,9 +1,22 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { Plus } from "lucide-react";
+import {
+  FilterRangeInputs,
+  FilterSelect,
+  FilterTextInput,
+  FilterTriState,
+  TableFilterBar,
+} from "@/components/filters/TableFilterBar";
+import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
-import { BOOKING_COLUMNS, BOOKING_FILTER_FIELDS } from "@/lib/table-page-columns";
+import { BookingFormModal } from "@/components/booking/BookingFormModal";
+import {
+  BOOKING_COLUMNS,
+  BOOKING_DEFAULT_HIDDEN_FILTER_KEYS,
+  BOOKING_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { BOOKING_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { DataTableHeadRow } from "@/components/ui/data-table";
@@ -12,12 +25,16 @@ import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { BOOKING_FILTER_SCHEMA } from "@/lib/table-filters";
+import { loadJsonEffect, safeFetchJson } from "@/lib/safe-fetch";
+import { taBtnPrimary } from "@/lib/styles";
+import { cn } from "@/lib/utils";
+import type { SessionUser } from "@/lib/auth/roles";
 
 type BookingRow = {
   id: string;
   bookingCode: string | null;
   application: { id: string; name: string; department?: { name: string } };
-  release?: { releaseCode: string } | null;
+  release?: { id: string; releaseCode: string } | null;
   departmentName?: string | null;
   dependencies?: string | null;
   releaseSize?: string | null;
@@ -109,6 +126,7 @@ export default function BookingContent() {
     sortKey,
     sortDir,
     toggleSort,
+    refetch,
   } = useFilteredFetch<BookingRow>("/api/bookings", BOOKING_FILTER_SCHEMA, {
     defaultSortKey: "bookingCode",
     defaultSortDir: "asc",
@@ -139,18 +157,41 @@ export default function BookingContent() {
   });
   const [departments, setDepartments] = useState<{ id: string; name: string }[]>([]);
   const [apps, setApps] = useState<{ id: string; name: string; departmentId: string }[]>([]);
-  const [envs, setEnvs] = useState<{ id: string; name: string; application: { name: string } }[]>([]);
+  const [envs, setEnvs] = useState<{ id: string; name: string; applicationId: string; application: { name: string } }[]>([]);
+  const [releases, setReleases] = useState<{ id: string; releaseCode: string; name: string }[]>([]);
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const canEdit = user?.role === "editor" || user?.role === "admin";
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/departments").then((r) => (r.ok ? r.json() : [])),
-      fetch("/api/applications").then((r) => (r.ok ? r.json() : [])),
-      fetch("/api/environments").then((r) => (r.ok ? r.json() : [])),
-    ]).then(([d, a, e]) => {
-      setDepartments(d);
-      setApps(a);
-      setEnvs(e);
+    return loadJsonEffect<{ user: SessionUser }>("/api/auth/me", (data) => setUser(data.user), {
+      label: "booking-auth",
     });
+  }, []);
+
+  useEffect(() => {
+    const ac = new AbortController();
+    void (async () => {
+      const [deptRes, appsRes, envsRes, relRes] = await Promise.all([
+        safeFetchJson<{ id: string; name: string }[]>("/api/departments", { signal: ac.signal, label: "departments" }),
+        safeFetchJson<{ id: string; name: string; departmentId: string }[]>("/api/applications", { signal: ac.signal, label: "applications" }),
+        safeFetchJson<{ id: string; name: string; applicationId: string; application: { name: string } }[]>(
+          "/api/environments",
+          { signal: ac.signal, label: "environments" },
+        ),
+        safeFetchJson<{ id: string; releaseCode: string; name: string }[]>("/api/releases", {
+          signal: ac.signal,
+          label: "releases",
+        }),
+      ]);
+      if (ac.signal.aborted) return;
+      if (deptRes.ok) setDepartments(deptRes.data);
+      if (appsRes.ok) setApps(appsRes.data);
+      if (envsRes.ok) setEnvs(envsRes.data);
+      if (relRes.ok) setReleases(relRes.data);
+    })();
+    return () => ac.abort();
   }, []);
 
   const appOptions = useMemo(
@@ -158,11 +199,19 @@ export default function BookingContent() {
     [apps, values.departmentId]
   );
 
+  const releaseSizes = useMemo(
+    () => [...new Set(bookings.map((b) => (b.releaseSize ?? "").trim()).filter(Boolean))].sort(),
+    [bookings]
+  );
+
   const { visibleColumns, isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "env-booking",
     BOOKING_COLUMNS,
     BOOKING_FILTER_FIELDS,
-    { lockedKeys: ["bookingCode"] }
+    {
+      lockedKeys: ["bookingCode"],
+      defaultHiddenFilters: BOOKING_DEFAULT_HIDDEN_FILTER_KEYS,
+    }
   );
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
@@ -176,8 +225,36 @@ export default function BookingContent() {
             {bookings.length} booking{bookings.length === 1 ? "" : "s"} — manage and schedule deployments across all infrastructure layers.
           </p>
         </div>
-        <PageDocumentation pageKey="env-booking" />
+        <div className="flex shrink-0 items-center gap-2">
+          {canEdit && (
+            <button type="button" className={cn(taBtnPrimary, "text-sm")} onClick={() => setModalOpen(true)}>
+              <Plus className="mr-1 inline h-4 w-4" /> New Booking
+            </button>
+          )}
+          <PageDocumentation pageKey="env-booking" />
+        </div>
       </div>
+
+      <BookingFormModal
+        open={modalOpen}
+        departments={departments.map((d) => ({ value: d.id, label: d.name }))}
+        applications={apps.map((a) => ({
+          value: a.id,
+          label: a.name,
+          departmentId: a.departmentId,
+        }))}
+        environments={envs.map((e) => ({
+          value: e.id,
+          label: `${e.application.name} — ${e.name}`,
+          applicationId: e.applicationId,
+        }))}
+        releases={releases.map((r) => ({
+          value: r.id,
+          label: `${r.releaseCode} — ${r.name}`,
+        }))}
+        onClose={() => setModalOpen(false)}
+        onSaved={() => refetch()}
+      />
 
       {!tablePending && (
         <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
@@ -212,11 +289,161 @@ export default function BookingContent() {
             </FilterSelect>
           )}
           {isFilterVisible("conflictFlag") && (
-            <FilterSelect value={values.conflictFlag} onChange={(v) => setFilter("conflictFlag", v)}>
-              <option value="">All bookings</option>
-              <option value="1">Conflicts only</option>
-              <option value="0">No conflicts</option>
+            <FilterTriState
+              value={values.conflictFlag}
+              onChange={(v) => setFilter("conflictFlag", v)}
+              yesLabel="Conflicts only"
+              noLabel="No conflicts"
+              allLabel="All bookings"
+            />
+          )}
+          {isFilterVisible("releaseCodeQ") && (
+            <FilterTextInput
+              value={values.releaseCodeQ}
+              onChange={(v) => setFilter("releaseCodeQ", v)}
+              placeholder="Release ID…"
+            />
+          )}
+          {isFilterVisible("releaseSize") && (
+            <FilterSelect value={values.releaseSize} onChange={(v) => setFilter("releaseSize", v)}>
+              <option value="">All sizes</option>
+              {releaseSizes.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
             </FilterSelect>
+          )}
+          {isFilterVisible("bookingCodeQ") && (
+            <FilterTextInput
+              value={values.bookingCodeQ}
+              onChange={(v) => setFilter("bookingCodeQ", v)}
+              placeholder="Booking ID…"
+            />
+          )}
+          {isFilterVisible("dependenciesQ") && (
+            <FilterTextInput
+              value={values.dependenciesQ}
+              onChange={(v) => setFilter("dependenciesQ", v)}
+              placeholder="Dependencies…"
+            />
+          )}
+          {isFilterVisible("prodReleaseDateQ") && (
+            <FilterTextInput
+              value={values.prodReleaseDateQ}
+              onChange={(v) => setFilter("prodReleaseDateQ", v)}
+              placeholder="Prod date…"
+            />
+          )}
+          {isFilterVisible("cabDateQ") && (
+            <FilterTextInput
+              value={values.cabDateQ}
+              onChange={(v) => setFilter("cabDateQ", v)}
+              placeholder="CAB date…"
+            />
+          )}
+          {isFilterVisible("testEnvCodeQ") && (
+            <FilterTextInput
+              value={values.testEnvCodeQ}
+              onChange={(v) => setFilter("testEnvCodeQ", v)}
+              placeholder="Test env…"
+            />
+          )}
+          {isFilterVisible("testStartQ") && (
+            <FilterTextInput
+              value={values.testStartQ}
+              onChange={(v) => setFilter("testStartQ", v)}
+              placeholder="Test start…"
+            />
+          )}
+          {isFilterVisible("testEndQ") && (
+            <FilterTextInput
+              value={values.testEndQ}
+              onChange={(v) => setFilter("testEndQ", v)}
+              placeholder="Test end…"
+            />
+          )}
+          {isFilterVisible("testDays") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Test days</span>
+              <FilterRangeInputs
+                minValue={values.testDaysMin}
+                maxValue={values.testDaysMax}
+                onMinChange={(v) => setFilter("testDaysMin", v)}
+                onMaxChange={(v) => setFilter("testDaysMax", v)}
+              />
+            </div>
+          )}
+          {isFilterVisible("uatEnvCodeQ") && (
+            <FilterTextInput
+              value={values.uatEnvCodeQ}
+              onChange={(v) => setFilter("uatEnvCodeQ", v)}
+              placeholder="UAT env…"
+            />
+          )}
+          {isFilterVisible("uatStartQ") && (
+            <FilterTextInput
+              value={values.uatStartQ}
+              onChange={(v) => setFilter("uatStartQ", v)}
+              placeholder="UAT start…"
+            />
+          )}
+          {isFilterVisible("uatEndQ") && (
+            <FilterTextInput
+              value={values.uatEndQ}
+              onChange={(v) => setFilter("uatEndQ", v)}
+              placeholder="UAT end…"
+            />
+          )}
+          {isFilterVisible("uatDays") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">UAT days</span>
+              <FilterRangeInputs
+                minValue={values.uatDaysMin}
+                maxValue={values.uatDaysMax}
+                onMinChange={(v) => setFilter("uatDaysMin", v)}
+                onMaxChange={(v) => setFilter("uatDaysMax", v)}
+              />
+            </div>
+          )}
+          {isFilterVisible("preProdEnvCodeQ") && (
+            <FilterTextInput
+              value={values.preProdEnvCodeQ}
+              onChange={(v) => setFilter("preProdEnvCodeQ", v)}
+              placeholder="Pre-Prod env…"
+            />
+          )}
+          {isFilterVisible("preProdStartQ") && (
+            <FilterTextInput
+              value={values.preProdStartQ}
+              onChange={(v) => setFilter("preProdStartQ", v)}
+              placeholder="Pre-Prod start…"
+            />
+          )}
+          {isFilterVisible("preProdEndQ") && (
+            <FilterTextInput
+              value={values.preProdEndQ}
+              onChange={(v) => setFilter("preProdEndQ", v)}
+              placeholder="Pre-Prod end…"
+            />
+          )}
+          {isFilterVisible("preProdDays") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Pre-Prod days</span>
+              <FilterRangeInputs
+                minValue={values.preProdDaysMin}
+                maxValue={values.preProdDaysMax}
+                onMinChange={(v) => setFilter("preProdDaysMin", v)}
+                onMaxChange={(v) => setFilter("preProdDaysMax", v)}
+              />
+            </div>
+          )}
+          {isFilterVisible("notesQ") && (
+            <FilterTextInput
+              value={values.notesQ}
+              onChange={(v) => setFilter("notesQ", v)}
+              placeholder="Notes…"
+            />
           )}
         </TableFilterBar>
       )}
@@ -272,7 +499,16 @@ export default function BookingContent() {
                           }`}
                           title={isNotes ? String(value) : undefined}
                         >
-                          {display}
+                          {col.key === "releaseId" && row.release?.id && row.release.releaseCode ? (
+                            <ProgressLink
+                              href={`/releases/${row.release.id}`}
+                              className="font-semibold text-brand-600 hover:underline dark:text-brand-400"
+                            >
+                              {row.release.releaseCode}
+                            </ProgressLink>
+                          ) : (
+                            display
+                          )}
                         </td>
                       );
                     })}

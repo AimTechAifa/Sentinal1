@@ -5,7 +5,26 @@ import Chip from "@mui/material/Chip";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
 import { PERIOD_OPTIONS } from "@/lib/period-labels";
 import type { Period } from "@/lib/period-range";
-import { FilterSelect, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { TableFilterBar } from "@/components/filters/TableFilterBar";
+import {
+  FilterRangeInputs,
+  FilterSelect,
+  FilterTextInput,
+  FilterTriState,
+} from "@/components/filters/TableFilterControls";
+
+export type ReleaseFilterOptionLists = {
+  statuses?: string[];
+  priorities?: string[];
+  impacts?: string[];
+  approvalStatuses?: string[];
+  rollbackPlans?: string[];
+  deploymentWindows?: string[];
+  changeFreezes?: string[];
+  regulatories?: string[];
+  vendorMaintenances?: string[];
+  releaseSizes?: string[];
+};
 
 export function ReleaseFiltersBar({
   className,
@@ -16,9 +35,12 @@ export function ReleaseFiltersBar({
   statusOptions = [],
   priorityOptions = [],
   impactOptions = [],
+  options,
   manageFilters,
   children,
-  isFilterVisible = () => true,
+  /** Page must pass prefs-backed visibility. Default: only shared scope filters (no Releases-only fields). */
+  isFilterVisible = (key) =>
+    key === "departmentId" || key === "applicationId" || key === "environmentId",
 }: {
   className?: string;
   variant?: "default" | "large";
@@ -28,6 +50,7 @@ export function ReleaseFiltersBar({
   statusOptions?: string[];
   priorityOptions?: string[];
   impactOptions?: string[];
+  options?: ReleaseFilterOptionLists;
   manageFilters?: React.ReactNode;
   children?: React.ReactNode;
   isFilterVisible?: (key: string) => boolean;
@@ -40,6 +63,7 @@ export function ReleaseFiltersBar({
     setStatus,
     setPriority,
     setImpact,
+    setFilter,
     clearFilters,
     hasRefinement,
     departments,
@@ -51,6 +75,14 @@ export function ReleaseFiltersBar({
   const appOptions = filters.departmentId
     ? applications.filter((a) => a.departmentId === filters.departmentId)
     : applications;
+
+  const approvalStatuses = options?.approvalStatuses ?? [];
+  const rollbackPlans = options?.rollbackPlans ?? [];
+  const deploymentWindows = options?.deploymentWindows ?? [];
+  const changeFreezes = options?.changeFreezes ?? [];
+  const regulatories = options?.regulatories ?? [];
+  const vendorMaintenances = options?.vendorMaintenances ?? [];
+  const releaseSizes = options?.releaseSizes ?? [];
 
   return (
     <TableFilterBar className={className} hasActive={hasRefinement} onClear={clearFilters} manageFilters={manageFilters}>
@@ -110,6 +142,179 @@ export function ReleaseFiltersBar({
           <option value="">All impacts</option>
           {impactOptions.map((i) => <option key={i} value={i}>{i}</option>)}
         </FilterSelect>
+      )}
+
+      {showListFilters && isFilterVisible("approvalStatus") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.approvalStatus}
+          onChange={(v) => setFilter("approvalStatus", v)}
+        >
+          <option value="">All approval statuses</option>
+          {approvalStatuses.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("rollbackPlan") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.rollbackPlan}
+          onChange={(v) => setFilter("rollbackPlan", v)}
+        >
+          <option value="">All rollback plans</option>
+          {rollbackPlans.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("deploymentWindow") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.deploymentWindow}
+          onChange={(v) => setFilter("deploymentWindow", v)}
+        >
+          <option value="">All deployment windows</option>
+          {deploymentWindows.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("changeFreeze") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.changeFreeze}
+          onChange={(v) => setFilter("changeFreeze", v)}
+        >
+          <option value="">All change freezes</option>
+          {changeFreezes.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("regulatory") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.regulatory}
+          onChange={(v) => setFilter("regulatory", v)}
+        >
+          <option value="">All regulatory</option>
+          {regulatories.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("vendorMaintenance") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.vendorMaintenance}
+          onChange={(v) => setFilter("vendorMaintenance", v)}
+        >
+          <option value="">All vendor maintenance</option>
+          {vendorMaintenances.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+      {showListFilters && isFilterVisible("releaseSize") && (
+        <FilterSelect
+          disabled={loading}
+          value={filters.releaseSize}
+          onChange={(v) => setFilter("releaseSize", v)}
+        >
+          <option value="">All sizes</option>
+          {releaseSizes.map((s) => <option key={s} value={s}>{s}</option>)}
+        </FilterSelect>
+      )}
+
+      {showListFilters && isFilterVisible("readinessPercent") && (
+        <div className="inline-flex items-center gap-1">
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Ready%</span>
+          <FilterRangeInputs
+            minValue={filters.readinessMin}
+            maxValue={filters.readinessMax}
+            onMinChange={(v) => setFilter("readinessMin", v)}
+            onMaxChange={(v) => setFilter("readinessMax", v)}
+            minPlaceholder="0"
+            maxPlaceholder="100"
+            disabled={loading}
+          />
+        </div>
+      )}
+      {showListFilters && isFilterVisible("goLiveChecklistPercent") && (
+        <div className="inline-flex items-center gap-1">
+          <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Go-Live%</span>
+          <FilterRangeInputs
+            minValue={filters.goLiveMin}
+            maxValue={filters.goLiveMax}
+            onMinChange={(v) => setFilter("goLiveMin", v)}
+            onMaxChange={(v) => setFilter("goLiveMax", v)}
+            minPlaceholder="0"
+            maxPlaceholder="100"
+            disabled={loading}
+          />
+        </div>
+      )}
+
+      {showListFilters && isFilterVisible("conflictFlag") && (
+        <FilterTriState
+          value={filters.conflictFlag}
+          onChange={(v) => setFilter("conflictFlag", v)}
+          yesLabel="Has conflict"
+          noLabel="No conflict"
+          allLabel="All conflicts"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("hasBlockers") && (
+        <FilterTriState
+          value={filters.hasBlockers}
+          onChange={(v) => setFilter("hasBlockers", v)}
+          yesLabel="Has blockers"
+          noLabel="No blockers"
+          allLabel="All blockers"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("hasDependsOn") && (
+        <FilterTriState
+          value={filters.hasDependsOn}
+          onChange={(v) => setFilter("hasDependsOn", v)}
+          yesLabel="Has depends-on"
+          noLabel="No depends-on"
+          allLabel="All depends-on"
+          disabled={loading}
+        />
+      )}
+
+      {showListFilters && isFilterVisible("releaseCodeQ") && (
+        <FilterTextInput
+          value={filters.releaseCodeQ}
+          onChange={(v) => setFilter("releaseCodeQ", v)}
+          placeholder="Release ID…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("nameQ") && (
+        <FilterTextInput
+          value={filters.nameQ}
+          onChange={(v) => setFilter("nameQ", v)}
+          placeholder="Release name…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("notesQ") && (
+        <FilterTextInput
+          value={filters.notesQ}
+          onChange={(v) => setFilter("notesQ", v)}
+          placeholder="Notes…"
+          disabled={loading}
+        />
+      )}
+
+      {showListFilters && isFilterVisible("releaseOwnerId") && (
+        <FilterTextInput
+          value={filters.releaseOwnerId}
+          onChange={(v) => setFilter("releaseOwnerId", v)}
+          placeholder="Owner name…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("stakeholderId") && (
+        <FilterTextInput
+          value={filters.stakeholderId}
+          onChange={(v) => setFilter("stakeholderId", v)}
+          placeholder="Stakeholder name…"
+          disabled={loading}
+        />
       )}
 
       {variant === "large" && (

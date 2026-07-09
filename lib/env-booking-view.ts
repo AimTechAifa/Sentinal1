@@ -82,19 +82,89 @@ export function mapSeedEnvBookingRow(b: SeedRow): EnvBookingViewRow {
   };
 }
 
+function contains(hay: string | null | undefined, needle: string | undefined) {
+  if (!needle) return true;
+  return (hay ?? "").toLowerCase().includes(needle.trim().toLowerCase());
+}
+
+function dateContains(iso: string | null | undefined, needle: string | undefined) {
+  if (!needle) return true;
+  if (!iso) return false;
+  return iso.slice(0, 10).includes(needle.trim());
+}
+
+function inRange(value: number | null | undefined, min?: number, max?: number) {
+  if (min === undefined && max === undefined) return true;
+  if (value === null || value === undefined) return false;
+  if (min !== undefined && value < min) return false;
+  if (max !== undefined && value > max) return false;
+  return true;
+}
+
+export type EnvBookingSeedFilters = {
+  departmentName?: string;
+  applicationName?: string;
+  /** Match against Test / UAT / Pre-Prod env codes (resolved env name or free text). */
+  environmentNeedle?: string;
+  releaseCodeQ?: string;
+  releaseSize?: string;
+  bookingCodeQ?: string;
+  dependenciesQ?: string;
+  prodReleaseDateQ?: string;
+  cabDateQ?: string;
+  testEnvCodeQ?: string;
+  testStartQ?: string;
+  testEndQ?: string;
+  testDaysMin?: number;
+  testDaysMax?: number;
+  uatEnvCodeQ?: string;
+  uatStartQ?: string;
+  uatEndQ?: string;
+  uatDaysMin?: number;
+  uatDaysMax?: number;
+  preProdEnvCodeQ?: string;
+  preProdStartQ?: string;
+  preProdEndQ?: string;
+  preProdDaysMin?: number;
+  preProdDaysMax?: number;
+  notesQ?: string;
+  conflictFlag?: boolean;
+};
+
 export function filterSeedEnvBookings(
   rows: EnvBookingViewRow[],
-  filters: {
-    departmentName?: string;
-    applicationName?: string;
-    releaseId?: string;
-    conflictFlag?: boolean;
-  }
+  filters: EnvBookingSeedFilters
 ): EnvBookingViewRow[] {
   return rows.filter((row) => {
     if (filters.departmentName && row.departmentName !== filters.departmentName) return false;
     if (filters.applicationName && row.application.name !== filters.applicationName) return false;
-    if (filters.releaseId && row.release?.releaseCode !== filters.releaseId) return false;
+    if (filters.environmentNeedle) {
+      const needle = filters.environmentNeedle;
+      const hit =
+        contains(row.testEnvCode, needle) ||
+        contains(row.uatEnvCode, needle) ||
+        contains(row.preProdEnvCode, needle);
+      if (!hit) return false;
+    }
+    if (!contains(row.release?.releaseCode, filters.releaseCodeQ)) return false;
+    if (filters.releaseSize && (row.releaseSize ?? "") !== filters.releaseSize) return false;
+    if (!contains(row.bookingCode, filters.bookingCodeQ)) return false;
+    if (!contains(row.dependencies, filters.dependenciesQ)) return false;
+    if (!dateContains(row.prodReleaseDate, filters.prodReleaseDateQ)) return false;
+    if (!dateContains(row.cabDate, filters.cabDateQ)) return false;
+    if (!contains(row.testEnvCode, filters.testEnvCodeQ)) return false;
+    if (!dateContains(row.testStart, filters.testStartQ)) return false;
+    if (!dateContains(row.testEnd, filters.testEndQ)) return false;
+    if (!inRange(row.testDays, filters.testDaysMin, filters.testDaysMax)) return false;
+    if (!contains(row.uatEnvCode, filters.uatEnvCodeQ)) return false;
+    if (!dateContains(row.uatStart, filters.uatStartQ)) return false;
+    if (!dateContains(row.uatEnd, filters.uatEndQ)) return false;
+    if (!inRange(row.uatDays, filters.uatDaysMin, filters.uatDaysMax)) return false;
+    if (!contains(row.preProdEnvCode, filters.preProdEnvCodeQ)) return false;
+    if (!dateContains(row.preProdStart, filters.preProdStartQ)) return false;
+    if (!dateContains(row.preProdEnd, filters.preProdEndQ)) return false;
+    if (!inRange(row.preProdDays, filters.preProdDaysMin, filters.preProdDaysMax)) return false;
+    if (!contains(row.purpose, filters.notesQ)) return false;
     if (filters.conflictFlag !== undefined && row.conflictFlag !== filters.conflictFlag) return false;
     return true;
   });

@@ -15,6 +15,7 @@ import {
   type InboxSection,
 } from "@/lib/inbox-shared";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
+import { loadJsonEffect } from "@/lib/safe-fetch";
 import { formatDate, cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -94,14 +95,11 @@ export function MorningInboxView() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/inbox?period=${period}${filterQuery}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((payload) => {
-        if (payload) {
-          setData({ counts: payload.counts, items: payload.items });
-        }
-        setLoading(false);
-      });
+    return loadJsonEffect<{ counts: Record<string, number>; items: InboxItem[] }>(
+      `/api/inbox?period=${period}${filterQuery}`,
+      (payload) => setData({ counts: payload.counts, items: payload.items }),
+      { label: "inbox", onFinally: () => setLoading(false) },
+    );
   }, [period, filterQuery, refreshKey]);
 
   const filtered = useMemo(() => {

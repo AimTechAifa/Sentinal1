@@ -19,7 +19,8 @@ export type PageDocKey =
   | "monitoring-alerts"
   | "incidents"
   | "application-status"
-  | "planned-maintenance";
+  | "planned-maintenance"
+  | "integration-flows";
 
 export type PageDocumentationEntry = {
   pageKey: PageDocKey;
@@ -60,8 +61,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
     ],
     fullDocumentation: [
       "The calendar reads CalendarEvent rows seeded from the source workbook — each CAB meeting and each release/deployment date is a separate event. The month grid colours events by type (RELEASE, CAB MEETING, CHANGE FREEZE, etc.).",
-      "Timeline view plots filtered releases on a horizontal axis by target date. Table view mirrors the Excel Calendar sheet columns including week-of-month (1–5) derived from the event date.",
-      "All three views honour the same ReleaseFiltersBar filters and period navigation. Environment Bookings tab is reserved for a future booking-centric calendar; release events live under Release Calendar.",
+      "Timeline view plots filtered releases on a horizontal axis by target date. Year period uses a minimal dot-and-stem style (status-colored dots, thin stems, plain text labels) with density clustering for close dates; Expand View opens a fit-to-year popup with zoom and pan. Table view mirrors the Excel Calendar sheet columns including week-of-month (1–5) derived from the event date.",
+      "All three views honour the same ReleaseFiltersBar filters and period navigation.",
     ],
   },
   "env-booking": {
@@ -288,6 +289,22 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
       "Filter by environment to see if your target prod/test tier has upcoming work during the proposed go-live week.",
     ],
   },
+  "integration-flows": {
+    pageKey: "integration-flows",
+    title: "Key Integration Flows",
+    quickReference: [
+      "Catalog of system-to-system integration flows (source → target).",
+      "Filter by integration type, frequency, source/target system, and purpose.",
+      "Source and target are plain-text system names (not linked to Applications yet).",
+      "Use with System Mapping for a fuller picture of cross-system dependencies.",
+      "Frequency and type indicate blast radius when a release touches either end.",
+    ],
+    fullDocumentation: [
+      "Key Integration Flows lists how enterprise systems exchange data — API, batch, SCIM, and hybrid patterns — with frequency and business purpose for each flow.",
+      "System names are stored as free text because they only partially match seeded Application records. Linking to Applications is a future reconciliation task.",
+      "When planning a release that changes Salesforce, SAP, Workday, or similar platforms, filter this list by source or target to identify downstream consumers that may need coordinated testing.",
+    ],
+  },
 };
 
 const PATH_TO_DOC_KEY: Record<string, PageDocKey> = {
@@ -307,6 +324,7 @@ const PATH_TO_DOC_KEY: Record<string, PageDocKey> = {
   "/incidents": "incidents",
   "/application-status": "application-status",
   "/planned-maintenance": "planned-maintenance",
+  "/integration-flows": "integration-flows",
 };
 
 export function getPageDocumentation(pageKey: PageDocKey): PageDocumentationEntry {
