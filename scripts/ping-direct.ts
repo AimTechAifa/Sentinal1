@@ -2,11 +2,16 @@ import { config } from "dotenv";
 config({ override: true });
 import { PrismaClient } from "@prisma/client";
 
-const url = process.env.DIRECT_URL;
-if (!url) {
-  console.error("DIRECT_URL missing");
-  process.exit(1);
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    console.error(`${name} missing`);
+    process.exit(1);
+  }
+  return value;
 }
+
+const url = requireEnv("DIRECT_URL");
 const p = new PrismaClient({ datasources: { db: { url } } });
 
 async function main() {
