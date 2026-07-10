@@ -18,6 +18,7 @@ export const RELEASE_COLUMNS: ColumnDef[] = [
   { key: "uatEnvRequired", label: "UAT Env Required" },
   { key: "status", label: "Status" },
   { key: "conflictFlag", label: "Conflict Flag" },
+  { key: "conflictIds", label: "Conflict ID(s)" },
   { key: "notes", label: "Notes" },
   { key: "readinessPercent", label: "Readiness %" },
   { key: "blockers", label: "Blockers" },
@@ -200,10 +201,11 @@ export const USER_COLUMNS: ColumnDef[] = [
   { key: "lastLogin", label: "Last Login" },
 ];
 
+/** Date is first so DataTable sticky-first-col sticks the row identifier (rule #8). */
 export const CALENDAR_TABLE_COLUMNS: ColumnDef[] = [
+  { key: "date", label: "Date" },
   { key: "month", label: "Month" },
   { key: "week", label: "Week" },
-  { key: "date", label: "Date" },
   { key: "day", label: "Day" },
   { key: "eventType", label: "Event Type" },
   { key: "releaseCode", label: "Release ID" },
@@ -404,6 +406,7 @@ export const APPLICATION_STATUS_DEFAULT_HIDDEN_FILTER_KEYS: string[] = APPLICATI
 export const APPROVALS_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "decision", label: "Decision" },
   { key: "approvalType", label: "Approval type" },
+  /** Single text field covers Approver Name + Approver ID (table-standard #2 person rule). */
   { key: "approverQ", label: "Approver" },
   { key: "releaseCodeQ", label: "Release ID" },
   { key: "releaseNameQ", label: "Release Name" },
@@ -453,6 +456,12 @@ export const RELEASE_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "conflictFlag", label: "Conflict Flag" },
   { key: "hasBlockers", label: "Blockers" },
   { key: "hasDependsOn", label: "Depends On" },
+  // Dates (YYYY / YYYY-MM / YYYY-MM-DD) + env-flag text
+  { key: "cabDateQ", label: "CAB Date" },
+  { key: "startDateQ", label: "Start Date" },
+  { key: "endDateQ", label: "End Date" },
+  { key: "testEnvRequiredQ", label: "Test Env Required" },
+  { key: "uatEnvRequiredQ", label: "UAT Env Required" },
   // Free-text
   { key: "releaseCodeQ", label: "Release ID" },
   { key: "nameQ", label: "Release Name" },
@@ -537,6 +546,7 @@ export const LEAVE_DEFAULT_HIDDEN_FILTER_KEYS: string[] = LEAVE_FILTER_FIELDS
 /**
  * Risk Register — own schema only.
  * Default-visible: status / category / likelihood / impact / risk owner / risk score.
+ * application / department / prod date / days out / release name default hidden.
  */
 export const RISK_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "status", label: "Status" },
@@ -546,7 +556,12 @@ export const RISK_FILTER_FIELDS: FilterFieldDef[] = [
   { key: "riskOwnerQ", label: "Risk Owner" },
   { key: "riskScore", label: "Risk Score" },
   { key: "riskCodeQ", label: "Risk ID" },
-  { key: "releaseCodeQ", label: "Release" },
+  { key: "releaseCodeQ", label: "Release ID" },
+  { key: "releaseNameQ", label: "Release Name" },
+  { key: "applicationQ", label: "Application" },
+  { key: "departmentQ", label: "Department" },
+  { key: "prodDateQ", label: "Prod Date" },
+  { key: "daysOut", label: "Days Out" },
   { key: "descriptionQ", label: "Description" },
   { key: "affectedAreaQ", label: "Affected Area" },
   { key: "mitigationStrategyQ", label: "Mitigation Strategy" },

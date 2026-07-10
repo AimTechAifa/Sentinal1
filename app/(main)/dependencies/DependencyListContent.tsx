@@ -13,8 +13,9 @@ import {
 } from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { DEPENDENCY_SORT_PRESETS } from "@/lib/table-sort-presets";
-import { DataTableHeadRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, dataTableTableClass, tableRow } from "@/components/ui/data-table";
 import { cn } from "@/lib/utils";
+import { Network } from "lucide-react";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -174,6 +175,7 @@ export default function DependencyListContent() {
   return (
     <div>
       <TopBar
+        pageKey="dependencies"
         trailing={<PageDocumentation pageKey="dependencies" />}
         title="Release Dependencies"
         subtitle={`${deps.length} dependencies${blockedCount > 0 ? ` · ${blockedCount} blocked or at risk` : ""}`}
@@ -254,12 +256,20 @@ export default function DependencyListContent() {
       {tablePending ? (
         <TableSkeleton showTitle={false} columns={DEPENDENCY_COLUMNS.length} />
       ) : (
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden dark:border-gray-700 dark:bg-[var(--card)]">
-        <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
-          <TablePageToolbar columnPicker={columnPicker} presets={DEPENDENCY_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1400px] text-left text-sm">
+        <DataTable
+          title="All Dependencies"
+          icon={Network}
+          toolbar={
+            <TablePageToolbar
+              columnPicker={columnPicker}
+              presets={DEPENDENCY_SORT_PRESETS}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSelectSort={setSort}
+            />
+          }
+        >
+          <table className={dataTableTableClass}>
             <thead>
               <DataTableHeadRow
                 columns={DEPENDENCY_COLUMNS}
@@ -269,7 +279,7 @@ export default function DependencyListContent() {
                 onSort={toggleSort}
               />
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
               {deps.length === 0 ? (
                 <tr>
                   <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
@@ -278,15 +288,14 @@ export default function DependencyListContent() {
                 </tr>
               ) : (
                 deps.map((d) => (
-                  <tr key={d.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr key={d.id} className={tableRow}>
                     {visibleColumns.map((col) => renderDepCell(d, col.key as DepColumnKey))}
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-        </div>
-      </div>
+        </DataTable>
       )}
     </div>
   );

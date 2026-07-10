@@ -22,10 +22,9 @@ import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { filterLabel } from "@/lib/release-filters";
-import { isNeedsAttentionStatus, type NeedsAttentionItem } from "@/lib/needs-attention";
+import { type NeedsAttentionItem } from "@/lib/needs-attention";
 import {
   dbToUnified,
-  mergeReleases,
   type UnifiedRelease,
 } from "@/lib/unified-releases";
 import { formatDate, cn } from "@/lib/utils";
@@ -52,6 +51,7 @@ type ReleaseRow = {
   department: { name: string };
   applications: { application: { id: string; name: string } }[];
   dependsOn: { dependsOnRelease: { id: string; releaseCode: string; name: string } }[];
+  conflictIds?: string[];
 };
 
 export default function ReleasesPageContent() {
@@ -179,10 +179,8 @@ export default function ReleasesPageContent() {
   );
 
   const unified = useMemo(() => {
-    const db = (dbRows as ReleaseRow[]).map((r) => dbToUnified(r));
-    if (attentionMode) return db.filter((r) => isNeedsAttentionStatus(r.status));
-    return db;
-  }, [dbRows, attentionMode]);
+    return (dbRows as ReleaseRow[]).map((r) => dbToUnified(r));
+  }, [dbRows]);
 
   const { sortKey, sortDir } = readSortFromValues(
     {
@@ -204,6 +202,7 @@ export default function ReleasesPageContent() {
         impact: (r) => r.impact ?? "",
         endDate: (r) => new Date(r.date).getTime(),
         status: (r) => r.status,
+        conflictIds: (r) => r.conflictIds?.join(", ") ?? "",
         readinessPercent: (r) => readinessByKey[readinessKey(r.source, r.id)]?.readiness ?? 999,
         blockers: (r) => readinessByKey[readinessKey(r.source, r.id)]?.blockerCount ?? 0,
         cabDate: (r) => (r.cabDate ? new Date(r.cabDate as string).getTime() : 0),
@@ -242,6 +241,7 @@ export default function ReleasesPageContent() {
   return (
     <div>
       <TopBar
+        pageKey="releases"
         trailing={
           <div className="flex items-center gap-2">
             {canEdit && !attentionMode && (
@@ -476,6 +476,27 @@ function UnifiedRow({
       {isColumnVisible("uatEnvRequired") && <td className={`${tableCell} whitespace-nowrap text-gray-600`}>{row.uatEnvRequired ?? "—"}</td>}
       {isColumnVisible("status") && <td className={`${tableCell} whitespace-nowrap`}><StatusBadge status={row.status as "Ready"} /></td>}
       {isColumnVisible("conflictFlag") && <td className={`${tableCell} whitespace-nowrap font-medium text-error-600`}>{row.conflictFlag ? "⚠️ CONFLICT" : "—"}</td>}
+      {isColumnVisible("conflictIds") && (
+        <td className={`${tableCell} whitespace-nowrap`}>
+          {row.conflictIds?.length ? (
+            <span className="font-mono text-xs">
+              {row.conflictIds.map((conflictId, index) => (
+                <span key={conflictId}>
+                  {index > 0 && <span className="text-gray-400 dark:text-white/40">, </span>}
+                  <ProgressLink
+                    href={`/conflicts?conflictId=${encodeURIComponent(conflictId)}`}
+                    className="text-brand-600 hover:underline dark:text-brand-400"
+                  >
+                    {conflictId}
+                  </ProgressLink>
+                </span>
+              ))}
+            </span>
+          ) : (
+            "—"
+          )}
+        </td>
+      )}
       {isColumnVisible("notes") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[200px] truncate`} title={row.notes ?? ""}>{row.notes ?? "—"}</td>}
       {isColumnVisible("readinessPercent") && <td className={`${tableCell} whitespace-nowrap font-medium`}>{row.readinessPercent !== null && row.readinessPercent !== undefined ? `${row.readinessPercent}%` : "—"}</td>}
       {isColumnVisible("blockers") && <td className={`${tableCell} whitespace-nowrap text-xs text-gray-600 max-w-[200px] truncate`} title={row.blockers ?? ""}>{row.blockers ?? "—"}</td>}

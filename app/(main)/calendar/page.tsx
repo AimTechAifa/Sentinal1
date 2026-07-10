@@ -9,6 +9,7 @@ import { CalendarStatusLegend } from "@/components/calendar/CalendarStatusLegend
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
 import { FilterSelect } from "@/components/filters/TableFilterControls";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
+import { TopBar } from "@/components/layout/TopBar";
 import { useFilterPreferences } from "@/hooks/useFilterPreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
 import {
@@ -104,12 +105,8 @@ export default function CalendarPage() {
       period,
       viewDate,
       filters,
-      dbRows,
-      bookings,
-      environments,
-      departments,
     });
-  }, [calendarEvents, period, viewDate, filters, dbRows, bookings, environments, departments]);
+  }, [calendarEvents, period, viewDate, filters]);
 
   const timelineReleases = useMemo(() => {
     const dbUnified = (dbRows as unknown as Parameters<typeof dbToUnified>[0][]).map(dbToUnified);
@@ -236,46 +233,41 @@ export default function CalendarPage() {
         </ReleaseFiltersBar>
 
         <div className="px-5 pb-4 pt-4">
-          <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
-            <div className="min-w-0">
+          <TopBar
+            className="mb-3"
+            pageKey="calendar"
+            title="Release Calendar"
+            subtitle={countBadge || undefined}
+            trailing={
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Release Calendar</h1>
-                {countBadge && (
-                  <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700 dark:bg-brand-900/40 dark:text-brand-200">
-                    {countBadge}
-                  </span>
-                )}
+                <PageDocumentation pageKey="calendar" />
+                <div className="flex items-center gap-1.5 rounded-2xl bg-slate-50 p-1.5 dark:bg-slate-900/60 dark:ring-1 dark:ring-slate-700">
+                  {(
+                    [
+                      { id: "calendar" as const, label: "Calendar", Icon: LayoutGrid },
+                      { id: "timeline" as const, label: "Timeline", Icon: GanttChartSquare },
+                      { id: "table" as const, label: "Table", Icon: Table2 },
+                    ] as const
+                  ).map(({ id, label, Icon }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setDisplay(id)}
+                      className={cn(
+                        "flex items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold transition-all",
+                        display === id
+                          ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
+                          : "text-slate-500 hover:bg-white dark:text-white/60 dark:hover:bg-white/5",
+                      )}
+                    >
+                      <Icon size={15} /> {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <CalendarStatusLegend className="mt-2.5" />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <PageDocumentation pageKey="calendar" />
-              <div className="flex items-center gap-1.5 rounded-2xl bg-slate-50 p-1.5 dark:bg-slate-900/60 dark:ring-1 dark:ring-slate-700">
-                {(
-                  [
-                    { id: "calendar" as const, label: "Calendar", Icon: LayoutGrid },
-                    { id: "timeline" as const, label: "Timeline", Icon: GanttChartSquare },
-                    { id: "table" as const, label: "Table", Icon: Table2 },
-                  ] as const
-                ).map(({ id, label, Icon }) => (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setDisplay(id)}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold transition-all",
-                      display === id
-                        ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
-                        : "text-slate-500 hover:bg-white dark:text-white/60 dark:hover:bg-white/5",
-                    )}
-                  >
-                    <Icon size={15} /> {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+            }
+          />
+          <CalendarStatusLegend className="mb-3" />
 
           {/* A3: keep ◀ ▶ as window shifter; period dropdown above remains grain control */}
           <div className="mb-1 flex items-center justify-center gap-4">

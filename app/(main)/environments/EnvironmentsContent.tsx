@@ -3,16 +3,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { EnvironmentDetailsTable } from "@/components/environments/EnvironmentDetailsTable";
 import { FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import {
   ENVIRONMENT_COLUMNS,
   ENVIRONMENT_DEFAULT_HIDDEN_FILTER_KEYS,
   ENVIRONMENT_FILTER_FIELDS,
 } from "@/lib/table-page-columns";
-import { TableToolbar } from "@/components/ui/data-table";
+import { ENVIRONMENT_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { useTableFilters } from "@/hooks/useTableFilters";
+import { useTableSort } from "@/hooks/useTableSort";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { TopBar } from "@/components/layout/TopBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { ENVIRONMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
 import { loadJsonEffect } from "@/lib/safe-fetch";
@@ -21,7 +24,12 @@ type DeskPayload = {
   versionMatrix: unknown[];
   versions: Array<{
     status?: string | null;
-    environment?: { name?: string; type?: string; owner?: string };
+    version?: string | null;
+    buildNumber?: string | null;
+    deployDate?: string | Date | null;
+    updatedBy?: string | null;
+    notes?: string | null;
+    environment?: { name?: string; type?: string; owner?: string | null };
     application?: { id?: string; name?: string; department?: { id?: string; name?: string } };
   }>;
   applications?: Array<{ id: string; name: string; departmentId?: string }>;
@@ -30,7 +38,8 @@ type DeskPayload = {
 };
 
 export function EnvironmentsContent() {
-  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(ENVIRONMENTS_FILTER_SCHEMA);
+  const { values, setFilter, setSort, clearAll, hasActive, apiQuery } = useTableFilters(ENVIRONMENTS_FILTER_SCHEMA);
+  const { sortKey, sortDir, toggleSort } = useTableSort(values, setFilter, "application", "asc");
   const [desk, setDesk] = useState<DeskPayload | null>(null);
   const [deskLoading, setDeskLoading] = useState(true);
 
@@ -87,17 +96,12 @@ export function EnvironmentsContent() {
     [desk]
   );
 
-  const selectedAppName = useMemo(() => {
-    if (!values.applicationId) return null;
-    return appOptions.find((a) => a.id === values.applicationId)?.name ?? null;
-  }, [appOptions, values.applicationId]);
-
   const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "environments",
     ENVIRONMENT_COLUMNS,
     ENVIRONMENT_FILTER_FIELDS,
     {
-      lockedKeys: ["application"],
+      lockedKeys: ["appId"],
       defaultHiddenFilters: ENVIRONMENT_DEFAULT_HIDDEN_FILTER_KEYS,
     }
   );
@@ -118,15 +122,11 @@ export function EnvironmentsContent() {
 
   return (
     <div className="space-y-6 min-w-0">
-      <div className="flex items-start justify-between gap-4">
-        <div className="max-w-2xl">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">Environments</h1>
-          <p className="text-gray-500 text-sm">
-            Track version deployments, identify drifts, and review detailed configuration across all environments.
-          </p>
-        </div>
-        <PageDocumentation pageKey="environments" />
-      </div>
+      <TopBar
+        pageKey="environments"
+        title="Versions & Config"
+        trailing={<PageDocumentation pageKey="environments" />}
+      />
 
       <TableFilterBar hasActive={hasActive} onClear={clearAll} manageFilters={filterPicker}>
         {isFilterVisible("applicationId") && (
@@ -211,13 +211,19 @@ export function EnvironmentsContent() {
       <div className="grid gap-6 min-w-0">
         <EnvironmentDetailsTable
           versions={desk.versions}
-          selectedApp={selectedAppName}
           isColumnVisible={isColumnVisible}
-          toolbar={<TableToolbar>{columnPicker}</TableToolbar>}
-          onSelectApp={(name) => {
-            const match = appOptions.find((a) => a.name === name);
-            setFilter("applicationId", match?.id ?? "");
-          }}
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSort={toggleSort}
+          toolbar={
+            <TablePageToolbar
+              columnPicker={columnPicker}
+              presets={ENVIRONMENT_SORT_PRESETS}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSelectSort={setSort}
+            />
+          }
         />
       </div>
     </div>

@@ -117,6 +117,7 @@ export default function DriftDashboardContent() {
   return (
     <div>
       <TopBar
+        pageKey="drifts"
         trailing={<PageDocumentation pageKey="drifts" />}
         title="Drift Dashboard"
         subtitle={`${drifts.length} drift${drifts.length === 1 ? "" : "s"} detected across environments`}

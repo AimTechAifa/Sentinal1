@@ -123,3 +123,12 @@ export const REFERENCE_DATA_SORT_PRESETS: TableSortPreset[] = [
   { id: "value-az", label: "Value (A → Z)", sort: "value", sortDir: "asc" },
   { id: "order-asc", label: "Sort order", sort: "sortOrder", sortDir: "asc" },
 ];
+
+export const ENVIRONMENT_SORT_PRESETS: TableSortPreset[] = [
+  { id: "app-az", label: "Application (A → Z)", sort: "application", sortDir: "asc" },
+  { id: "app-za", label: "Application (Z → A)", sort: "application", sortDir: "desc" },
+  { id: "deploy-new", label: "Newest deploy", sort: "deployDate", sortDir: "desc" },
+  { id: "deploy-old", label: "Oldest deploy", sort: "deployDate", sortDir: "asc" },
+  { id: "env-az", label: "Environment (A → Z)", sort: "environment", sortDir: "asc" },
+  { id: "status", label: "Status", sort: "status", sortDir: "asc" },
+];

@@ -97,6 +97,7 @@ export default function ApplicationStatusContent() {
   return (
     <div>
       <TopBar
+        pageKey="application-status"
         trailing={<PageDocumentation pageKey="application-status" />}
         title="Application Status" subtitle={`${rows.length} application × environment record${rows.length === 1 ? "" : "s"} — current state snapshot`} />
       {!tablePending && (

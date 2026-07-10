@@ -110,6 +110,7 @@ export default function ApprovalQueueContent() {
   return (
     <div>
       <TopBar
+        pageKey="approvals"
         trailing={<PageDocumentation pageKey="approvals" />}
         title="Approval Queue" subtitle={`${approvals.length} approval${approvals.length === 1 ? "" : "s"} across all releases`} />
       {!tablePending && (
@@ -130,7 +131,7 @@ export default function ApprovalQueueContent() {
             <FilterTextInput
               value={values.approverQ}
               onChange={(v) => setFilter("approverQ", v)}
-              placeholder="Approver name…"
+              placeholder="Approver name or ID…"
             />
           )}
           {isFilterVisible("releaseCodeQ") && (

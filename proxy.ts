@@ -13,6 +13,8 @@ const authorizedParties = [
   process.env.NEXT_PUBLIC_APP_URL,
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
   process.env.NODE_ENV === "development" ? "http://localhost:3000" : null,
+  process.env.NODE_ENV === "development" ? "http://127.0.0.1:3000" : null,
+  process.env.NODE_ENV === "development" ? "http://10.138.194.41:3000" : null,
 ].filter((v): v is string => Boolean(v));
 
 export default clerkMiddleware(

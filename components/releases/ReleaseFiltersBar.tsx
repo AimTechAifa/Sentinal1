@@ -317,6 +317,47 @@ export function ReleaseFiltersBar({
         />
       )}
 
+      {showListFilters && isFilterVisible("cabDateQ") && (
+        <FilterTextInput
+          value={filters.cabDateQ}
+          onChange={(v) => setFilter("cabDateQ", v)}
+          placeholder="CAB date…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("startDateQ") && (
+        <FilterTextInput
+          value={filters.startDateQ}
+          onChange={(v) => setFilter("startDateQ", v)}
+          placeholder="Start date…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("endDateQ") && (
+        <FilterTextInput
+          value={filters.endDateQ}
+          onChange={(v) => setFilter("endDateQ", v)}
+          placeholder="End date…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("testEnvRequiredQ") && (
+        <FilterTextInput
+          value={filters.testEnvRequiredQ}
+          onChange={(v) => setFilter("testEnvRequiredQ", v)}
+          placeholder="Test env required…"
+          disabled={loading}
+        />
+      )}
+      {showListFilters && isFilterVisible("uatEnvRequiredQ") && (
+        <FilterTextInput
+          value={filters.uatEnvRequiredQ}
+          onChange={(v) => setFilter("uatEnvRequiredQ", v)}
+          placeholder="UAT env required…"
+          disabled={loading}
+        />
+      )}
+
       {variant === "large" && (
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
           {filters.departmentId && (

@@ -96,6 +96,7 @@ export default function IntegrationFlowsContent() {
   return (
     <div>
       <TopBar
+        pageKey="integration-flows"
         trailing={<PageDocumentation pageKey="integration-flows" />}
         title="Key Integration Flows"
         subtitle={`${rows.length} integration flow${rows.length === 1 ? "" : "s"}`}

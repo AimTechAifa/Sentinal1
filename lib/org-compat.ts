@@ -103,3 +103,80 @@ export async function createUserRow(data: {
   `;
   return rows[0];
 }
+
+export type CreateEnvBookingInput = {
+  bookingCode: string;
+  applicationId: string;
+  environmentId?: string | null;
+  bookedBy: string;
+  team: string;
+  departmentName?: string | null;
+  fromDate: Date;
+  toDate: Date;
+  purpose?: string | null;
+  releaseId?: string | null;
+  status?: string;
+  conflictFlag?: boolean;
+  testEnvCode?: string | null;
+  testStart?: Date | null;
+  testEnd?: Date | null;
+  testDays?: number | null;
+};
+
+/**
+ * Create EnvBooking. Live Neon (v2) requires organizationId which is absent from
+ * the v1 Prisma schema — insert via raw SQL when an org exists.
+ */
+export async function createEnvBookingRow(data: CreateEnvBookingInput) {
+  const orgId = await getDefaultOrganizationId();
+  const include = {
+    application: { include: { department: true } },
+    release: { select: { id: true, releaseCode: true } },
+  } as const;
+
+  if (!orgId) {
+    return prisma.envBooking.create({
+      data: {
+        bookingCode: data.bookingCode,
+        applicationId: data.applicationId,
+        environmentId: data.environmentId ?? null,
+        bookedBy: data.bookedBy,
+        team: data.team,
+        departmentName: data.departmentName ?? null,
+        fromDate: data.fromDate,
+        toDate: data.toDate,
+        purpose: data.purpose ?? null,
+        releaseId: data.releaseId ?? null,
+        status: data.status ?? "BOOKED",
+        conflictFlag: data.conflictFlag ?? false,
+        testEnvCode: data.testEnvCode ?? null,
+        testStart: data.testStart ?? null,
+        testEnd: data.testEnd ?? null,
+        testDays: data.testDays ?? null,
+      },
+      include,
+    });
+  }
+
+  const id = newId();
+  const now = new Date();
+  await prisma.$executeRaw`
+    INSERT INTO "EnvBooking" (
+      id, "organizationId", "bookingCode", "applicationId", "environmentId",
+      "bookedBy", team, "departmentName", "fromDate", "toDate", purpose,
+      "releaseId", status, "conflictFlag", "testEnvCode", "testStart", "testEnd",
+      "testDays", "createdAt", "updatedAt"
+    ) VALUES (
+      ${id}, ${orgId}, ${data.bookingCode}, ${data.applicationId}, ${data.environmentId ?? null},
+      ${data.bookedBy}, ${data.team}, ${data.departmentName ?? null}, ${data.fromDate}, ${data.toDate},
+      ${data.purpose ?? null}, ${data.releaseId ?? null}, ${data.status ?? "BOOKED"},
+      ${data.conflictFlag ?? false}, ${data.testEnvCode ?? null}, ${data.testStart ?? null},
+      ${data.testEnd ?? null}, ${data.testDays ?? null}, ${now}, ${now}
+    )
+  `;
+
+  return prisma.envBooking.findUniqueOrThrow({
+    where: { id },
+    include,
+  });
+}

@@ -13,7 +13,7 @@ import { useReleaseStore } from "@/context/ReleaseStoreContext";
 
 export function AppHeader() {
   const { user, isLoaded } = useUser();
-  const { toggleMobileSidebar } = useSidebar();
+  const { isMobileOpen, toggleMobileSidebar } = useSidebar();
   const { unreadNotifications } = useReleaseStore();
   const { requestPageDocumentationOpen } = usePageDocumentationTrigger();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -49,7 +49,9 @@ export function AppHeader() {
               type="button"
               onClick={toggleMobileSidebar}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--border)] text-gray-600 dark:text-white/80 transition-colors hover:bg-brand-50 dark:hover:bg-white/10 hover:text-brand-600 lg:hidden"
-              aria-label="Open navigation menu"
+              aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-controls="app-sidebar"
+              aria-expanded={isMobileOpen}
             >
               <Menu className="h-5 w-5" />
             </button>

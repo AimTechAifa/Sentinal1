@@ -1,8 +1,9 @@
 "use client";
 
 /**
- * Public local diagnostic page for sidebar hover-peek overlay.
- * No Clerk session required — used to verify opaque overlay stacking.
+ * Public local diagnostic page for sidebar hover-expand.
+ * Desktop hover pushes content (no overlay bleed). Mobile uses the drawer.
+ * No Clerk session required.
  */
 import { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";

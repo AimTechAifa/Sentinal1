@@ -199,7 +199,12 @@ export function RiskFactorsBrowse() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-2">
-        <TopBar title="Risk Factors" subtitle={`${rows.length} weighted-scoring factors`} className="mb-0 flex-1" />
+        <TopBar
+          pageKey="risk-factors"
+          title="Risk Factors"
+          subtitle={`${rows.length} weighted-scoring factors`}
+          className="mb-0 flex-1"
+        />
         <div className="flex shrink-0 items-center gap-2">
           <PageDocumentation pageKey="risk-factors" />
           <button
@@ -262,7 +267,7 @@ export function RiskFactorsBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={RISK_FACTOR_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
+      <MasterDataTableShell scrollShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={RISK_FACTOR_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -277,7 +282,7 @@ export function RiskFactorsBrowse() {
         ) : rows.length === 0 ? (
           <MasterDataEmptyState entityLabel="risk factors" addLabel="Add Risk Factor" onAdd={openCreate} />
         ) : (
-          <table className="w-full text-left border-collapse min-w-[900px]">
+          <table className="w-full min-w-max border-separate border-spacing-0 text-left text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("category") && (
@@ -294,9 +299,9 @@ export function RiskFactorsBrowse() {
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {pageRows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={row.id} className="border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200">
                   {isColumnVisible("category") && <td className={tdClass}>{row.category}</td>}
                   {isColumnVisible("factorName") && <td className={`${tdClass} font-semibold text-gray-900`}>{row.factorName}</td>}
                   {isColumnVisible("weight") && <td className={tdClass}>{row.weight}</td>}

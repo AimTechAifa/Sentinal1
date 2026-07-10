@@ -24,8 +24,8 @@ function ShellInner({ children }: { children: React.ReactNode }) {
         <Backdrop />
         <div
           className={cn(
-            "relative z-0 flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out",
-            // Margin tracks visual sidebar width (pin OR hover) — never overlaps content
+            "relative z-0 flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out motion-reduce:transition-none",
+            // Margin tracks visual sidebar width (pin OR hover expand) — never overlaps content
             isMobileOpen ? "ml-0" : "lg:ml-[var(--sidebar-width)]"
           )}
         >

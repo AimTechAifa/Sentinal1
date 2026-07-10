@@ -20,11 +20,17 @@ export type PageDocKey =
   | "incidents"
   | "application-status"
   | "planned-maintenance"
-  | "integration-flows";
+  | "integration-flows"
+  | "departments"
+  | "applications"
+  | "users"
+  | "reference-data";
 
 export type PageDocumentationEntry = {
   pageKey: PageDocKey;
   title: string;
+  /** Short page-purpose blurb (~2 sentences) shown under the title on table pages. */
+  summary: string;
   quickReference: string[];
   fullDocumentation: string[];
 };
@@ -36,6 +42,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   releases: {
     pageKey: "releases",
     title: "Releases",
+    summary:
+      "Central register of every release in flight — database-backed REL- rows and demo command-center releases. Filter, sort, and open a release to manage readiness, blockers, bookings, and CAB gates in one place.",
     quickReference: [
       "Master list of database releases (editable) and demo command-center releases.",
       "Filter by department, application, environment, status, priority, and impact.",
@@ -52,6 +60,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   calendar: {
     pageKey: "calendar",
     title: "Release Calendar",
+    summary:
+      "See CAB meetings, release dates, freezes, and governance events on one timeline. Switch Month, Timeline, or Table views — all share the same filters and period so you can plan around freezes without losing context.",
     quickReference: [
       "Three views: Month grid, Timeline, and Table — same filtered event set.",
       "Shows CAB meetings, release dates, freezes, and governance events.",
@@ -68,6 +78,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "env-booking": {
     pageKey: "env-booking",
     title: "Environment Booking",
+    summary:
+      "Reserve TEST and UAT windows for releases across shared infrastructure. Spot overlapping bookings on the same environment before they become go-live blockers.",
     quickReference: [
       "Book TEST and UAT windows for releases across applications.",
       "Filter by department, application, environment, and conflict flag.",
@@ -84,6 +96,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   dependencies: {
     pageKey: "dependencies",
     title: "Release Dependencies",
+    summary:
+      "Track and resolve dependency chains between releases. See which releases are blocked waiting on others to complete, and reassess dates when an upstream slip hits downstream work.",
     quickReference: [
       "Lists upstream/downstream release dependencies with status and impact.",
       "Filter by status (Open, Blocked, At Risk, etc.), type, and impact.",
@@ -100,6 +114,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   conflicts: {
     pageKey: "conflicts",
     title: "Conflict Resolution Queue",
+    summary:
+      "Triage environment and resource conflicts between concurrent releases — shared test beds, competing CAB slots, or capacity clashes. Clear open and escalated items before confirming bookings.",
     quickReference: [
       "Tracks environment and resource conflicts between concurrent releases.",
       "Filter by department, application, status, and priority.",
@@ -116,6 +132,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "system-mapping": {
     pageKey: "system-mapping",
     title: "System Mapping",
+    summary:
+      "Document how environments depend on each other upstream and downstream. Analyse booking conflicts in a date range so a release is not scheduled when a required downstream env is already taken.",
     quickReference: [
       "Document environment dependencies (upstream/downstream edges).",
       "Set an analysis period to match your planned test window.",
@@ -132,6 +150,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   environments: {
     pageKey: "environments",
     title: "Versions & Config",
+    summary:
+      "Answer what is deployed where with the version matrix across PROD, TEST, and UAT. Spot drift between tiers and confirm the target environment before CAB approval.",
     quickReference: [
       "Environment desk: version matrix, booking timeline, and topology.",
       "Compare PROD vs TEST/UAT versions before approving a release.",
@@ -148,6 +168,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   risks: {
     pageKey: "risks",
     title: "Risk",
+    summary:
+      "Qualitative risks per release scored as likelihood × impact (1–25). Use the heat map and filters to focus CAB discussion on High and Critical items still open.",
     quickReference: [
       "Qualitative risks per release: likelihood × impact = risk score (1–25).",
       "Bands: Low ≤5, Medium ≤11, High ≤19, Critical ≥20.",
@@ -164,6 +186,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "risk-factors": {
     pageKey: "risk-factors",
     title: "Risk Factors",
+    summary:
+      "Master list of weighted scoring factors that drive the release Weighted Risk Score. Edit weights carefully — they feed go/no-go math on every release detail page.",
     quickReference: [
       "44 weighted factors across 10 categories (editable weights in master data).",
       `Category weight budget: ${CATEGORY_WEIGHTS_VERIFIED}`,
@@ -180,6 +204,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   drifts: {
     pageKey: "drifts",
     title: "Drift Dashboard",
+    summary:
+      "Capture environment and config differences found while validating a release — version gaps, timeouts, stale data. Triage by severity so Critical drift does not slip into UAT sign-off.",
     quickReference: [
       "Tracks environment/application drift found during release testing.",
       "Drift Type values come from Reference Data (category drift_type).",
@@ -196,6 +222,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   approvals: {
     pageKey: "approvals",
     title: "Approval Queue",
+    summary:
+      "CAB and gate sign-offs across in-scope releases in one queue. Filter to Pending items that still need a decision before go-live.",
     quickReference: [
       "CAB and gate approvals across all in-scope releases.",
       "Filter by decision (Pending, Approved, Rejected), type, and approver.",
@@ -212,6 +240,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   leaves: {
     pageKey: "leaves",
     title: "Leave & Resource Availability",
+    summary:
+      "See who is unavailable during the planning horizon and which releases lose coverage. High-risk leave overlapping a release window needs a backup plan before CAB.",
     quickReference: [
       "Staff leave records that may affect release windows.",
       "Risk level (Low / Medium / High) flags coverage gaps.",
@@ -228,6 +258,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "monitoring-alerts": {
     pageKey: "monitoring-alerts",
     title: "Monitoring Alerts",
+    summary:
+      "Open monitoring signals across applications and environments — threshold breaches and integration failures. Review P1/P2 alerts in the same env as a planned deploy before CAB.",
     quickReference: [
       "Open monitoring alerts across applications and environments.",
       "Filter by severity, status, application, alert type, and environment.",
@@ -244,6 +276,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   incidents: {
     pageKey: "incidents",
     title: "Incidents",
+    summary:
+      "Production and pre-prod incidents (P1–P3) tied to applications and environments. Open P1s block deploy to affected envs and surface on Dashboard and Morning Inbox.",
     quickReference: [
       "Production and pre-prod incidents (P1–P3) across applications.",
       "Filter by severity, status, application, department, and environment.",
@@ -260,6 +294,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "application-status": {
     pageKey: "application-status",
     title: "Application Status",
+    summary:
+      "Point-in-time health per application × environment — Healthy, Degraded, or Down. Confirm the target env is Healthy before you deploy.",
     quickReference: [
       "One row per application × environment health snapshot.",
       "Status: Healthy ✅ | Degraded ⚠️ | Down 🛑 — target env must be Healthy before deploy.",
@@ -276,6 +312,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "planned-maintenance": {
     pageKey: "planned-maintenance",
     title: "Planned Maintenance",
+    summary:
+      "Scheduled vendor patches and infrastructure windows that may collide with release dates. Approved maintenance in your go-live week means reschedule or get an explicit exemption.",
     quickReference: [
       "Scheduled maintenance windows that may overlap release dates.",
       "Filter by type, approval status, application, environment, and impact.",
@@ -292,6 +330,8 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   "integration-flows": {
     pageKey: "integration-flows",
     title: "Key Integration Flows",
+    summary:
+      "Catalog of system-to-system integrations (source → target) with type, frequency, and purpose. Use it when a release touches either end so coordinated testing is not missed.",
     quickReference: [
       "Catalog of system-to-system integration flows (source → target).",
       "Filter by integration type, frequency, source/target system, and purpose.",
@@ -303,6 +343,74 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
       "Key Integration Flows lists how enterprise systems exchange data — API, batch, SCIM, and hybrid patterns — with frequency and business purpose for each flow.",
       "System names are stored as free text because they only partially match seeded Application records. Linking to Applications is a future reconciliation task.",
       "When planning a release that changes Salesforce, SAP, Workday, or similar platforms, filter this list by source or target to identify downstream consumers that may need coordinated testing.",
+    ],
+  },
+  departments: {
+    pageKey: "departments",
+    title: "Departments",
+    summary:
+      "Organizational units that own applications and releases in Sentinel. Keep this catalog accurate so filters, ownership, and reporting stay aligned across Release Desk.",
+    quickReference: [
+      "Master list of departments used across releases, apps, and filters.",
+      "Editors can create, rename, and deactivate organizational units.",
+      "Department filters on other pages read from this catalog.",
+      "Deactivating a department does not delete historical release rows.",
+    ],
+    fullDocumentation: [
+      "Departments are the top-level org structure for portfolio filtering. Every application and many release records reference a department so Release Desk views can be scoped to a train or business unit.",
+      "Editors maintain the catalog here. Prefer deactivate over hard-delete when a unit is retired so historical releases keep a readable department label.",
+      "Changes appear immediately in department dropdowns on Releases, Env Booking, Conflicts, and related pages.",
+    ],
+  },
+  applications: {
+    pageKey: "applications",
+    title: "Applications",
+    summary:
+      "Application catalog with owning department and environment instances. This is the source of truth for app filters and for booking TEST/UAT windows against the right system.",
+    quickReference: [
+      "Master list of applications in the release portfolio.",
+      "Each app belongs to a department and can own multiple environments.",
+      "Open an app to manage its environment instances.",
+      "Application filters across Release Desk read from this catalog.",
+    ],
+    fullDocumentation: [
+      "Applications define the systems you release and book environments for. Each row links to a department and can expand into environment instances (TEST, UAT, PROD, etc.).",
+      "Editors add or update applications and nested environments here. Env Booking and Versions & Config depend on these records being complete and correctly named.",
+      "Retire unused apps carefully — releases and bookings may still reference them historically.",
+    ],
+  },
+  users: {
+    pageKey: "users",
+    title: "Users",
+    summary:
+      "Release stakeholders and approvers used for ownership, CAB queues, and assignment fields. Keep names and roles current so approval and risk-owner filters match real people.",
+    quickReference: [
+      "Directory of release stakeholders, owners, and approvers.",
+      "Used by approval queues, risk owners, and assignment fields.",
+      "Editors can add or update user records for desk workflows.",
+      "Prefer matching live user data in person filters — never hardcode names.",
+    ],
+    fullDocumentation: [
+      "Users stores the people referenced across Release Desk — release owners, risk owners, approvers, and assignees. Person filters on table pages match against this live catalog.",
+      "Editors maintain the directory so CAB queues and ownership fields stay accurate. Do not replace person filters with hardcoded name dropdowns; that has caused stale-data bugs before.",
+      "Clerk authentication is separate — this catalog is operational master data for release workflows, not the login identity store.",
+    ],
+  },
+  "reference-data": {
+    pageKey: "reference-data",
+    title: "Reference Data",
+    summary:
+      "Governed lookup values (statuses, types, severities, drift types, and more) that power dropdowns and validation. Change a category here and every page that uses it stays consistent.",
+    quickReference: [
+      "Category-based lookup values for filters and form validation.",
+      "Examples: drift_type, statuses, severities, and other desk enums.",
+      "Editors add categories and values; inactive values stop appearing in new picks.",
+      "API create/update paths validate against active reference values where required.",
+    ],
+    fullDocumentation: [
+      "Reference Data is the controlled vocabulary for Release Desk. Categories group related values (for example drift_type) that appear in filters, forms, and API validation.",
+      "Editors manage categories and individual values. Mark values inactive instead of deleting when historical rows still reference them.",
+      "Pages such as Drift Dashboard require reference-backed types — free-text substitutes are rejected so reporting stays clean.",
     ],
   },
 };
@@ -325,6 +433,10 @@ const PATH_TO_DOC_KEY: Record<string, PageDocKey> = {
   "/application-status": "application-status",
   "/planned-maintenance": "planned-maintenance",
   "/integration-flows": "integration-flows",
+  "/departments": "departments",
+  "/applications": "applications",
+  "/users": "users",
+  "/admin/reference-data": "reference-data",
 };
 
 export function getPageDocumentation(pageKey: PageDocKey): PageDocumentationEntry {

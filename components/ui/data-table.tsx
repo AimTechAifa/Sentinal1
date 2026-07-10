@@ -18,8 +18,13 @@ interface DataTableProps {
   className?: string;
 }
 
-/** Shared scrollport: visible scrollbars + edge-fade cues when more content is off-screen. */
-function DataTableScrollArea({ children }: { children: React.ReactNode }) {
+/**
+ * Shared scrollport: visible scrollbars + edge-fade cues when more content is off-screen.
+ * Used by DataTable by default. Pages with a custom card shell may opt in by wrapping
+ * their <table> in this component (do not change DataTable defaults to force it).
+ * table-standard.mdc #7–9, #12.
+ */
+export function DataTableScrollArea({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const [fade, setFade] = useState({ left: false, right: false, top: false, bottom: false });
 
@@ -118,12 +123,19 @@ export const tableHeadCell = cn(
   "px-3 py-3 min-w-[5.5rem] text-left align-middle text-[11px] font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 whitespace-nowrap"
 );
 
+/**
+ * Canonical body row style (table-standard.mdc #10):
+ * horizontal divider only — no vertical column borders; smooth hover transition.
+ * Prefer this over ad-hoc divide-y / border-r row classes.
+ */
 export const tableRow =
   "border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200 group";
 export const tableCell = "px-4 py-3 align-middle transition-colors text-gray-800 dark:text-gray-200";
 
 export function TableToolbar({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("flex items-center justify-end gap-2", className)}>{children}</div>;
+  return (
+    <div className={cn("flex flex-wrap items-center justify-end gap-2", className)}>{children}</div>
+  );
 }
 
 function SortIndicators({

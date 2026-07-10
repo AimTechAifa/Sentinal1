@@ -25,7 +25,7 @@
   --readiness-high: #40c057;
   --readiness-medium: #fab005;
   --readiness-low: #ba1a1a;
-  /* Solid — hover-peek overlays page content; translucent glass bleeds through. */
+  /* Solid opaque — required for mobile drawer overlay; desktop hover expands by pushing content. */
   --sidebar: #ffffff;
   --header: rgba(255, 255, 255, 0.7);
   --card: rgba(255, 255, 255, 0.6);
@@ -446,13 +446,24 @@ body {
     gap: var(--materio-grid-gap);
   }
   .materio-sidebar {
-    /* Hard opaque fill — peek overlays page content; never use glass/alpha here. */
+    /* Hard opaque fill — mobile drawer overlays content; never use glass/alpha here. */
     background-color: #ffffff !important;
     opacity: 1 !important;
     border-color: var(--border);
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     isolation: isolate;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .materio-sidebar {
+      transition: none !important;
+    }
+  }
+  /* Collapsed-rail label chips: only on true hover devices (not sticky touch :hover). */
+  @media (hover: none), (pointer: coarse) {
+    .menu-item-tooltip {
+      display: none !important;
+    }
   }
   .materio-sidebar::before {
     content: "";

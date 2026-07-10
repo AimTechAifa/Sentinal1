@@ -100,6 +100,7 @@ export default function LeaveCalendarContent() {
   return (
     <div>
       <TopBar
+        pageKey="leaves"
         trailing={<PageDocumentation pageKey="leaves" />}
         title="Leave & Resource Availability"
         subtitle={`${leaves.length} leave record${leaves.length === 1 ? "" : "s"}${highRiskCount > 0 ? ` · ${highRiskCount} high-risk` : ""}`}

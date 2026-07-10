@@ -863,6 +863,7 @@ export default function RiskRegisterContent() {
   return (
     <div>
       <TopBar
+        pageKey="risks"
         trailing={<PageDocumentation pageKey="risks" />}
         title="Risk"
         subtitle={`${risks.length} risk${risks.length === 1 ? "" : "s"} across all releases`}
@@ -910,7 +911,7 @@ export default function RiskRegisterContent() {
             <FilterTextInput
               value={values.riskOwnerQ}
               onChange={(v) => setFilter("riskOwnerQ", v)}
-              placeholder="Risk owner…"
+              placeholder="Risk owner name or ID…"
             />
           )}
           {isFilterVisible("riskScore") && (
@@ -935,8 +936,47 @@ export default function RiskRegisterContent() {
             <FilterTextInput
               value={values.releaseCodeQ}
               onChange={(v) => setFilter("releaseCodeQ", v)}
-              placeholder="Release…"
+              placeholder="Release ID…"
             />
+          )}
+          {isFilterVisible("releaseNameQ") && (
+            <FilterTextInput
+              value={values.releaseNameQ}
+              onChange={(v) => setFilter("releaseNameQ", v)}
+              placeholder="Release name…"
+            />
+          )}
+          {isFilterVisible("applicationQ") && (
+            <FilterTextInput
+              value={values.applicationQ}
+              onChange={(v) => setFilter("applicationQ", v)}
+              placeholder="Application…"
+            />
+          )}
+          {isFilterVisible("departmentQ") && (
+            <FilterTextInput
+              value={values.departmentQ}
+              onChange={(v) => setFilter("departmentQ", v)}
+              placeholder="Department…"
+            />
+          )}
+          {isFilterVisible("prodDateQ") && (
+            <FilterTextInput
+              value={values.prodDateQ}
+              onChange={(v) => setFilter("prodDateQ", v)}
+              placeholder="Prod date (YYYY-MM-DD)…"
+            />
+          )}
+          {isFilterVisible("daysOut") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Days out</span>
+              <FilterRangeInputs
+                minValue={values.daysOutMin}
+                maxValue={values.daysOutMax}
+                onMinChange={(v) => setFilter("daysOutMin", v)}
+                onMaxChange={(v) => setFilter("daysOutMax", v)}
+              />
+            </div>
           )}
           {isFilterVisible("descriptionQ") && (
             <FilterTextInput

@@ -99,6 +99,7 @@ export default function IncidentsContent() {
   return (
     <div>
       <TopBar
+        pageKey="incidents"
         trailing={<PageDocumentation pageKey="incidents" />}
         title="Incidents"
         subtitle={`${incidents.length} incident${incidents.length === 1 ? "" : "s"} across all applications`}

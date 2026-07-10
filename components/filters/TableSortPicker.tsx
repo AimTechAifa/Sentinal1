@@ -55,7 +55,7 @@ export function TableSortPicker({ presets, sortKey, sortDir, onSelect, className
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 z-50 mt-1 min-w-[220px] max-h-72 overflow-y-auto rounded-lg border border-gray-200 bg-white py-2 shadow-lg dark:border-[var(--border)] dark:bg-[var(--card)]"
+          className="absolute right-0 z-50 mt-1 w-[min(100vw-1.5rem,16rem)] min-w-[12rem] max-h-72 overflow-y-auto rounded-lg border border-gray-200 bg-white py-2 shadow-lg dark:border-[var(--border)] dark:bg-[var(--card)]"
         >
           <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-white/45">
             Sort table

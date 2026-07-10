@@ -101,7 +101,9 @@ export const CONFLICTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "status", param: "status" },
   { key: "priority", param: "priority" },
   { key: "assignedToQ", param: "assignedTo" },
-  { key: "conflictCodeQ", param: "conflictCode" },
+  { key: "conflictCodeQ", param: "conflictId" },
+  // Preserve links created before Conflict ID adopted the shared URL naming convention.
+  { key: "legacyConflictCodeQ", param: "conflictCode" },
   { key: "release1CodeQ", param: "release1" },
   { key: "release2CodeQ", param: "release2" },
   { key: "conflictingEnvironmentQ", param: "conflictEnv" },
@@ -231,6 +233,12 @@ export const RISKS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "riskScoreMax", param: "scoreMax" },
   { key: "riskCodeQ", param: "riskCode" },
   { key: "releaseCodeQ", param: "release" },
+  { key: "releaseNameQ", param: "releaseName" },
+  { key: "applicationQ", param: "application" },
+  { key: "departmentQ", param: "department" },
+  { key: "prodDateQ", param: "prodDate" },
+  { key: "daysOutMin", param: "daysOutMin" },
+  { key: "daysOutMax", param: "daysOutMax" },
   { key: "descriptionQ", param: "description" },
   { key: "affectedAreaQ", param: "affectedArea" },
   { key: "mitigationStrategyQ", param: "mitigation" },
@@ -315,13 +323,13 @@ export const ENVIRONMENTS_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "notesQ", param: "notes" },
 ]);
 
-export const REFERENCE_DATA_FILTER_SCHEMA: FilterSchema = [
+export const REFERENCE_DATA_FILTER_SCHEMA: FilterSchema = withTableSort([
   { key: "category", param: "cat" },
   { key: "active", param: "active" },
   { key: "valueQ", param: "value" },
   { key: "sortOrderMin", param: "sortMin" },
   { key: "sortOrderMax", param: "sortMax" },
-];
+]);
 
 export const SYSTEM_MAPPING_FILTER_SCHEMA: FilterSchema = [
   { key: "groupId", param: "group" },

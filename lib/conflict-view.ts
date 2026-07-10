@@ -29,6 +29,29 @@ export function loadSeedConflicts(): SeedRow[] {
   return cached!;
 }
 
+/** All conflict IDs involving each release, regardless of which side it appears on. */
+export function conflictCodesByRelease(): Map<string, string[]> {
+  const byRelease = new Map<string, string[]>();
+
+  for (const row of loadSeedConflicts()) {
+    const conflictCode = String(row["Conflict ID"] ?? "").trim();
+    if (!conflictCode) continue;
+
+    for (const field of ["Release 1", "Release 2"] as const) {
+      const releaseCode = String(row[field] ?? "").trim();
+      if (!releaseCode) continue;
+      const codes = byRelease.get(releaseCode) ?? [];
+      if (!codes.includes(conflictCode)) codes.push(conflictCode);
+      byRelease.set(releaseCode, codes);
+    }
+  }
+
+  for (const codes of byRelease.values()) {
+    codes.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  }
+  return byRelease;
+}
+
 export function mapSeedConflictRow(
   row: SeedRow,
   releaseIdByCode: Map<string, string>

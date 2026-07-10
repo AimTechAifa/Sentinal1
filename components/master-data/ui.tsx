@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronDown, ChevronUp, Loader2, MoreVertical, Plus, X } from "lucide-react";
+import { DataTableScrollArea } from "@/components/ui/data-table";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { cn } from "@/lib/utils";
 
 export const thClass =
-  "px-6 py-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider";
+  "sticky top-0 z-20 bg-gray-50 px-6 py-4 text-[12px] font-bold uppercase tracking-wider text-gray-500 dark:bg-[var(--card)]";
 export const tdClass = "px-6 py-4 text-[14px] text-gray-800";
 
 export function MasterDataSectionHeader({
@@ -37,7 +38,21 @@ export function MasterDataSectionHeader({
   );
 }
 
-export function MasterDataTableShell({ children, toolbar }: { children: ReactNode; toolbar?: ReactNode }) {
+/**
+ * Master-data table card.
+ * Opt into `scrollShell` for table-standard sticky header / first-col / edge-fade
+ * (DataTableScrollArea). Default remains legacy overflow-x-auto so callers must opt in.
+ */
+export function MasterDataTableShell({
+  children,
+  toolbar,
+  scrollShell = false,
+}: {
+  children: ReactNode;
+  toolbar?: ReactNode;
+  /** When true, use shared DataTable scrollport (sticky + edge-fade). Opt-in only. */
+  scrollShell?: boolean;
+}) {
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-[var(--border)] dark:bg-[var(--card)]">
       {toolbar && (
@@ -45,7 +60,11 @@ export function MasterDataTableShell({ children, toolbar }: { children: ReactNod
           {toolbar}
         </div>
       )}
-      <div className="overflow-x-auto">{children}</div>
+      {scrollShell ? (
+        <DataTableScrollArea>{children}</DataTableScrollArea>
+      ) : (
+        <div className="overflow-x-auto">{children}</div>
+      )}
     </div>
   );
 }

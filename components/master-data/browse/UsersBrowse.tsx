@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Mail } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { TopBar } from "@/components/layout/TopBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
 import {
   DEFAULT_PAGE_SIZE,
   pageCount,
@@ -211,7 +212,12 @@ export function UsersBrowse() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
-        <TopBar title="Users" subtitle={`${rows.length} release stakeholders and approvers`} />
+        <TopBar
+          pageKey="users"
+          title="Users"
+          subtitle={`${rows.length} release stakeholders and approvers`}
+          trailing={<PageDocumentation pageKey="users" />}
+        />
         <button
           type="button"
           onClick={openCreate}
@@ -278,7 +284,7 @@ export function UsersBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={USER_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
+      <MasterDataTableShell scrollShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={USER_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -293,7 +299,7 @@ export function UsersBrowse() {
         ) : rows.length === 0 ? (
           <MasterDataEmptyState entityLabel="users" addLabel="Add User" onAdd={openCreate} />
         ) : (
-          <table className="w-full text-left border-collapse min-w-[1100px]">
+          <table className="w-full min-w-max border-separate border-spacing-0 text-left text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("name") && (
@@ -318,9 +324,9 @@ export function UsersBrowse() {
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {pageRows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={row.id} className="border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200">
                   {isColumnVisible("name") && (
                   <td className={tdClass}>
                     <div className="flex items-center gap-3">

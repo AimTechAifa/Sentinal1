@@ -12,7 +12,10 @@ type SidebarContextType = {
   /** Manual pin: sidebar stays fully open across navigations. */
   isExpanded: boolean;
   isMobileOpen: boolean;
-  /** Temporary hover expand while collapsed — same layout as pinned (pushes content). */
+  /**
+   * Temporary hover expand while collapsed.
+   * Pushes page content (margin tracks width) — never overlays, so no bleed-through.
+   */
   isHovered: boolean;
   /**
    * After a nav click, ignore live hover until the pointer leaves the sidebar.

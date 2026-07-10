@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { requireRole } from "@/lib/auth/api";
 import { buildBookings, buildTimeline, buildVersionMatrix } from "@/lib/db-environment-desk";
 import { prisma } from "@/lib/prisma";
-import { sp, str, dateTextRange } from "@/lib/list-api-filters";
+import { environmentVersionOrderBy, sp, str, dateTextRange } from "@/lib/list-api-filters";
 
 export async function GET(req: Request) {
   const { error } = await requireRole("readonly");
@@ -55,6 +55,7 @@ export async function GET(req: Request) {
     prisma.application.findMany({ include: { department: true, environments: true } }),
     prisma.environmentVersion.findMany({
       where: versionWhere,
+      orderBy: environmentVersionOrderBy(params),
       include: { environment: true, application: { include: { department: true } } },
     }),
     prisma.release.findMany({ include: { department: true }, orderBy: { releaseDate: "asc" } }),

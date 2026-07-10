@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TopBar } from "@/components/layout/TopBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { DEFAULT_PAGE_SIZE, pageCount, paginateRows, type SortDir } from "@/lib/master-data/table-utils";
 import { useTableFilters } from "@/hooks/useTableFilters";
 import { DEPARTMENTS_FILTER_SCHEMA } from "@/lib/table-filters";
@@ -158,7 +159,12 @@ export function DepartmentsBrowse() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
-        <TopBar title="Departments" subtitle={`${rows.length} organizational units`} />
+        <TopBar
+          pageKey="departments"
+          title="Departments"
+          subtitle={`${rows.length} organizational units`}
+          trailing={<PageDocumentation pageKey="departments" />}
+        />
         <button
           type="button"
           onClick={openCreate}
@@ -198,7 +204,7 @@ export function DepartmentsBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={DEPARTMENT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
+      <MasterDataTableShell scrollShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={DEPARTMENT_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -213,7 +219,7 @@ export function DepartmentsBrowse() {
         ) : rows.length === 0 ? (
           <MasterDataEmptyState entityLabel="departments" addLabel="Add Department" onAdd={openCreate} />
         ) : (
-          <table className="w-full text-left border-collapse min-w-[600px]">
+          <table className="w-full min-w-max border-separate border-spacing-0 text-left text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("name") && (
@@ -226,9 +232,9 @@ export function DepartmentsBrowse() {
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {pageRows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={row.id} className="border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200">
                   {isColumnVisible("name") && <td className={`${tdClass} font-semibold text-gray-900`}>{row.name}</td>}
                   {isColumnVisible("head") && <td className={tdClass}>{row.head || "—"}</td>}
                   {isColumnVisible("applicationCount") && <td className={tdClass}>{row._count?.applications ?? 0}</td>}

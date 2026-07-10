@@ -160,6 +160,21 @@ export function releaseListWhere(sp: URLSearchParams): Prisma.ReleaseWhereInput 
     parts.push({ notes: { contains: filters.notesQ, mode: "insensitive" } });
   }
 
+  const cabDate = dateTextRange(filters.cabDateQ);
+  if (cabDate) parts.push({ cabDate });
+  const startDate = dateTextRange(filters.startDateQ);
+  if (startDate) parts.push({ startDate });
+  // UI "End Date" = releaseDate
+  const endDate = dateTextRange(filters.endDateQ);
+  if (endDate) parts.push({ releaseDate: endDate });
+
+  if (filters.testEnvRequiredQ) {
+    parts.push({ testEnvRequired: { contains: filters.testEnvRequiredQ, mode: "insensitive" } });
+  }
+  if (filters.uatEnvRequiredQ) {
+    parts.push({ uatEnvRequired: { contains: filters.uatEnvRequiredQ, mode: "insensitive" } });
+  }
+
   // Owner / Stakeholder: free-text name search against live User rows (not a fixed ID list).
   if (filters.releaseOwnerId) {
     const q = filters.releaseOwnerId.trim();
@@ -188,20 +203,62 @@ export function releaseListWhere(sp: URLSearchParams): Prisma.ReleaseWhereInput 
 
 export function releaseListOrderBy(sp: URLSearchParams): Prisma.ReleaseOrderByWithRelationInput {
   const sort = str(sp, "sort") ?? "releaseDate";
-  const dir = str(sp, "sortDir") === "desc" ? "desc" : "asc";
+  const dir = (str(sp, "dir") ?? str(sp, "sortDir")) === "desc" ? "desc" : "asc";
   switch (sort) {
     case "releaseId":
     case "releaseCode":
       return { releaseCode: dir };
     case "date":
     case "releaseDate":
+    case "endDate":
       return { releaseDate: dir };
+    case "cabDate":
+      return { cabDate: dir };
+    case "startDate":
+      return { startDate: dir };
     case "status":
       return { status: dir };
     case "priority":
       return { priority: dir };
+    case "name":
+      return { name: dir };
+    case "impact":
+      return { impact: dir };
     default:
       return { releaseDate: dir };
+  }
+}
+
+/** Versions & Config — EnvironmentVersion list sort from ?sort=&dir=. */
+export function environmentVersionOrderBy(
+  sp: URLSearchParams
+): Prisma.EnvironmentVersionOrderByWithRelationInput[] {
+  const sort = str(sp, "sort") ?? "application";
+  const dir = (str(sp, "dir") ?? str(sp, "sortDir")) === "desc" ? "desc" : "asc";
+  switch (sort) {
+    case "appId":
+    case "application":
+      return [{ application: { name: dir } }, { environment: { name: "asc" } }];
+    case "department":
+      return [{ application: { department: { name: dir } } }, { application: { name: "asc" } }];
+    case "environment":
+      return [{ environment: { name: dir } }, { application: { name: "asc" } }];
+    case "envOwner":
+      return [{ environment: { owner: dir } }];
+    case "version":
+      return [{ version: dir }];
+    case "buildNumber":
+      return [{ buildNumber: dir }];
+    case "deployDate":
+      return [{ deployDate: dir }];
+    case "deployedBy":
+      return [{ updatedBy: dir }];
+    case "status":
+      return [{ status: dir }];
+    case "notes":
+      return [{ notes: dir }];
+    default:
+      return [{ application: { name: "asc" } }, { environment: { name: "asc" } }];
   }
 }
 
@@ -635,6 +692,12 @@ export function riskWhere(sp: URLSearchParams): Prisma.RiskWhereInput {
   const category = str(sp, "category");
   const owner = str(sp, "owner");
   const release = str(sp, "release");
+  const releaseName = str(sp, "releaseName");
+  const application = str(sp, "application");
+  const department = str(sp, "department");
+  const prodDate = dateTextRange(str(sp, "prodDate"));
+  const daysOutMin = num(sp, "daysOutMin");
+  const daysOutMax = num(sp, "daysOutMax");
   const likelihoodRaw = str(sp, "likelihood");
   const impactRaw = str(sp, "impact");
   const scoreMin = num(sp, "scoreMin");
@@ -652,6 +715,7 @@ export function riskWhere(sp: URLSearchParams): Prisma.RiskWhereInput {
     parts.push({
       OR: [
         { riskOwner: { name: { contains: owner, mode: "insensitive" } } },
+        { riskOwner: { userId: { contains: owner, mode: "insensitive" } } },
         { riskOwnerId: owner },
       ],
     });
@@ -661,6 +725,45 @@ export function riskWhere(sp: URLSearchParams): Prisma.RiskWhereInput {
       OR: [
         { release: { releaseCode: { contains: release, mode: "insensitive" } } },
         { releaseId: release },
+      ],
+    });
+  }
+  if (releaseName) {
+    parts.push({ release: { name: { contains: releaseName, mode: "insensitive" } } });
+  }
+  if (application) {
+    parts.push({ applicationName: { contains: application, mode: "insensitive" } });
+  }
+  if (department) {
+    parts.push({ departmentName: { contains: department, mode: "insensitive" } });
+  }
+  if (prodDate) {
+    // UI prod date = startDate ?? releaseDate — match either field.
+    parts.push({
+      OR: [{ release: { startDate: prodDate } }, { release: { releaseDate: prodDate } }],
+    });
+  }
+  if (daysOutMin !== undefined || daysOutMax !== undefined) {
+    // daysOut = calendar days from today to prod date → translate to absolute date bounds.
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    const dateRange: { gte?: Date; lt?: Date } = {};
+    if (daysOutMin !== undefined) {
+      const gte = new Date(today);
+      gte.setUTCDate(gte.getUTCDate() + daysOutMin);
+      dateRange.gte = gte;
+    }
+    if (daysOutMax !== undefined) {
+      const lt = new Date(today);
+      lt.setUTCDate(lt.getUTCDate() + daysOutMax + 1);
+      dateRange.lt = lt;
+    }
+    parts.push({
+      OR: [
+        { release: { startDate: dateRange } },
+        {
+          AND: [{ release: { startDate: null } }, { release: { releaseDate: dateRange } }],
+        },
       ],
     });
   }
@@ -924,6 +1027,22 @@ export function calendarEventWhere(sp: URLSearchParams): Prisma.CalendarEventWhe
             { releaseId: null },
             { departmentName: { equals: "ALL", mode: "insensitive" } },
           ],
+        },
+      ],
+    });
+  }
+  if (filters.environmentId) {
+    // Org-wide events have no env link — exclude them when an environment filter is set
+    // (matches prior client filterCalendarEvents behavior).
+    parts.push({
+      OR: [
+        { release: { bookings: { some: { environmentId: filters.environmentId } } } },
+        {
+          release: {
+            applications: {
+              some: { application: { environments: { some: { id: filters.environmentId } } } },
+            },
+          },
         },
       ],
     });

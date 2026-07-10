@@ -29,6 +29,7 @@ export type UnifiedRelease = {
   testEnvRequired?: string | null;
   uatEnvRequired?: string | null;
   conflictFlag?: boolean;
+  conflictIds?: string[];
   notes?: string | null;
   readinessPercent?: number | null;
   blockers?: string | null;
@@ -65,6 +66,7 @@ type DbRelease = {
   testEnvRequired?: string | null;
   uatEnvRequired?: string | null;
   conflictFlag?: boolean;
+  conflictIds?: string[];
   notes?: string | null;
   readinessPercent?: number | null;
   blockers?: string | null;
@@ -157,6 +159,7 @@ export function dbToUnified(r: DbRelease): UnifiedRelease {
     testEnvRequired: r.testEnvRequired,
     uatEnvRequired: r.uatEnvRequired,
     conflictFlag: r.conflictFlag,
+    conflictIds: r.conflictIds ?? [],
     notes: r.notes,
     readinessPercent: r.readinessPercent,
     blockers: r.blockers,

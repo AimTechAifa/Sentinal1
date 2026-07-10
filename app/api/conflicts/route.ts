@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     status: str(params, "status"),
     priority: str(params, "priority"),
     assignedToQ: str(params, "assignedTo"),
-    conflictCodeQ: str(params, "conflictCode"),
+    conflictCodeQ: str(params, "conflictId") ?? str(params, "conflictCode"),
     release1CodeQ: str(params, "release1"),
     release2CodeQ: str(params, "release2"),
     conflictingEnvironmentQ: str(params, "conflictEnv"),

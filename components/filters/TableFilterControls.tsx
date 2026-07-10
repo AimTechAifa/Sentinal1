@@ -190,7 +190,7 @@ export function FilterSearchableSelect({
         {selectedLabel ?? placeholder}
       </button>
       {open && (
-        <div className="absolute left-0 z-50 mt-1 min-w-[220px] max-h-64 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-[var(--border)] dark:bg-[var(--card)]">
+        <div className="absolute left-0 z-50 mt-1 w-[min(100vw-1.5rem,18rem)] min-w-[12rem] max-h-64 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-[var(--border)] dark:bg-[var(--card)]">
           <div className="border-b border-gray-100 p-2 dark:border-white/10">
             <input
               autoFocus

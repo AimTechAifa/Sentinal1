@@ -1,0 +1,91 @@
+---
+description: Standard pattern every data table in Sentinel must follow — filters, columns, sorting, scrolling, persistence, visual style
+globs: ["app/**/*.tsx", "components/**/*Table*.tsx", "components/**/*Content.tsx", "lib/table-*.ts", "hooks/useTable*.ts"]
+alwaysApply: false
+---
+
+# Sentinel Table Standard
+
+Every data table in this app — existing or new — must follow this pattern.
+Do not invent a new table pattern. Reuse the existing shared components.
+
+## Required for every table
+
+1. **Filters** live in a distinct bordered "Filters" section above the
+   table, using the shared filter bar component — never a page-specific
+   one-off filter UI.
+2. **Every real column gets a filter**, classified by its actual data
+   type:
+   - Low-cardinality (status, type, category) → checkbox/dropdown of
+     real distinct values
+   - Numeric (%, scores, counts) → min/max range
+   - Boolean / has-doesn't-have → simple toggle
+   - Free-text / near-unique (names, titles, notes, IDs) → contains
+     text search
+   - Person/owner/assignee fields → TEXT INPUT matching live User data.
+     NEVER a dropdown of cached/hardcoded names — this has caused real
+     bugs before.
+3. **Manage Filters button**: all filters individually toggleable,
+   default to 5-6 most useful visible, rest hidden. Persist per user
+   (Clerk ID), survive logout, via the existing UserTablePreference
+   mechanism — never a new preferences system.
+4. **Manage Columns button**: same persistence mechanism as Manage
+   Filters. The row-identifier column and any actions column can never
+   be hidden.
+5. **Search inside Manage Filters and Manage Columns**: once a page has
+   more than ~8 filters or columns available, both the Manage Filters
+   and Manage Columns panels must include a small search input at the
+   top to filter the option list — don't make the user scroll a long
+   unsearchable list.
+6. **Sorting — two mechanisms, both required** (this supersedes any
+   earlier guidance that said "no separate sort control" — a sort
+   button beside Manage Columns is now required in addition to
+   per-header sorting):
+   - Click any column header to sort by it, with a direction indicator
+     (arrow) shown on the header. State stored in the URL (?sort=&dir=).
+   - A separate sort-summary button sits beside the Manage Columns
+     button (e.g. "Release ID (A→Z)"), showing the current sort at a
+     glance and offering quick preset options. This is in addition to
+     per-header click-sort, not a replacement for it.
+7. **Sticky table header** while scrolling vertically — always visible.
+8. **Sticky first column** (row identifier) while scrolling
+   horizontally, on wide tables.
+9. **Both scrollbars visible and styled** — horizontal AND vertical,
+   whichever axes actually overflow. Never hide the native scrollbar.
+   Add an edge-fade cue when more columns exist off-screen. Confirm
+   legible in both light and dark mode.
+10. **Row styling**: separate rows with a horizontal divider line only.
+    Do NOT add vertical divider lines between columns — no grid/cell-
+    border look. On row hover, apply a smooth transition (background
+    and/or border highlight fades in, not an instant snap) so hovering
+    down a list feels fluid.
+11. **All filtering is server-side** (Prisma `where` clauses). Never
+    filter by fetching everything and narrowing client-side.
+12. **Mobile**: horizontal scroll + sticky first column is the default
+    mobile pattern (not a card rebuild), per the approved responsive
+    plan. Only Env Booking-tier extreme-width tables get a card/summary
+    fallback — ask before adding a new one.
+13. **Page description + Know more** (one-time product requirement —
+    not a reason to invent a second docs system): every table page
+    header uses the shared `TopBar` with `pageKey` so a real ~2-line
+    `summary` from `lib/page-documentation.ts` appears under the title,
+    plus a "Know more" link that opens the **same** `PageDocumentation`
+    popup already wired to that page's Help button (via
+    `requestPageDocumentationOpen`). Do not build a duplicate modal or
+    hand-roll per-page description markup.
+
+## Before touching any SHARED component (filter bar, DataTable, column
+picker, sort button, etc.)
+
+Any change must be scoped via a new prop/config that only the calling
+page opts into. NEVER change a shared component's default behavior —
+this has caused real cross-page regressions before (Calendar once
+inherited Releases' entire filter set this way). If a change might
+affect more than one page, audit every consumer of that component
+first and report back before changing it.
+
+## When building a genuinely NEW table/page
+
+Audit real columns from the actual schema/data first — do not guess or
+copy another page's filter/column list. Classify each column per the
+rules above, then build.

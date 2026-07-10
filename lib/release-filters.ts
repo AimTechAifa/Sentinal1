@@ -44,6 +44,12 @@ export type ReleaseListFilters = {
   releaseCodeQ: string;
   nameQ: string;
   notesQ: string;
+  // Dates (YYYY / YYYY-MM / YYYY-MM-DD) + env-flag text
+  cabDateQ: string;
+  startDateQ: string;
+  endDateQ: string;
+  testEnvRequiredQ: string;
+  uatEnvRequiredQ: string;
   // High-cardinality linked
   releaseOwnerId: string;
   stakeholderId: string;
@@ -85,6 +91,11 @@ export const EMPTY_RELEASE_FILTERS: ReleaseListFilters = {
   releaseCodeQ: "",
   nameQ: "",
   notesQ: "",
+  cabDateQ: "",
+  startDateQ: "",
+  endDateQ: "",
+  testEnvRequiredQ: "",
+  uatEnvRequiredQ: "",
   releaseOwnerId: "",
   stakeholderId: "",
   eventType: "",
@@ -124,6 +135,11 @@ export const RELEASE_FILTER_URL_MAP: { key: keyof ReleaseListFilters; param: str
   { key: "releaseCodeQ", param: "releaseCode" },
   { key: "nameQ", param: "name" },
   { key: "notesQ", param: "notes" },
+  { key: "cabDateQ", param: "cabDate" },
+  { key: "startDateQ", param: "startDate" },
+  { key: "endDateQ", param: "endDate" },
+  { key: "testEnvRequiredQ", param: "testEnvRequired" },
+  { key: "uatEnvRequiredQ", param: "uatEnvRequired" },
   { key: "releaseOwnerId", param: "owner" },
   { key: "stakeholderId", param: "stakeholder" },
   { key: "eventType", param: "eventType" },
@@ -207,6 +223,11 @@ const REFINEMENT_KEYS: (keyof ReleaseListFilters)[] = [
   "releaseCodeQ",
   "nameQ",
   "notesQ",
+  "cabDateQ",
+  "startDateQ",
+  "endDateQ",
+  "testEnvRequiredQ",
+  "uatEnvRequiredQ",
   "releaseOwnerId",
   "stakeholderId",
   "eventType",

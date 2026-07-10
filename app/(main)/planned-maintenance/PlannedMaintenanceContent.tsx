@@ -101,6 +101,7 @@ export default function PlannedMaintenanceContent() {
   return (
     <div>
       <TopBar
+        pageKey="planned-maintenance"
         trailing={<PageDocumentation pageKey="planned-maintenance" />}
         title="Planned Maintenance" subtitle={`${rows.length} maintenance window${rows.length === 1 ? "" : "s"} scheduled`} />
       {!tablePending && (

@@ -14,7 +14,10 @@ import {
   REFERENCE_DATA_DEFAULT_HIDDEN_FILTER_KEYS,
   REFERENCE_DATA_FILTER_FIELDS,
 } from "@/lib/table-page-columns";
-import { TableToolbar } from "@/components/ui/data-table";
+import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
+import { REFERENCE_DATA_SORT_PRESETS } from "@/lib/table-sort-presets";
+import { TopBar } from "@/components/layout/TopBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
 import {
   apiJson,
   FormField,
@@ -24,9 +27,11 @@ import {
   MasterDataError,
   MasterDataLoading,
   MasterDataTableShell,
+  SortableTh,
   tdClass,
   thClass,
 } from "@/components/master-data/shared";
+import type { SortDirection } from "@/lib/table-sort";
 
 type ReferenceDataRow = {
   id: string;
@@ -47,11 +52,22 @@ const emptyValueForm: ValueFormState = { value: "", sortOrder: "0", active: true
  * doesn't exist yet.
  */
 export function ReferenceDataManager() {
-  const { values, setFilter, clearAll, hasActive, apiQuery } = useTableFilters(REFERENCE_DATA_FILTER_SCHEMA);
+  const { values, setFilter, setSort, clearAll, hasActive, apiQuery } = useTableFilters(REFERENCE_DATA_FILTER_SCHEMA);
   const [rows, setRows] = useState<ReferenceDataRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const selectedCategory = values.category;
+  const sortKey = (values.sort || "sortOrder") as "value" | "sortOrder" | "active";
+  const sortDir = (values.sortDir === "desc" ? "desc" : "asc") as SortDirection;
+
+  const toggleSort = (key: "value" | "sortOrder" | "active", dir?: SortDirection) => {
+    if (dir) {
+      setSort(key, dir);
+      return;
+    }
+    if (sortKey === key) setFilter("sortDir", sortDir === "asc" ? "desc" : "asc");
+    else setSort(key, "asc");
+  };
 
   const [valueModalOpen, setValueModalOpen] = useState(false);
   const [editingValue, setEditingValue] = useState<ReferenceDataRow | null>(null);
@@ -98,13 +114,17 @@ export function ReferenceDataManager() {
     }
   }, [categories, selectedCategory, setFilter]);
 
-  const categoryRows = useMemo(
-    () =>
-      rows
-        .filter((r) => r.category === selectedCategory)
-        .sort((a, b) => a.sortOrder - b.sortOrder || a.value.localeCompare(b.value)),
-    [rows, selectedCategory]
-  );
+  const categoryRows = useMemo(() => {
+    const filtered = rows.filter((r) => r.category === selectedCategory);
+    const dir = sortDir === "desc" ? -1 : 1;
+    return [...filtered].sort((a, b) => {
+      if (sortKey === "value") return a.value.localeCompare(b.value) * dir;
+      if (sortKey === "active") return (Number(a.active) - Number(b.active)) * dir;
+      // sortOrder default
+      const byOrder = (a.sortOrder - b.sortOrder) * dir;
+      return byOrder !== 0 ? byOrder : a.value.localeCompare(b.value);
+    });
+  }, [rows, selectedCategory, sortKey, sortDir]);
 
   const { isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "reference-data",
@@ -248,13 +268,11 @@ export function ReferenceDataManager() {
       </aside>
 
       <div className="flex-1 min-w-0 space-y-6">
-        <div>
-          <h1 className="text-[32px] font-bold text-[#111827] tracking-tight mb-2">Reference Data</h1>
-          <p className="text-[15px] text-gray-500 font-medium leading-relaxed">
-            Configurable lookup lists used throughout Sentinel (dropdowns, filters, validation). Deactivated values
-            stop appearing in dropdowns immediately, but records that already reference them keep working.
-          </p>
-        </div>
+        <TopBar
+          pageKey="reference-data"
+          title="Reference Data"
+          trailing={<PageDocumentation pageKey="reference-data" />}
+        />
 
         {error && <MasterDataError message={error} onRetry={load} />}
 
@@ -314,22 +332,57 @@ export function ReferenceDataManager() {
               </button>
             </div>
 
-            <MasterDataTableShell toolbar={<TableToolbar>{columnPicker}</TableToolbar>}>
+            <MasterDataTableShell
+              scrollShell
+              toolbar={
+                <TablePageToolbar
+                  columnPicker={columnPicker}
+                  presets={REFERENCE_DATA_SORT_PRESETS}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSelectSort={setSort}
+                />
+              }
+            >
               {categoryRows.length === 0 ? (
                 <MasterDataEmptyState entityLabel="values" addLabel="Add Value" onAdd={openAddValue} />
               ) : (
-                <table className="w-full text-left border-collapse">
+                <table className="w-full min-w-max border-separate border-spacing-0 text-left text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 bg-gray-50/50">
-                      {isColumnVisible("value") && <th className={thClass}>Value</th>}
-                      {isColumnVisible("sortOrder") && <th className={thClass}>Sort Order</th>}
-                      {isColumnVisible("active") && <th className={thClass}>Active</th>}
+                      {isColumnVisible("value") && (
+                        <SortableTh
+                          label="Value"
+                          active={sortKey === "value"}
+                          dir={sortDir}
+                          onSort={(dir) => toggleSort("value", dir)}
+                        />
+                      )}
+                      {isColumnVisible("sortOrder") && (
+                        <SortableTh
+                          label="Sort Order"
+                          active={sortKey === "sortOrder"}
+                          dir={sortDir}
+                          onSort={(dir) => toggleSort("sortOrder", dir)}
+                        />
+                      )}
+                      {isColumnVisible("active") && (
+                        <SortableTh
+                          label="Active"
+                          active={sortKey === "active"}
+                          dir={sortDir}
+                          onSort={(dir) => toggleSort("active", dir)}
+                        />
+                      )}
                       <th className={`${thClass} text-right`}>Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {categoryRows.map((row) => (
-                      <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                      <tr
+                        key={row.id}
+                        className="border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200"
+                      >
                         {isColumnVisible("value") && <td className={`${tdClass} font-semibold text-gray-900`}>{row.value}</td>}
                         {isColumnVisible("sortOrder") && <td className={cn(tdClass, "font-mono text-gray-500")}>{row.sortOrder}</td>}
                         {isColumnVisible("active") && (

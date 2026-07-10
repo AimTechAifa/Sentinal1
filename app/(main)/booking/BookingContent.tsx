@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { CalendarCheck, Plus } from "lucide-react";
 import {
   FilterRangeInputs,
   FilterSelect,
@@ -10,6 +10,7 @@ import {
   TableFilterBar,
 } from "@/components/filters/TableFilterBar";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
+import { TopBar } from "@/components/layout/TopBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { BookingFormModal } from "@/components/booking/BookingFormModal";
 import {
@@ -19,7 +20,7 @@ import {
 } from "@/lib/table-page-columns";
 import { TablePageToolbar } from "@/components/filters/TablePageToolbar";
 import { BOOKING_SORT_PRESETS } from "@/lib/table-sort-presets";
-import { DataTableHeadRow } from "@/components/ui/data-table";
+import { DataTable, DataTableHeadRow, dataTableTableClass, tableCell, tableRow } from "@/components/ui/data-table";
 import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
@@ -218,22 +219,21 @@ export default function BookingContent() {
 
   return (
     <div className="space-y-6 pb-12 font-sans">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[28px] font-bold text-[#111827] dark:text-white tracking-tight">Environment Booking</h1>
-          <p className="mt-1 text-[15px] text-gray-600 dark:text-white/60 font-medium">
-            {bookings.length} booking{bookings.length === 1 ? "" : "s"} — manage and schedule deployments across all infrastructure layers.
-          </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          {canEdit && (
-            <button type="button" className={cn(taBtnPrimary, "text-sm")} onClick={() => setModalOpen(true)}>
-              <Plus className="mr-1 inline h-4 w-4" /> New Booking
-            </button>
-          )}
-          <PageDocumentation pageKey="env-booking" />
-        </div>
-      </div>
+      <TopBar
+        pageKey="env-booking"
+        title="Environment Booking"
+        subtitle={`${bookings.length} booking${bookings.length === 1 ? "" : "s"}`}
+        trailing={
+          <div className="flex shrink-0 items-center gap-2">
+            {canEdit && (
+              <button type="button" className={cn(taBtnPrimary, "text-sm")} onClick={() => setModalOpen(true)}>
+                <Plus className="mr-1 inline h-4 w-4" /> New Booking
+              </button>
+            )}
+            <PageDocumentation pageKey="env-booking" />
+          </div>
+        }
+      />
 
       <BookingFormModal
         open={modalOpen}
@@ -451,12 +451,20 @@ export default function BookingContent() {
       {tablePending ? (
         <TableSkeleton showTitle={false} columns={BOOKING_COLUMNS.length} />
       ) : (
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[var(--card)] shadow-sm overflow-hidden">
-        <div className="flex items-center justify-end border-b border-gray-100 bg-gray-50/80 px-4 py-2 dark:border-gray-700 dark:bg-white/[0.03]">
-          <TablePageToolbar columnPicker={columnPicker} presets={BOOKING_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[2200px] text-left text-sm">
+        <DataTable
+          title="All Bookings"
+          icon={CalendarCheck}
+          toolbar={
+            <TablePageToolbar
+              columnPicker={columnPicker}
+              presets={BOOKING_SORT_PRESETS}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSelectSort={setSort}
+            />
+          }
+        >
+          <table className={dataTableTableClass}>
             <thead>
               <DataTableHeadRow
                 columns={BOOKING_COLUMNS}
@@ -466,7 +474,7 @@ export default function BookingContent() {
                 onSort={toggleSort}
               />
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+            <tbody>
               {bookings.length === 0 ? (
                 <tr>
                   <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
@@ -475,7 +483,7 @@ export default function BookingContent() {
                 </tr>
               ) : (
                 bookings.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                  <tr key={row.id} className={tableRow}>
                     {visibleColumns.map((col) => {
                       const key = col.key as BookingColumnKey;
                       const value = cellValue(row, key);
@@ -492,11 +500,13 @@ export default function BookingContent() {
                       return (
                         <td
                           key={col.key}
-                          className={`px-4 py-3 whitespace-nowrap text-gray-700 dark:text-white/80 ${
-                            col.key === "releaseId" ? "font-semibold text-brand-600 dark:text-brand-400" : ""
-                          } ${isConflict ? "font-medium text-error-600 dark:text-rose-400" : ""} ${
-                            isNotes ? "max-w-[280px] truncate" : ""
-                          }`}
+                          className={cn(
+                            tableCell,
+                            "whitespace-nowrap",
+                            col.key === "releaseId" && "font-semibold text-brand-600 dark:text-brand-400",
+                            isConflict && "font-medium text-error-600 dark:text-rose-400",
+                            isNotes && "max-w-[280px] truncate",
+                          )}
                           title={isNotes ? String(value) : undefined}
                         >
                           {col.key === "releaseId" && row.release?.id && row.release.releaseCode ? (
@@ -517,8 +527,7 @@ export default function BookingContent() {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
+        </DataTable>
       )}
     </div>
   );

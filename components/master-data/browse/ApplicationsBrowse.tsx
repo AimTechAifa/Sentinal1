@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
+import { PageDocumentation } from "@/components/help/PageDocumentation";
 import {
   DEFAULT_PAGE_SIZE,
   filterRows,
@@ -352,7 +353,7 @@ export function ApplicationsBrowse() {
           </button>
         </div>
 
-        <MasterDataTableShell>
+        <MasterDataTableShell scrollShell>
           <BrowseToolbar
             search={envSearch}
             onSearchChange={setEnvSearch}
@@ -367,7 +368,7 @@ export function ApplicationsBrowse() {
           ) : filteredEnvs.length === 0 ? (
             <MasterDataEmptyState entityLabel="environments" addLabel="Add Environment" onAdd={openCreateEnv} />
           ) : (
-            <table className="w-full text-left border-collapse min-w-[700px]">
+            <table className="w-full min-w-max border-separate border-spacing-0 text-left text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50/50">
                   <th className={thClass}>Env Name</th>
@@ -377,9 +378,9 @@ export function ApplicationsBrowse() {
                   <th className={`${thClass} text-right`}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {envPageRows.map((row) => (
-                  <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={row.id} className="border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200">
                     <td className={`${tdClass} font-semibold`}>{row.name}</td>
                     <td className={tdClass}>{row.type}</td>
                     <td className={tdClass}>{row.owner || "—"}</td>
@@ -429,7 +430,12 @@ export function ApplicationsBrowse() {
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
-        <TopBar title="Applications" subtitle={`${apps.length} applications in catalog`} />
+        <TopBar
+          pageKey="applications"
+          title="Applications"
+          subtitle={`${apps.length} applications in catalog`}
+          trailing={<PageDocumentation pageKey="applications" />}
+        />
         <button
           type="button"
           onClick={openCreateApp}
@@ -500,7 +506,7 @@ export function ApplicationsBrowse() {
         )}
       </TableFilterBar>
 
-      <MasterDataTableShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={APPLICATION_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
+      <MasterDataTableShell scrollShell toolbar={<TablePageToolbar columnPicker={columnPicker} presets={APPLICATION_SORT_PRESETS} sortKey={sortKey} sortDir={sortDir} onSelectSort={setSort} />}>
         <BrowseToolbar
           search={search}
           onSearchChange={(v) => setFilter("q", v)}
@@ -515,7 +521,7 @@ export function ApplicationsBrowse() {
         ) : apps.length === 0 ? (
           <MasterDataEmptyState entityLabel="applications" addLabel="Add Application" onAdd={openCreateApp} />
         ) : (
-          <table className="w-full text-left border-collapse min-w-[1000px]">
+          <table className="w-full min-w-max border-separate border-spacing-0 text-left text-sm">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
                 {isColumnVisible("name") && (
@@ -538,9 +544,9 @@ export function ApplicationsBrowse() {
                 <th className={`${thClass} text-right`}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {appPageRows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr key={row.id} className="border-b border-gray-200 dark:border-[var(--border)] hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200">
                   {isColumnVisible("name") && <td className={`${tdClass} font-semibold text-gray-900 max-w-[200px]`}>{row.name}</td>}
                   {isColumnVisible("department") && <td className={tdClass}>{row.department?.name ?? "—"}</td>}
                   {isColumnVisible("type") && <td className={tdClass}>{row.type}</td>}

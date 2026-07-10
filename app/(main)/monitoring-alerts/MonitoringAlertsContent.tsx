@@ -108,6 +108,7 @@ export default function MonitoringAlertsContent() {
   return (
     <div>
       <TopBar
+        pageKey="monitoring-alerts"
         trailing={<PageDocumentation pageKey="monitoring-alerts" />}
         title="Monitoring Alerts" subtitle={`${alerts.length} alert${alerts.length === 1 ? "" : "s"} across all applications`} />
       {!tablePending && (
