@@ -10,7 +10,7 @@
   --border: #e4e4e7;
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 80px;
-  --sidebar-width: var(--sidebar-width-expanded);
+  --sidebar-width: var(--sidebar-width-collapsed);
   --header-height: 72px;
   --data-table-toolbar-height: 5.625rem;
   --materio-grid-gap: 24px;
@@ -25,7 +25,8 @@
   --readiness-high: #40c057;
   --readiness-medium: #fab005;
   --readiness-low: #ba1a1a;
-  --sidebar: rgba(255, 255, 255, 0.6);
+  /* Solid — hover-peek overlays page content; translucent glass bleeds through. */
+  --sidebar: #ffffff;
   --header: rgba(255, 255, 255, 0.7);
   --card: rgba(255, 255, 255, 0.6);
   --materio-primary-o-light: rgba(124, 58, 237, 0.08);
@@ -445,10 +446,21 @@ body {
     gap: var(--materio-grid-gap);
   }
   .materio-sidebar {
-    background-color: var(--sidebar);
-    border-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    /* Hard opaque fill — peek overlays page content; never use glass/alpha here. */
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+    border-color: var(--border);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    isolation: isolate;
+  }
+  .materio-sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: #ffffff;
+    pointer-events: none;
   }
   .materio-header {
     background-color: var(--header);
@@ -494,10 +506,19 @@ body {
   }
   .theme-dark .materio-sidebar,
   .theme-dark .materio-header {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background-color: var(--sidebar);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: #212738 !important;
     border-color: var(--border);
+  }
+  .theme-dark .materio-sidebar::before {
+    background-color: #212738;
+  }
+  .theme-semi-dark .materio-sidebar {
+    background-color: #212738 !important;
+  }
+  .theme-semi-dark .materio-sidebar::before {
+    background-color: #212738;
   }
 
   /* Full dark mode: no glassmorphism, solid surfaces, readable text */

@@ -899,15 +899,68 @@ export function riskFactorOrderBy(sp: URLSearchParams): Prisma.RiskFactorOrderBy
 export function calendarEventWhere(sp: URLSearchParams): Prisma.CalendarEventWhereInput {
   const filters = filtersFromSearchParams(sp);
   const parts: Prisma.CalendarEventWhereInput[] = [];
+  // Include org-wide events with no Release ID (CHANGE FREEZE, department "ALL")
+  // alongside release-linked matches — otherwise Prisma's release relation filter
+  // silently drops every null-releaseId row.
   if (filters.departmentId) {
-    parts.push({ release: { departmentId: filters.departmentId } });
+    parts.push({
+      OR: [
+        { release: { departmentId: filters.departmentId } },
+        {
+          AND: [
+            { releaseId: null },
+            { departmentName: { equals: "ALL", mode: "insensitive" } },
+          ],
+        },
+      ],
+    });
   }
   if (filters.applicationId) {
-    parts.push({ release: { applications: { some: { applicationId: filters.applicationId } } } });
+    parts.push({
+      OR: [
+        { release: { applications: { some: { applicationId: filters.applicationId } } } },
+        {
+          AND: [
+            { releaseId: null },
+            { departmentName: { equals: "ALL", mode: "insensitive" } },
+          ],
+        },
+      ],
+    });
   }
-  const eventType = str(sp, "eventType");
-  const releaseStatus = str(sp, "releaseStatus");
+  if (filters.status) parts.push({ release: { status: filters.status } });
+  if (filters.priority) parts.push({ release: { priority: filters.priority } });
+  if (filters.impact) parts.push({ release: { impact: filters.impact } });
+
+  const eventType = filters.eventType || str(sp, "eventType");
   if (eventType) parts.push({ eventType });
+  if (filters.sizeImpact) parts.push({ sizeImpact: filters.sizeImpact });
+
+  if (filters.releaseCodeQ) {
+    parts.push({
+      release: { releaseCode: { contains: filters.releaseCodeQ, mode: "insensitive" } },
+    });
+  }
+  if (filters.nameQ) {
+    parts.push({ title: { contains: filters.nameQ, mode: "insensitive" } });
+  }
+  if (filters.notesQ) {
+    parts.push({ notes: { contains: filters.notesQ, mode: "insensitive" } });
+  }
+
+  const dateRange: { gte?: Date; lte?: Date } = {};
+  if (filters.dateFrom) {
+    const from = new Date(`${filters.dateFrom}T00:00:00.000Z`);
+    if (!Number.isNaN(from.getTime())) dateRange.gte = from;
+  }
+  if (filters.dateTo) {
+    const to = new Date(`${filters.dateTo}T23:59:59.999Z`);
+    if (!Number.isNaN(to.getTime())) dateRange.lte = to;
+  }
+  if (dateRange.gte || dateRange.lte) parts.push({ date: dateRange });
+
+  // Day-of-week is applied client-side (derived display field; same pattern as period).
+  const releaseStatus = str(sp, "releaseStatus");
   if (releaseStatus) parts.push({ release: { status: releaseStatus } });
   if (!parts.length) return {};
   if (parts.length === 1) return parts[0];

@@ -88,9 +88,9 @@ export function ReleaseFiltersProvider({ children }: { children: ReactNode }) {
       try {
         const res = await fetch(url, { signal });
         // 503 = Neon cold-start / transient; retry a few times before giving up.
-        if ((res.status === 503 || res.status === 500) && attempt < 3) {
-          const delay = 1000 * 2 ** attempt;
-          console.warn(`ReleaseFilters: ${url} → ${res.status}, retry ${attempt + 1}/3 in ${delay}ms`);
+        if ((res.status === 503 || res.status === 500) && attempt < 5) {
+          const delay = 1200 * 2 ** attempt;
+          console.warn(`ReleaseFilters: ${url} → ${res.status}, retry ${attempt + 1}/5 in ${delay}ms`);
           await new Promise((r) => setTimeout(r, delay));
           return load(attempt + 1);
         }

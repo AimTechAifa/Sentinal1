@@ -117,6 +117,8 @@ export async function GET(req: Request) {
     const transient =
       msg.toLowerCase().includes("can't reach database") ||
       msg.toLowerCase().includes("timed out") ||
+      msg.toLowerCase().includes("not yet connected") ||
+      msg.toLowerCase().includes("engine is not yet connected") ||
       (err as { code?: string })?.code === "P1001";
     return NextResponse.json(
       { error: transient ? "Database temporarily unavailable" : "Failed to load release lookups" },

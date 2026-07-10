@@ -19,17 +19,18 @@ function ShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <ChatProvider>
-      <div className="min-h-screen materio-page-bg">
+      <div className="relative min-h-screen materio-page-bg">
         <Sidebar />
         <Backdrop />
         <div
           className={cn(
-            "flex min-h-screen flex-1 flex-col transition-[margin] duration-300 ease-in-out min-w-0",
+            "relative z-0 flex min-h-screen min-w-0 flex-1 flex-col transition-[margin] duration-300 ease-in-out",
+            // Margin tracks visual sidebar width (pin OR hover) — never overlaps content
             isMobileOpen ? "ml-0" : "lg:ml-[var(--sidebar-width)]"
           )}
         >
           <AppHeader />
-          <main className="materio-main flex-1 px-4 pb-6 pt-6 md:px-6 lg:px-8 min-w-0">
+          <main className="materio-main min-w-0 flex-1 px-4 pb-6 pt-6 md:px-6 lg:px-8">
             {children}
           </main>
           <ChatPanel />

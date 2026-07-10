@@ -7,13 +7,21 @@ import { ReleaseTimelineView } from "@/components/calendar/ReleaseTimelineView";
 import { CalendarTableView } from "@/components/calendar/CalendarTableView";
 import { CalendarStatusLegend } from "@/components/calendar/CalendarStatusLegend";
 import { ReleaseFiltersBar } from "@/components/releases/ReleaseFiltersBar";
-import { FilterSelect } from "@/components/filters/TableFilterBar";
+import { FilterSelect } from "@/components/filters/TableFilterControls";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { useFilterPreferences } from "@/hooks/useFilterPreferences";
 import { useReleaseFilters } from "@/context/ReleaseFiltersContext";
-import { CALENDAR_FILTER_FIELDS } from "@/lib/table-page-columns";
+import {
+  CALENDAR_DEFAULT_HIDDEN_FILTER_KEYS,
+  CALENDAR_FILTER_FIELDS,
+} from "@/lib/table-page-columns";
 import { periodTitle, shiftPeriodAnchor } from "@/lib/calendar-schedule";
-import { filterCalendarEvents, type CalendarEventApi } from "@/lib/calendar-table";
+import {
+  CALENDAR_DAY_OPTIONS,
+  CALENDAR_SIZE_IMPACT_OPTIONS,
+  filterCalendarEvents,
+  type CalendarEventApi,
+} from "@/lib/calendar-table";
 import { inPeriod, periodRange, type Period } from "@/lib/period-range";
 import { filterUnifiedReleases } from "@/lib/release-filters";
 import { timelineRangeLabel } from "@/lib/release-timeline";
@@ -22,9 +30,18 @@ import {
   getDemoReleasesInPeriod,
   mergeReleases,
 } from "@/lib/unified-releases";
+import { SELECT_CLASS } from "@/lib/table-filters";
 import { cn } from "@/lib/utils";
 
 type CalendarDisplay = "calendar" | "timeline" | "table";
+
+const EVENT_TYPE_OPTIONS = [
+  "CAB MEETING",
+  "RELEASE",
+  "CHANGE FREEZE",
+  "REGULATORY",
+  "VENDOR MAINT",
+] as const;
 
 export default function CalendarPage() {
   const {
@@ -38,9 +55,12 @@ export default function CalendarPage() {
     calendarEvents,
     setPeriod,
     setAnchor,
+    setFilter,
   } = useReleaseFilters();
 
-  const { filterPicker, isFilterVisible } = useFilterPreferences("calendar", CALENDAR_FILTER_FIELDS);
+  const { filterPicker, isFilterVisible } = useFilterPreferences("calendar", CALENDAR_FILTER_FIELDS, {
+    defaultHiddenFilters: CALENDAR_DEFAULT_HIDDEN_FILTER_KEYS,
+  });
 
   const period = (filters.period || "month") as Period;
   const viewDate = useMemo(() => {
@@ -53,8 +73,6 @@ export default function CalendarPage() {
 
   const [display, setDisplay] = useState<CalendarDisplay>("calendar");
   const [mounted, setMounted] = useState(false);
-  /** Calendar-only — not part of shared ReleaseFiltersBar. */
-  const [eventType, setEventType] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -66,11 +84,18 @@ export default function CalendarPage() {
   );
 
   const eventTypeOptions = useMemo(() => {
-    const set = new Set(
-      (calendarEvents as CalendarEventApi[])
-        .map((e) => e.eventType)
-        .filter(Boolean),
-    );
+    const set = new Set<string>([...EVENT_TYPE_OPTIONS]);
+    for (const e of calendarEvents as CalendarEventApi[]) {
+      if (e.eventType) set.add(e.eventType);
+    }
+    return [...set].sort();
+  }, [calendarEvents]);
+
+  const sizeImpactOptions = useMemo(() => {
+    const set = new Set<string>([...CALENDAR_SIZE_IMPACT_OPTIONS]);
+    for (const e of calendarEvents as CalendarEventApi[]) {
+      if (e.sizeImpact) set.add(e.sizeImpact);
+    }
     return [...set].sort();
   }, [calendarEvents]);
 
@@ -83,9 +108,8 @@ export default function CalendarPage() {
       bookings,
       environments,
       departments,
-      eventType,
     });
-  }, [calendarEvents, period, viewDate, filters, dbRows, bookings, environments, departments, eventType]);
+  }, [calendarEvents, period, viewDate, filters, dbRows, bookings, environments, departments]);
 
   const timelineReleases = useMemo(() => {
     const dbUnified = (dbRows as unknown as Parameters<typeof dbToUnified>[0][]).map(dbToUnified);
@@ -144,15 +168,71 @@ export default function CalendarPage() {
           manageFilters={filterPicker}
           isFilterVisible={isFilterVisible}
         >
-          {/* B1: Calendar-only Event Type — not on shared bar defaults */}
-          <FilterSelect value={eventType} onChange={setEventType}>
-            <option value="">All event types</option>
-            {eventTypeOptions.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </FilterSelect>
+          {/* Calendar-only controls — not part of shared ReleaseFiltersBar defaults */}
+          {isFilterVisible("eventType") && (
+            <FilterSelect
+              disabled={loading}
+              value={filters.eventType}
+              onChange={(v) => setFilter("eventType", v)}
+            >
+              <option value="">All event types</option>
+              {eventTypeOptions.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("sizeImpact") && (
+            <FilterSelect
+              disabled={loading}
+              value={filters.sizeImpact}
+              onChange={(v) => setFilter("sizeImpact", v)}
+            >
+              <option value="">All sizes/impacts</option>
+              {sizeImpactOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("day") && (
+            <FilterSelect
+              disabled={loading}
+              value={filters.day}
+              onChange={(v) => setFilter("day", v)}
+            >
+              <option value="">All days</option>
+              {CALENDAR_DAY_OPTIONS.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </FilterSelect>
+          )}
+          {isFilterVisible("dateRange") && (
+            <div className="inline-flex items-center gap-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">Date</span>
+              <input
+                type="date"
+                disabled={loading}
+                value={filters.dateFrom}
+                onChange={(e) => setFilter("dateFrom", e.target.value)}
+                className={cn(SELECT_CLASS, "min-w-[132px]")}
+                aria-label="Date from"
+              />
+              <span className="text-xs text-gray-400">–</span>
+              <input
+                type="date"
+                disabled={loading}
+                value={filters.dateTo}
+                onChange={(e) => setFilter("dateTo", e.target.value)}
+                className={cn(SELECT_CLASS, "min-w-[132px]")}
+                aria-label="Date to"
+              />
+            </div>
+          )}
         </ReleaseFiltersBar>
 
         <div className="px-5 pb-4 pt-4">

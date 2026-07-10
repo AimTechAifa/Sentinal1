@@ -22,7 +22,7 @@
     "Notes": "Resource conflict with REL-0003 - Same Test/UAT env required",
     "Readiness %": "75%",
     "Blockers": "Environment conflict with REL-0003; awaiting conflict resolution meeting",
-    "Vendor Maintenance": "No",
+    "Vendor Maintenance": "",
     "Change Freeze": "Quarter-End Freeze",
     "Regulatory": "",
     "Release Owner ID": "USR-061",
@@ -402,7 +402,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0010",
@@ -582,7 +582,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0014",
@@ -762,7 +762,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0018",
@@ -942,7 +942,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0022",
@@ -1122,7 +1122,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0026",
@@ -1302,7 +1302,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0030",
@@ -1482,7 +1482,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0034",
@@ -1662,7 +1662,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0038",
@@ -1842,7 +1842,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0042",
@@ -2022,7 +2022,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0046",
@@ -2202,7 +2202,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0050",
@@ -2382,7 +2382,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0054",
@@ -2562,7 +2562,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0058",
@@ -2742,7 +2742,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0062",
@@ -2922,7 +2922,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0066",
@@ -3102,7 +3102,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0070",
@@ -3282,7 +3282,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🔴 No-Go",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0074",
@@ -3462,7 +3462,7 @@
     "Training Status": "Not Started",
     "Support Briefed": "⬜",
     "Release Health": "🟡 Caution",
-    "Dependencies": "NA"
+    "Dependencies": ""
   },
   {
     "Release ID": "REL-0078",

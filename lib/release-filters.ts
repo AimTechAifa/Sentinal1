@@ -47,6 +47,12 @@ export type ReleaseListFilters = {
   // High-cardinality linked
   releaseOwnerId: string;
   stakeholderId: string;
+  // Calendar-only column filters (URL-backed; Calendar Manage Filters only)
+  eventType: string;
+  sizeImpact: string;
+  day: string;
+  dateFrom: string;
+  dateTo: string;
   // Sort / calendar (unchanged)
   sort: string;
   sortDir: string;
@@ -81,6 +87,11 @@ export const EMPTY_RELEASE_FILTERS: ReleaseListFilters = {
   notesQ: "",
   releaseOwnerId: "",
   stakeholderId: "",
+  eventType: "",
+  sizeImpact: "",
+  day: "",
+  dateFrom: "",
+  dateTo: "",
   sort: "",
   sortDir: "",
   period: "",
@@ -115,6 +126,11 @@ export const RELEASE_FILTER_URL_MAP: { key: keyof ReleaseListFilters; param: str
   { key: "notesQ", param: "notes" },
   { key: "releaseOwnerId", param: "owner" },
   { key: "stakeholderId", param: "stakeholder" },
+  { key: "eventType", param: "eventType" },
+  { key: "sizeImpact", param: "sizeImpact" },
+  { key: "day", param: "day" },
+  { key: "dateFrom", param: "dateFrom" },
+  { key: "dateTo", param: "dateTo" },
 ];
 
 const META_PARAMS = ["sort", "dir", "sortDir", "period", "anchor", "tab"] as const;
@@ -193,6 +209,11 @@ const REFINEMENT_KEYS: (keyof ReleaseListFilters)[] = [
   "notesQ",
   "releaseOwnerId",
   "stakeholderId",
+  "eventType",
+  "sizeImpact",
+  "day",
+  "dateFrom",
+  "dateTo",
   "period",
   "anchor",
   "tab",

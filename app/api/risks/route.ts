@@ -10,7 +10,16 @@ export async function GET(req: Request) {
   const data = await prisma.risk.findMany({
     where: riskWhere(sp(req)),
     include: {
-      release: { select: { id: true, releaseCode: true, name: true, status: true } },
+      release: {
+        select: {
+          id: true,
+          releaseCode: true,
+          name: true,
+          status: true,
+          startDate: true,
+          releaseDate: true,
+        },
+      },
       riskOwner: { select: { id: true, userId: true, name: true, email: true } },
     },
     orderBy: { riskScore: "desc" },

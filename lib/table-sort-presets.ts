@@ -93,6 +93,7 @@ export const CALENDAR_SORT_PRESETS: TableSortPreset[] = [
   { id: "date-asc", label: "Date — oldest first", sort: "date", sortDir: "asc" },
   { id: "date-desc", label: "Date — newest first", sort: "date", sortDir: "desc" },
   { id: "release-az", label: "Release ID (A → Z)", sort: "releaseCode", sortDir: "asc" },
+  { id: "app-az", label: "Application (A → Z)", sort: "application", sortDir: "asc" },
 ];
 
 export const DEPARTMENT_SORT_PRESETS: TableSortPreset[] = [

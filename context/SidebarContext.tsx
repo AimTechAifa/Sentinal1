@@ -3,18 +3,37 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 export const SIDEBAR_WIDTH_EXPANDED = 260;
-export const SIDEBAR_WIDTH_COLLAPSED = 78;
+export const SIDEBAR_WIDTH_COLLAPSED = 80;
 const STORAGE_KEY = "sentinel-sidebar-expanded";
+/** Delay before hover-peek collapses after mouse leaves (avoids flicker). */
+export const SIDEBAR_HOVER_LEAVE_DELAY_MS = 280;
 
 type SidebarContextType = {
+  /** Manual pin: sidebar stays fully open across navigations. */
   isExpanded: boolean;
   isMobileOpen: boolean;
+  /** Temporary hover expand while collapsed — same layout as pinned (pushes content). */
   isHovered: boolean;
+  /**
+   * After a nav click, ignore live hover until the pointer leaves the sidebar.
+   * Prevents expand staying open when the cursor never left the rail.
+   */
+  hoverPeekLocked: boolean;
+  /** Sidebar is visually wide (pin, mobile, or active hover). */
   isWide: boolean;
+  /** Layout margin for page content — matches visual width so hover never overlaps. */
+  contentSidebarWidth: number;
+  /** Visual sidebar width (same as contentSidebarWidth). */
   sidebarWidth: number;
   toggleSidebar: () => void;
   toggleMobileSidebar: () => void;
   setIsHovered: (v: boolean) => void;
+  /** Call on nav / route change: collapse hover expand and lock until mouseleave. */
+  collapsePeekAfterNavigation: () => void;
+  /** Call on mouseleave: allow hover-expand again on the next mouseenter. */
+  unlockHoverPeek: () => void;
+  /** Clear hover + unlock (e.g. pin toggle). */
+  clearHoverPeek: () => void;
   closeMobileSidebar: () => void;
 };
 
@@ -27,7 +46,7 @@ export function useSidebar() {
 }
 
 function readStoredExpanded(): boolean {
-  if (typeof window === "undefined") return true;
+  if (typeof window === "undefined") return false;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "false") return false;
@@ -35,13 +54,14 @@ function readStoredExpanded(): boolean {
   } catch {
     /* ignore */
   }
-  return true;
+  return false;
 }
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [hoverPeekLocked, setHoverPeekLocked] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -49,8 +69,10 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     setHydrated(true);
   }, []);
 
-  const isWide = isExpanded || isHovered || isMobileOpen;
-  const sidebarWidth = isWide ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED;
+  // Wide = pin, mobile drawer, or hover expand. Content margin always matches — no overlay.
+  const isWide = isExpanded || isMobileOpen || (isHovered && !hoverPeekLocked);
+  const contentSidebarWidth = isWide ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED;
+  const sidebarWidth = contentSidebarWidth;
 
   useEffect(() => {
     if (!hydrated) return;
@@ -62,8 +84,8 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   }, [isExpanded, hydrated]);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--sidebar-width", `${sidebarWidth}px`);
-  }, [sidebarWidth]);
+    document.documentElement.style.setProperty("--sidebar-width", `${contentSidebarWidth}px`);
+  }, [contentSidebarWidth]);
 
   useEffect(() => {
     const onResize = () => {
@@ -76,31 +98,57 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const toggleSidebar = useCallback(() => {
     setIsExpanded((p) => !p);
     setIsHovered(false);
+    setHoverPeekLocked(false);
   }, []);
 
   const toggleMobileSidebar = useCallback(() => setIsMobileOpen((p) => !p), []);
   const closeMobileSidebar = useCallback(() => setIsMobileOpen(false), []);
+
+  const collapsePeekAfterNavigation = useCallback(() => {
+    setIsHovered(false);
+    setHoverPeekLocked(true);
+    setIsMobileOpen(false);
+  }, []);
+
+  const unlockHoverPeek = useCallback(() => {
+    setHoverPeekLocked(false);
+  }, []);
+
+  const clearHoverPeek = useCallback(() => {
+    setHoverPeekLocked(false);
+    setIsHovered(false);
+  }, []);
 
   const value = useMemo(
     () => ({
       isExpanded,
       isMobileOpen,
       isHovered,
+      hoverPeekLocked,
       isWide,
+      contentSidebarWidth,
       sidebarWidth,
       toggleSidebar,
       toggleMobileSidebar,
       setIsHovered,
+      collapsePeekAfterNavigation,
+      unlockHoverPeek,
+      clearHoverPeek,
       closeMobileSidebar,
     }),
     [
       isExpanded,
       isMobileOpen,
       isHovered,
+      hoverPeekLocked,
       isWide,
+      contentSidebarWidth,
       sidebarWidth,
       toggleSidebar,
       toggleMobileSidebar,
+      collapsePeekAfterNavigation,
+      unlockHoverPeek,
+      clearHoverPeek,
       closeMobileSidebar,
     ]
   );

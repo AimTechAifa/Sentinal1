@@ -88,9 +88,14 @@ export const REFERENCE_DATA_COLUMNS: ColumnDef[] = [
 
 export const RISK_COLUMNS: ColumnDef[] = [
   { key: "riskCode", label: "Risk ID" },
-  { key: "release", label: "Release" },
-  { key: "category", label: "Category" },
-  { key: "description", label: "Description" },
+  { key: "releaseCode", label: "Release ID" },
+  { key: "releaseName", label: "Release Name" },
+  { key: "application", label: "Application" },
+  { key: "department", label: "Department" },
+  { key: "prodDate", label: "Prod Date" },
+  { key: "daysOut", label: "Days Out" },
+  { key: "category", label: "Risk Category" },
+  { key: "description", label: "Risk Description" },
   { key: "likelihood", label: "Likelihood" },
   { key: "impact", label: "Impact" },
   { key: "riskScore", label: "Risk Score" },
@@ -99,6 +104,7 @@ export const RISK_COLUMNS: ColumnDef[] = [
   { key: "riskOwner", label: "Risk Owner" },
   { key: "status", label: "Status" },
   { key: "notes", label: "Notes" },
+  { key: "riskOwnerId", label: "Risk Owner ID" },
 ];
 
 export const RISK_FACTOR_COLUMNS: ColumnDef[] = [
@@ -202,6 +208,7 @@ export const CALENDAR_TABLE_COLUMNS: ColumnDef[] = [
   { key: "eventType", label: "Event Type" },
   { key: "releaseCode", label: "Release ID" },
   { key: "releaseName", label: "Release Name" },
+  { key: "application", label: "Application" },
   { key: "department", label: "Department" },
   { key: "sizeImpact", label: "Size/Impact" },
   { key: "notes", label: "Notes" },
@@ -473,15 +480,36 @@ export const RELEASE_DEFAULT_HIDDEN_FILTER_KEYS: string[] = RELEASE_FILTER_FIELD
 /**
  * Calendar shares ReleaseFiltersBar + ReleaseFiltersContext, but must NOT inherit
  * Releases-only columns (Rollback Plan, Go-Live %, Owner text search, etc.).
- * Only release-family scope filters that apply to calendar events / timeline.
+ * Scoped to Calendar table columns + existing release-family scope filters.
+ * Month/Week are intentionally omitted — period navigator is the single time control.
  */
 export const CALENDAR_FILTER_FIELDS: FilterFieldDef[] = [
+  // Existing defaults (keep visible)
   { key: "departmentId", label: "Department" },
   { key: "applicationId", label: "Application" },
   { key: "environmentId", label: "Environment" },
   { key: "status", label: "Status" },
   { key: "priority", label: "Priority" },
   { key: "impact", label: "Impact" },
+  // Calendar column filters (Event Type was already always-on in the bar)
+  { key: "eventType", label: "Event Type" },
+  { key: "releaseCodeQ", label: "Release ID" },
+  { key: "nameQ", label: "Release Name" },
+  { key: "sizeImpact", label: "Size/Impact" },
+  { key: "notesQ", label: "Notes" },
+  { key: "dateRange", label: "Date" },
+  { key: "day", label: "Day" },
+];
+
+/** New Calendar column filters — hidden until enabled in Manage Filters.
+ *  eventType stays default-visible (was always shown before this expansion). */
+export const CALENDAR_DEFAULT_HIDDEN_FILTER_KEYS: string[] = [
+  "releaseCodeQ",
+  "nameQ",
+  "sizeImpact",
+  "notesQ",
+  "dateRange",
+  "day",
 ];
 
 /**

@@ -169,6 +169,11 @@ export function CalendarTableView({
                         {row.releaseName}
                       </td>
                     )}
+                    {isColumnVisible("application") && (
+                      <td className={cn(tableCell, "max-w-[220px] truncate whitespace-nowrap")} title={row.application}>
+                        {row.application}
+                      </td>
+                    )}
                     {isColumnVisible("department") && (
                       <td className={`${tableCell} whitespace-nowrap`}>{row.department}</td>
                     )}

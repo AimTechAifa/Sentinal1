@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { useSidebar } from "@/context/SidebarContext";
+import {
+  SIDEBAR_HOVER_LEAVE_DELAY_MS,
+  useSidebar,
+} from "@/context/SidebarContext";
 import { ChevronsLeft, ChevronsRight, Shield, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRODUCT_TAGLINE } from "@/lib/brand";
@@ -14,18 +18,42 @@ export function Sidebar() {
   const {
     isExpanded,
     isMobileOpen,
+    isHovered,
+    hoverPeekLocked,
     isWide,
     toggleSidebar,
     toggleMobileSidebar,
     setIsHovered,
-    closeMobileSidebar,
+    collapsePeekAfterNavigation,
+    unlockHoverPeek,
   } = useSidebar();
 
+  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearLeaveTimer = () => {
+    if (leaveTimer.current) {
+      clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+  };
+
+  useEffect(() => () => clearLeaveTimer(), []);
+
+  // Auto-collapse peek on every navigation (pinned-open is left alone).
+  // Locks hover until mouseleave so a stationary cursor can't keep peek open.
+  useEffect(() => {
+    clearLeaveTimer();
+    collapsePeekAfterNavigation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to route changes
+  }, [pathname]);
+
   const handleNavClick = () => {
-    if (isMobileOpen) closeMobileSidebar();
+    clearLeaveTimer();
+    collapsePeekAfterNavigation();
   };
 
   const handleToggle = () => {
+    clearLeaveTimer();
     if (typeof window !== "undefined" && window.innerWidth >= 1024) {
       toggleSidebar();
     } else {
@@ -33,13 +61,39 @@ export function Sidebar() {
     }
   };
 
+  /** Hover-to-peek only when docked (not pinned) on desktop, and not locked after nav. */
+  const canHoverPeek = !isExpanded && !isMobileOpen && !hoverPeekLocked;
+
+  const onMouseEnter = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+    if (!canHoverPeek) return;
+    clearLeaveTimer();
+    setIsHovered(true);
+  };
+
+  const onMouseLeave = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+    clearLeaveTimer();
+    // Unlock so the next enter can peek again (required after nav lock).
+    unlockHoverPeek();
+    if (isExpanded) return;
+    leaveTimer.current = setTimeout(() => {
+      setIsHovered(false);
+      leaveTimer.current = null;
+    }, SIDEBAR_HOVER_LEAVE_DELAY_MS);
+  };
+
   return (
     <aside
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={cn(
-        "materio-sidebar fixed top-0 left-0 z-50 flex h-screen flex-col border-r border-[var(--border)] shadow-sm transition-all duration-300 ease-in-out lg:top-0 lg:left-0 lg:h-screen lg:rounded-none",
+        "materio-sidebar fixed top-0 left-0 z-[100] flex h-screen flex-col border-r border-[var(--border)] bg-white shadow-sm transition-[width,transform] duration-300 ease-in-out lg:top-0 lg:left-0 lg:h-screen lg:rounded-none dark:bg-[#212738]",
         isWide ? "w-[var(--sidebar-width-expanded)]" : "w-[var(--sidebar-width-collapsed)]",
         isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
+      data-sidebar-peek={isHovered && !hoverPeekLocked && !isExpanded ? "true" : "false"}
+      data-sidebar-wide={isWide ? "true" : "false"}
     >
       <div
         className={cn(
@@ -57,8 +111,12 @@ export function Sidebar() {
           </div>
           {isWide && (
             <div className="min-w-0">
-              <span className="block truncate text-lg font-bold tracking-tight text-gray-900 dark:text-white">Sentinel</span>
-              <p className="mt-0.5 truncate text-[11px] leading-snug text-gray-500 dark:text-gray-400">{PRODUCT_TAGLINE}</p>
+              <span className="block truncate text-lg font-bold tracking-tight text-gray-900 dark:text-white">
+                Sentinel
+              </span>
+              <p className="mt-0.5 truncate text-[11px] leading-snug text-gray-500 dark:text-gray-400">
+                {PRODUCT_TAGLINE}
+              </p>
             </div>
           )}
         </ProgressLink>
@@ -68,9 +126,10 @@ export function Sidebar() {
           onClick={handleToggle}
           className={cn(
             "materio-sidebar-toggle flex shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card)] text-gray-500 dark:text-white/70 transition-all hover:bg-brand-50 dark:hover:bg-white/10 hover:text-brand-600 shadow-sm",
-            isWide ? "h-8 w-8" : "h-8 w-8"
+            "h-8 w-8"
           )}
-          aria-label={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+          aria-label={isExpanded ? "Unpin sidebar (auto-collapse on)" : "Pin sidebar open"}
+          title={isExpanded ? "Unpin — sidebar will auto-collapse" : "Pin sidebar open"}
         >
           {isExpanded ? <ChevronsLeft className="h-4 w-4" /> : <ChevronsRight className="h-4 w-4" />}
         </button>

@@ -5,6 +5,8 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/auth/login(.*)",
+  // Dev-only overlay diagnostic (no auth). Safe: no secrets, local verification only.
+  ...(process.env.NODE_ENV === "development" ? ["/dev/sidebar-peek-test(.*)"] : []),
 ]);
 
 const authorizedParties = [

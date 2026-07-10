@@ -170,7 +170,7 @@ async function main() {
         conflictingRelease: r["Conflicting Release"] || null,
         conflictType: r["Conflict Type"] || null,
         conflictNotes: r["Conflict Notes"] || null,
-        dependencies: r["Dependencies"] ? String(r["Dependencies"]) : "NA",
+        dependencies: r["Dependencies"] ? String(r["Dependencies"]) : null,
         externalDependencies: r["External Dependencies"] || null,
         readinessPercent: r["Readiness %"],
         blockers: r["Blockers"],
@@ -266,7 +266,8 @@ async function main() {
       fromDate,
       toDate: toDt,
       releaseId,
-      dependencies: b["Dependencies"] ? String(b["Dependencies"]) : "NA",
+      // Keep blank Dependencies blank (source sheet uses empty, not "NA", on some rows)
+      dependencies: b["Dependencies"] ? String(b["Dependencies"]) : null,
       purpose: b["Notes"] ? String(b["Notes"]) : null,
       releaseSize: b["Release Size"] ? String(b["Release Size"]) : null,
       prodReleaseDate: toDate(b["Prod Release Date"]),
@@ -306,6 +307,8 @@ async function main() {
       data: {
         riskCode: r["Risk ID"],
         releaseId,
+        applicationName: r["Application"] || null,
+        departmentName: r["Department"] || null,
         category: r["Risk Category"],
         description: r["Risk Description"],
         likelihood: r["Likelihood"],

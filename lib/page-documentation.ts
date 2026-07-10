@@ -147,7 +147,7 @@ export const PAGE_DOCUMENTATION: Record<PageDocKey, PageDocumentationEntry> = {
   },
   risks: {
     pageKey: "risks",
-    title: "Risk Register",
+    title: "Risk",
     quickReference: [
       "Qualitative risks per release: likelihood × impact = risk score (1–25).",
       "Bands: Low ≤5, Medium ≤11, High ≤19, Critical ≥20.",

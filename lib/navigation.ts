@@ -65,7 +65,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: "Governance",
     items: [
-      { href: "/risks", label: "Risk Register", icon: AlertTriangle },
+      { href: "/risks", label: "Risk", icon: AlertTriangle },
       { href: "/drifts", label: "Drift Dashboard", icon: GitCompareArrows },
       { href: "/approvals", label: "Approval Queue", icon: ClipboardCheck },
       { href: "/leaves", label: "Leave Calendar", icon: CalendarOff },

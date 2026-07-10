@@ -16,7 +16,7 @@ import { RISK_SORT_PRESETS } from "@/lib/table-sort-presets";
 import { DataTable, DataTableHeadRow, tableCell, tableRow } from "@/components/ui/data-table";
 import { StatusBadge } from "@/components/badges/StatusBadge";
 import { ProgressLink } from "@/components/layout/NavigationProgress";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { getRiskLevel, RISK_LEVEL_COLOR, type RiskLevel } from "@/lib/risk-level";
 import { FilterPills, FilterRangeInputs, FilterSelect, FilterTextInput, TableFilterBar } from "@/components/filters/TableFilterBar";
 import {
@@ -32,11 +32,31 @@ import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { RISKS_FILTER_SCHEMA } from "@/lib/table-filters";
 
+/** Calendar days from today to prod/start date (can be negative if past). */
+function daysOutFrom(iso: string | null | undefined): number {
+  if (!iso) return 0;
+  const target = new Date(iso);
+  if (Number.isNaN(target.getTime())) return 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  target.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - today.getTime()) / 86_400_000);
+}
+
 type RiskRow = {
   id: string;
   riskCode: string;
   releaseId: string;
-  release: { id: string; releaseCode: string; name: string; status: string };
+  release: {
+    id: string;
+    releaseCode: string;
+    name: string;
+    status: string;
+    startDate: string | null;
+    releaseDate: string;
+  };
+  applicationName: string | null;
+  departmentName: string | null;
   category: string;
   description: string;
   likelihood: number;
@@ -789,7 +809,12 @@ export default function RiskRegisterContent() {
     defaultSortDir: "desc",
     sortAccessors: {
       riskCode: (r) => r.riskCode,
-      release: (r) => r.release.releaseCode,
+      releaseCode: (r) => r.release.releaseCode,
+      releaseName: (r) => r.release.name,
+      application: (r) => r.applicationName ?? "",
+      department: (r) => r.departmentName ?? "",
+      prodDate: (r) => r.release.startDate ?? r.release.releaseDate ?? "",
+      daysOut: (r) => daysOutFrom(r.release.startDate ?? r.release.releaseDate),
       category: (r) => r.category,
       description: (r) => r.description,
       likelihood: (r) => r.likelihood,
@@ -800,6 +825,7 @@ export default function RiskRegisterContent() {
       riskOwner: (r) => r.riskOwner?.name ?? r.riskOwner?.userId ?? "",
       status: (r) => r.status,
       notes: (r) => r.notes ?? "",
+      riskOwnerId: (r) => r.riskOwner?.userId ?? "",
     },
   });
   const [allRisks, setAllRisks] = useState<RiskRow[]>([]);
@@ -838,7 +864,7 @@ export default function RiskRegisterContent() {
     <div>
       <TopBar
         trailing={<PageDocumentation pageKey="risks" />}
-        title="Risk Register"
+        title="Risk"
         subtitle={`${risks.length} risk${risks.length === 1 ? "" : "s"} across all releases`}
       />
       {!tablePending && (
@@ -988,22 +1014,41 @@ export default function RiskRegisterContent() {
                     </td>
                   </tr>
                 ) : (
-                  risks.map((r) => (
+                  risks.map((r) => {
+                    const prodIso = r.release.startDate ?? r.release.releaseDate;
+                    return (
                     <tr key={r.id} className={tableRow}>
                       {isColumnVisible("riskCode") && (
                         <td className={`${tableCell} whitespace-nowrap`}>
                           <span className="font-mono text-xs text-brand-600 dark:text-brand-400">{r.riskCode}</span>
                         </td>
                       )}
-                      {isColumnVisible("release") && (
+                      {isColumnVisible("releaseCode") && (
                         <td className={`${tableCell} whitespace-nowrap`}>
                           <ProgressLink
                             href={`/releases/${r.release.id}`}
-                            className="text-brand-600 dark:text-brand-400 hover:underline text-xs"
+                            className="text-brand-600 dark:text-brand-400 hover:underline font-mono text-xs"
                           >
                             {r.release.releaseCode}
                           </ProgressLink>
                         </td>
+                      )}
+                      {isColumnVisible("releaseName") && (
+                        <td className={`${tableCell} max-w-[220px] truncate`} title={r.release.name}>
+                          {r.release.name}
+                        </td>
+                      )}
+                      {isColumnVisible("application") && (
+                        <td className={`${tableCell} whitespace-nowrap`}>{r.applicationName ?? "—"}</td>
+                      )}
+                      {isColumnVisible("department") && (
+                        <td className={`${tableCell} whitespace-nowrap`}>{r.departmentName ?? "—"}</td>
+                      )}
+                      {isColumnVisible("prodDate") && (
+                        <td className={`${tableCell} whitespace-nowrap`}>{prodIso ? formatDate(prodIso) : "—"}</td>
+                      )}
+                      {isColumnVisible("daysOut") && (
+                        <td className={`${tableCell} text-center whitespace-nowrap`}>{daysOutFrom(prodIso)}</td>
                       )}
                       {isColumnVisible("category") && (
                         <td className={`${tableCell} whitespace-nowrap`}>{r.category}</td>
@@ -1049,7 +1094,7 @@ export default function RiskRegisterContent() {
                       )}
                       {isColumnVisible("riskOwner") && (
                         <td className={`${tableCell} whitespace-nowrap text-gray-600 dark:text-gray-300`}>
-                          {r.riskOwner?.name ?? r.riskOwner?.userId ?? "—"}
+                          {r.riskOwner?.name ?? "—"}
                         </td>
                       )}
                       {isColumnVisible("status") && (
@@ -1065,8 +1110,14 @@ export default function RiskRegisterContent() {
                           {r.notes ?? "—"}
                         </td>
                       )}
+                      {isColumnVisible("riskOwnerId") && (
+                        <td className={`${tableCell} whitespace-nowrap font-mono text-xs text-gray-600 dark:text-gray-300`}>
+                          {r.riskOwner?.userId ?? "—"}
+                        </td>
+                      )}
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

@@ -4,6 +4,7 @@ import {
   startedAtForRollout,
 } from "./deployment-sim";
 import { getAllHistory, releases } from "./dummy-data";
+import { getDefaultOrganizationId } from "./org-compat";
 import { prisma } from "./prisma";
 import type {
   AppNotification,
@@ -64,22 +65,36 @@ function toDecisionRecord(row: {
   };
 }
 
+function newNotificationId(): string {
+  const t = Date.now().toString(36);
+  const r = Math.random().toString(36).slice(2, 10);
+  return `c${t}${r}`.slice(0, 25);
+}
+
 async function ensureDefaultNotifications() {
   try {
     const count = await prisma.appNotificationRow.count();
     if (count > 0) return;
-    await prisma.appNotificationRow.createMany({
-      data: DEFAULT_NOTIFICATIONS.map((n) => ({
-        title: n.title,
-        message: n.message,
-        releaseId: n.releaseId,
-        read: n.read,
-        type: n.type,
-        timestamp: new Date(n.timestamp),
-      })),
-    });
+
+    const organizationId = await getDefaultOrganizationId();
+    if (!organizationId) {
+      // v2 DB requires organizationId; without an org, skip demo seed quietly.
+      console.warn("[live-state] ensureDefaultNotifications skipped: no organizationId");
+      return;
+    }
+
+    for (const n of DEFAULT_NOTIFICATIONS) {
+      const id = newNotificationId();
+      const ts = new Date(n.timestamp);
+      await prisma.$executeRaw`
+        INSERT INTO "AppNotificationRow"
+          (id, timestamp, title, message, "releaseId", read, type, "organizationId")
+        VALUES
+          (${id}, ${ts}, ${n.title}, ${n.message}, ${n.releaseId}, ${n.read}, ${n.type}, ${organizationId})
+      `;
+    }
   } catch (err) {
-    // Neon P1001 / pooler wake — skip seeding; live-state can still serve empty/stale.
+    // Neon P1001 / pooler wake / schema drift — skip seeding; live-state can still serve empty/stale.
     console.warn("[live-state] ensureDefaultNotifications skipped:", err);
   }
 }
@@ -102,7 +117,20 @@ async function appendNotification(data: {
   releaseId?: string;
   type: AppNotification["type"];
 }) {
-  return prisma.appNotificationRow.create({ data });
+  const organizationId = await getDefaultOrganizationId();
+  if (!organizationId) {
+    return prisma.appNotificationRow.create({ data });
+  }
+  const id = newNotificationId();
+  const ts = new Date();
+  const releaseId = data.releaseId ?? null;
+  await prisma.$executeRaw`
+    INSERT INTO "AppNotificationRow"
+      (id, timestamp, title, message, "releaseId", read, type, "organizationId")
+    VALUES
+      (${id}, ${ts}, ${data.title}, ${data.message}, ${releaseId}, false, ${data.type}, ${organizationId})
+  `;
+  return prisma.appNotificationRow.findUniqueOrThrow({ where: { id } });
 }
 
 export async function getDecision(releaseId: string): Promise<ReleaseDecisionRecord | null> {
