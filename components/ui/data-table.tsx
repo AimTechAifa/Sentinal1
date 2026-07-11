@@ -82,19 +82,24 @@ export function DataTable({ title, subtitle, icon: Icon, action, toolbar, childr
   return (
     <MagicCard
       gradient="from-gray-200/70 via-white to-gray-200/70"
-      className={cn("w-full max-w-full", className)}
+      // min-w-0: grid/flex items default to min-width:auto and grow with wide tables,
+      // which expands the page and pushes toolbar (Manage Columns / Sort) off-screen.
+      className={cn("w-full min-w-0 max-w-full", className)}
+      innerClassName="min-w-0"
     >
       {hasToolbarSection && (
         <div className="flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-6 py-5 dark:border-[var(--border)] dark:bg-[var(--card)]">
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden">
             {Icon && (
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-brand-100 bg-brand-50 shadow-sm dark:border-brand-500/20 dark:bg-brand-500/10">
                 <Icon className="h-5 w-5 text-brand-600 dark:text-brand-400" />
               </div>
             )}
             <div className="min-w-0">
-              {title && <h3 className="text-headline-sm font-bold text-gray-900 dark:text-white">{title}</h3>}
-              {subtitle && <p className="mt-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">{subtitle}</p>}
+              {title && <h3 className="truncate text-headline-sm font-bold text-gray-900 dark:text-white">{title}</h3>}
+              {subtitle && (
+                <p className="mt-0.5 truncate text-xs font-medium text-gray-500 dark:text-gray-400">{subtitle}</p>
+              )}
             </div>
           </div>
           {(toolbar || action) && (

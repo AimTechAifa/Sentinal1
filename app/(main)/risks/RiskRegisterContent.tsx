@@ -7,7 +7,7 @@ import {
   Circle,
   Flame,
   Grid3x3,
-  Info,
+  HelpCircle,
   User,
 } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
@@ -75,21 +75,31 @@ type HeatMapView = "matrix" | "bubble" | "density";
 /** Ownership is "concentrated" when one person owns more than half of owned risks. */
 const OWNERSHIP_CONCENTRATION_THRESHOLD = 0.5;
 
-const BAND_SOLID: Record<RiskLevel, string> = {
-  LOW: "#10b981",
-  MEDIUM: "#f59e0b",
-  HIGH: "#f97316",
-  CRITICAL: "#ef4444",
-};
-
-const HEATMAP_CELL_COLOR: Record<RiskLevel, string> = {
-  LOW: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/25 dark:text-emerald-300",
-  MEDIUM: "bg-amber-100 text-amber-800 dark:bg-amber-500/25 dark:text-amber-300",
-  HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-500/25 dark:text-orange-300",
-  CRITICAL: "bg-red-100 text-red-800 dark:bg-red-500/30 dark:text-red-300",
+/** Heat-map band palette (v3) — MEDIUM gold vs HIGH tangerine kept clearly distinct. */
+const BAND_COLOR: Record<
+  RiskLevel,
+  { bg: string; text: string; solid: string; darkBg: string; darkText: string }
+> = {
+  LOW: { bg: "#d1fae5", text: "#065f46", solid: "#059669", darkBg: "rgba(5,150,105,0.28)", darkText: "#6ee7b7" },
+  MEDIUM: { bg: "#fef9c3", text: "#854d0e", solid: "#eab308", darkBg: "rgba(234,179,8,0.28)", darkText: "#fde047" },
+  HIGH: { bg: "#fed7aa", text: "#9a3412", solid: "#ea580c", darkBg: "rgba(234,88,12,0.32)", darkText: "#fdba74" },
+  CRITICAL: { bg: "#fecaca", text: "#7f1d1d", solid: "#dc2626", darkBg: "rgba(220,38,38,0.32)", darkText: "#fca5a5" },
 };
 
 const BAND_ORDER: RiskLevel[] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+
+function useIsDarkMode() {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () => setDark(root.classList.contains("dark") || root.classList.contains("theme-dark"));
+    sync();
+    const mo = new MutationObserver(sync);
+    mo.observe(root, { attributes: true, attributeFilter: ["class"] });
+    return () => mo.disconnect();
+  }, []);
+  return dark;
+}
 
 function clampScore(n: number) {
   return Math.min(5, Math.max(1, n));
@@ -219,17 +229,20 @@ function HeatMapCell({
   count,
   active,
   onSelect,
+  dark,
 }: {
   likelihood: number;
   impact: number;
   count: number;
   active: boolean;
   onSelect: (likelihood: number, impact: number) => void;
+  dark: boolean;
 }) {
   const [hover, setHover] = useState(false);
   const score = likelihood * impact;
   const band = getRiskLevel(score);
   const empty = count === 0;
+  const c = BAND_COLOR[band];
 
   return (
     <button
@@ -246,11 +259,13 @@ function HeatMapCell({
       className={cn(
         "group relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-xl text-[15px] font-bold transition-all duration-150",
         "hover:z-10 hover:scale-110 hover:shadow-lg disabled:cursor-default disabled:hover:scale-100 disabled:hover:shadow-none",
-        empty
-          ? "bg-slate-100 text-slate-300 dark:bg-gray-800 dark:text-gray-600"
-          : HEATMAP_CELL_COLOR[band],
         active && !empty && "ring-2 ring-brand-500 dark:ring-brand-400 scale-105"
       )}
+      style={
+        empty
+          ? { background: dark ? "#1f2937" : "#eef2f7", color: dark ? "#4b5563" : "#c3cad6" }
+          : { background: dark ? c.darkBg : c.bg, color: dark ? c.darkText : c.text }
+      }
     >
       {count > 0 ? count : ""}
       {hover && !empty && (
@@ -258,7 +273,7 @@ function HeatMapCell({
           <div className="font-bold">
             {count} risk{count !== 1 ? "s" : ""} · Score {score}
           </div>
-          <div className="mt-0.5" style={{ color: BAND_SOLID[band] }}>
+          <div className="mt-0.5" style={{ color: c.solid }}>
             {band}
           </div>
           <div className="mt-1 text-white/60">
@@ -275,11 +290,13 @@ function MatrixView({
   selLi,
   selIm,
   onSelect,
+  dark,
 }: {
   grid: number[][];
   selLi: number;
   selIm: number;
   onSelect: (likelihood: number, impact: number) => void;
+  dark: boolean;
 }) {
   return (
     <div className="flex gap-3">
@@ -310,6 +327,7 @@ function MatrixView({
                       count={count}
                       active={selLi === likelihood && selIm === impact}
                       onSelect={onSelect}
+                      dark={dark}
                     />
                   );
                 })}
@@ -344,8 +362,8 @@ function BubbleView({
   maxCount: number;
   onSelect: (likelihood: number, impact: number) => void;
 }) {
-  const size = 480;
-  const pad = 50;
+  const size = 420;
+  const pad = 48;
   const step = (size - pad * 1.5) / 5;
   const pos = (likelihood: number, impact: number) => ({
     x: pad + (impact - 0.5) * step,
@@ -363,8 +381,8 @@ function BubbleView({
   } | null>(null);
 
   return (
-    <div className="relative mx-auto w-full max-w-[560px]">
-      <svg viewBox={`0 0 ${size + 20} ${size}`} width="100%" className="overflow-visible">
+    <div className="relative mx-auto w-full max-w-[480px]">
+      <svg viewBox={`0 0 ${size + 16} ${size}`} width="100%" className="overflow-visible">
         {[1, 2, 3, 4, 5].map((n) => (
           <g key={n}>
             <line
@@ -411,29 +429,6 @@ function BubbleView({
             {n}
           </text>
         ))}
-        <text
-          x={(size + pad) / 2}
-          y={size}
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="700"
-          letterSpacing="1"
-          className="fill-slate-400 dark:fill-slate-500"
-        >
-          IMPACT →
-        </text>
-        <text
-          x={12}
-          y={(size - pad) / 2}
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="700"
-          letterSpacing="1"
-          transform={`rotate(-90 12 ${(size - pad) / 2})`}
-          className="fill-slate-400 dark:fill-slate-500"
-        >
-          ↑ LIKELIHOOD
-        </text>
 
         {grid.flatMap((row, rowIdx) =>
           row.map((count, colIdx) => {
@@ -443,7 +438,8 @@ function BubbleView({
             const p = pos(likelihood, impact);
             const score = likelihood * impact;
             const band = getRiskLevel(score);
-            const r = 10 + (count / scale) * 28;
+            const solid = BAND_COLOR[band].solid;
+            const r = 9 + (count / scale) * 26;
             return (
               <g
                 key={`${likelihood}-${impact}`}
@@ -454,16 +450,8 @@ function BubbleView({
                 }
                 onMouseLeave={() => setTip(null)}
               >
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={r}
-                  fill={BAND_SOLID[band]}
-                  fillOpacity={0.75}
-                  stroke={BAND_SOLID[band]}
-                  strokeWidth={2}
-                />
-                <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize="13" fontWeight="800" fill="#fff">
+                <circle cx={p.x} cy={p.y} r={r} fill={solid} fillOpacity={0.82} stroke={solid} strokeWidth={2} />
+                <text x={p.x} y={p.y + 4} textAnchor="middle" fontSize="12" fontWeight="800" fill="#fff">
                   {count}
                 </text>
               </g>
@@ -475,14 +463,14 @@ function BubbleView({
         <div
           className="pointer-events-none absolute z-20 w-44 -translate-x-1/2 -translate-y-full rounded-xl bg-slate-900 p-2.5 text-left text-[11px] leading-snug text-white shadow-xl dark:bg-slate-950"
           style={{
-            left: `${(tip.x / (size + 20)) * 100}%`,
+            left: `${(tip.x / (size + 16)) * 100}%`,
             top: `${(tip.y / size) * 100}%`,
           }}
         >
           <div className="font-bold">
             {tip.count} risk{tip.count !== 1 ? "s" : ""} · Score {tip.score}
           </div>
-          <div className="mt-0.5" style={{ color: BAND_SOLID[tip.band] }}>
+          <div className="mt-0.5" style={{ color: BAND_COLOR[tip.band].solid }}>
             {tip.band}
           </div>
           <div className="mt-1 text-white/60">
@@ -498,13 +486,15 @@ function DensityView({
   grid,
   maxCount,
   onSelect,
+  dark,
 }: {
   grid: number[][];
   maxCount: number;
   onSelect: (likelihood: number, impact: number) => void;
+  dark: boolean;
 }) {
-  const size = 480;
-  const pad = 50;
+  const size = 420;
+  const pad = 48;
   const step = (size - pad * 1.5) / 5;
   const pos = (likelihood: number, impact: number) => ({
     x: pad + (impact - 0.5) * step,
@@ -532,7 +522,7 @@ function DensityView({
           count,
           band: getRiskLevel(likelihood * impact),
           p: pos(likelihood, impact),
-          r: 28 + (count / scale) * 55,
+          r: 26 + (count / scale) * 50,
         });
       });
     });
@@ -541,17 +531,23 @@ function DensityView({
 
   return (
     <div className="flex justify-center">
-      <svg viewBox={`0 0 ${size + 20} ${size}`} width="100%" style={{ maxWidth: 560 }}>
+      <svg viewBox={`0 0 ${size + 16} ${size}`} width="100%" style={{ maxWidth: 480 }}>
         <defs>
           {cells.map((c) => (
             <radialGradient key={`g-${c.likelihood}-${c.impact}`} id={`risk-density-${c.likelihood}-${c.impact}`}>
-              <stop offset="0%" stopColor={BAND_SOLID[c.band]} stopOpacity={0.85} />
-              <stop offset="100%" stopColor={BAND_SOLID[c.band]} stopOpacity={0} />
+              <stop offset="0%" stopColor={BAND_COLOR[c.band].solid} stopOpacity={0.85} />
+              <stop offset="100%" stopColor={BAND_COLOR[c.band].solid} stopOpacity={0} />
             </radialGradient>
           ))}
         </defs>
-        <rect x={pad} y={0} width={size - pad} height={size - pad} className="fill-slate-50 dark:fill-slate-900/40" />
-        <g style={{ mixBlendMode: "multiply" }}>
+        <rect
+          x={pad}
+          y={0}
+          width={size - pad}
+          height={size - pad}
+          fill={dark ? "rgba(15,23,42,0.45)" : "#fafbfd"}
+        />
+        <g style={{ mixBlendMode: dark ? "screen" : "multiply" }}>
           {cells.map((c) => (
             <circle
               key={`glow-${c.likelihood}-${c.impact}`}
@@ -562,20 +558,29 @@ function DensityView({
             />
           ))}
         </g>
+        {/* 5×5 cell separators — after glow, before count labels */}
+        <g stroke={dark ? "rgba(255,255,255,0.35)" : "#ffffff"} strokeWidth={2} opacity={0.9}>
+          {[0, 1, 2, 3, 4, 5].map((n) => (
+            <line key={`gx${n}`} x1={pad + n * step} y1={0} x2={pad + n * step} y2={size - pad} />
+          ))}
+          {[0, 1, 2, 3, 4, 5].map((n) => (
+            <line key={`gy${n}`} x1={pad} y1={n * step} x2={size} y2={n * step} />
+          ))}
+        </g>
         {cells.map((c) => (
           <g
             key={`pt-${c.likelihood}-${c.impact}`}
             className="cursor-pointer"
             onClick={() => onSelect(c.likelihood, c.impact)}
           >
-            <circle cx={c.p.x} cy={c.p.y} r={3} className="fill-slate-800 dark:fill-slate-200" />
+            <circle cx={c.p.x} cy={c.p.y} r={3} fill={dark ? "#e2e8f0" : "#1e293b"} />
             <text
               x={c.p.x}
               y={c.p.y - 10}
               textAnchor="middle"
               fontSize="12"
               fontWeight="800"
-              className="fill-slate-800 dark:fill-slate-100"
+              fill={dark ? "#f1f5f9" : "#1e293b"}
             >
               {c.count}
             </text>
@@ -609,48 +614,30 @@ function DensityView({
             {n}
           </text>
         ))}
-        <text
-          x={(size + pad) / 2}
-          y={size}
-          textAnchor="middle"
-          fontSize="11"
-          fontWeight="700"
-          letterSpacing="1"
-          className="fill-slate-400 dark:fill-slate-500"
-        >
-          IMPACT →
-        </text>
       </svg>
     </div>
   );
 }
 
-function IntegratedLegend({ counts }: { counts: Record<RiskLevel, number> }) {
+function LegendRow({
+  band,
+  count,
+  total,
+}: {
+  band: RiskLevel;
+  count: number;
+  total: number;
+}) {
+  const c = BAND_COLOR[band];
+  const pct = total > 0 ? Math.round((count / total) * 100) : 0;
   return (
-    <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl bg-slate-50 px-5 py-4 dark:bg-slate-800/50">
-      <div className="flex items-center gap-2 text-[12px] font-bold text-slate-600 dark:text-slate-300">
-        <span className="rounded-lg bg-brand-100 px-2.5 py-1 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
-          Score = Likelihood × Impact
-        </span>
+    <div className="flex items-center gap-3">
+      <span className="h-3.5 w-3.5 shrink-0 rounded-md" style={{ background: c.solid }} />
+      <span className="w-20 text-[12.5px] font-semibold text-slate-700 dark:text-slate-200">{band}</span>
+      <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: c.solid }} />
       </div>
-      <div className="hidden h-6 w-px bg-slate-200 dark:bg-slate-600 sm:block" />
-      {BAND_ORDER.map((band) => (
-        <div key={band} className="flex items-center gap-1.5">
-          <span className="h-3 w-3 rounded-md" style={{ background: BAND_SOLID[band] }} />
-          <span className="text-[12px] font-semibold text-slate-600 dark:text-slate-300">{band}</span>
-          <span className="text-[12px] font-bold text-slate-800 dark:text-slate-100">{counts[band]}</span>
-        </div>
-      ))}
-      <div className="hidden h-6 w-px bg-slate-200 dark:bg-slate-600 sm:block" />
-      <span className="text-[11px] text-slate-400 dark:text-slate-500">
-        1-5 Low · 6-11 Medium · 12-19 High · 20-25 Critical
-      </span>
-      <span className="group/tip relative ml-auto">
-        <Info size={14} className="cursor-help text-slate-300 hover:text-brand-500 dark:text-slate-500 dark:hover:text-brand-400" />
-        <span className="pointer-events-none absolute right-0 top-6 z-30 w-60 rounded-xl bg-slate-900 p-3 text-[11px] leading-relaxed text-white opacity-0 shadow-xl transition-opacity group-hover/tip:opacity-100 dark:bg-slate-950">
-          Top-right (high likelihood, high impact) is the most dangerous combination — those risks need attention first. Click any point to filter the risk list.
-        </span>
-      </span>
+      <span className="w-8 text-right text-[12.5px] font-bold text-slate-800 dark:text-slate-100">{count}</span>
     </div>
   );
 }
@@ -669,8 +656,10 @@ function RiskHeatMapSection({
   onOwnerSelect: (ownerId: string) => void;
 }) {
   const [view, setView] = useState<HeatMapView>("matrix");
+  const dark = useIsDarkMode();
   const grid = useMemo(() => buildGrid(risks), [risks]);
   const counts = useMemo(() => bandCounts(risks), [risks]);
+  const total = useMemo(() => BAND_ORDER.reduce((sum, b) => sum + counts[b], 0), [counts]);
   const maxCount = useMemo(() => maxCellCount(grid), [grid]);
   const cluster = useMemo(() => findBiggestCluster(grid), [grid]);
   const ownership = useMemo(() => ownershipInsight(risks), [risks]);
@@ -685,8 +674,110 @@ function RiskHeatMapSection({
   ];
 
   return (
-    <div className="mb-6 space-y-5">
-      <div className="rounded-[24px] border border-gray-200 dark:border-[var(--border)] bg-white dark:bg-[var(--card)] p-6 sm:p-7 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.18)] dark:shadow-none">
+    <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-[340px_1fr]">
+      {/* LEFT — explanatory info panel */}
+      <div className="flex flex-col gap-4">
+        <div className="rounded-[22px] border border-gray-200 bg-white p-5 shadow-[0_16px_36px_-24px_rgba(112,144,176,0.25)] dark:border-[var(--border)] dark:bg-[var(--card)] dark:shadow-none">
+          <div className="mb-3 flex items-center gap-2">
+            <HelpCircle size={16} className="text-brand-500 dark:text-brand-400" />
+            <h3 className="text-[13.5px] font-bold text-slate-800 dark:text-white">Understanding This Matrix</h3>
+          </div>
+          <div className="space-y-3 text-[12.5px] leading-relaxed text-slate-600 dark:text-slate-300">
+            <p>
+              Each risk gets two scores from 1 (lowest) to 5 (highest):
+              <br />
+              <b className="text-slate-800 dark:text-white">Likelihood</b> — how probable it is
+              <br />
+              <b className="text-slate-800 dark:text-white">Impact</b> — how bad it would be
+            </p>
+            <div className="rounded-xl bg-brand-50 px-3 py-2.5 text-center text-[13px] font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
+              Risk Score = Likelihood × Impact
+            </div>
+            <p>
+              A cell in the top-right (high likelihood, high impact) is the most dangerous combination — those risks
+              need attention first.
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-[22px] border border-gray-200 bg-white p-5 shadow-[0_16px_36px_-24px_rgba(112,144,176,0.25)] dark:border-[var(--border)] dark:bg-[var(--card)] dark:shadow-none">
+          <h3 className="mb-3 text-[13.5px] font-bold text-slate-800 dark:text-white">Risk Level Breakdown</h3>
+          <div className="space-y-2.5">
+            {BAND_ORDER.map((band) => (
+              <LegendRow key={band} band={band} count={counts[band]} total={total} />
+            ))}
+          </div>
+          <div className="mt-3 border-t border-slate-100 pt-3 text-[11px] text-slate-400 dark:border-slate-700 dark:text-slate-500">
+            Score 1-5 Low · 6-11 Medium · 12-19 High · 20-25 Critical
+          </div>
+        </div>
+
+        {cluster && cluster.count >= 2 && (
+          <div className="rounded-[22px] bg-gradient-to-br from-amber-50 to-orange-50 p-5 ring-1 ring-amber-100 dark:from-amber-500/10 dark:to-orange-500/10 dark:ring-amber-500/20">
+            <div className="mb-2 flex items-center gap-2">
+              <Flame size={15} className="text-amber-500" />
+              <h3 className="text-[13px] font-bold text-amber-800 dark:text-amber-300">Biggest Cluster</h3>
+            </div>
+            <p className="text-[12.5px] leading-relaxed text-amber-900 dark:text-amber-100/90">
+              <b>
+                {cluster.count} risk{cluster.count !== 1 ? "s" : ""}
+              </b>{" "}
+              sit at Likelihood {cluster.likelihood} / Impact {cluster.impact} ({cluster.band}) — your largest
+              concentration.
+              {cluster.band === "MEDIUM" || cluster.band === "LOW"
+                ? " Most of your real risk exposure in this view is moderate, not extreme."
+                : " This cell is where attention should go first."}
+            </p>
+            <button
+              type="button"
+              onClick={() => onCellSelect(cluster.likelihood, cluster.impact)}
+              className="mt-3 flex items-center gap-1 text-[12px] font-bold text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-200"
+            >
+              View these risks <ChevronRight size={13} />
+            </button>
+          </div>
+        )}
+
+        {ownership.kind === "concentrated" && (
+          <div className="rounded-[22px] bg-gradient-to-br from-rose-50 to-red-50 p-5 ring-1 ring-rose-100 dark:from-rose-500/10 dark:to-red-500/10 dark:ring-rose-500/20">
+            <div className="mb-2 flex items-center gap-2">
+              <User size={15} className="text-rose-500" />
+              <h3 className="text-[13px] font-bold text-rose-800 dark:text-rose-300">Ownership Concentration</h3>
+            </div>
+            <p className="text-[12.5px] leading-relaxed text-rose-900 dark:text-rose-100/90">
+              <b>
+                {ownership.ownerName} owns {ownership.pct}%
+              </b>{" "}
+              of assigned risks ({ownership.ownedCount} of {ownership.totalOwned}). Only {ownership.distinctOwners}{" "}
+              {ownership.distinctOwners === 1 ? "person holds" : "people hold"} any risk ownership in this view.
+            </p>
+            <button
+              type="button"
+              onClick={() => onOwnerSelect(ownership.ownerId)}
+              className="mt-3 flex items-center gap-1 text-[12px] font-bold text-rose-700 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-200"
+            >
+              View this owner&apos;s risks <ChevronRight size={13} />
+            </button>
+          </div>
+        )}
+
+        {ownership.kind === "even" && (
+          <div className="rounded-[22px] bg-gradient-to-br from-slate-50 to-slate-100 p-5 ring-1 ring-slate-200 dark:from-slate-500/10 dark:to-slate-600/10 dark:ring-slate-500/20">
+            <div className="mb-2 flex items-center gap-2">
+              <User size={15} className="text-slate-500 dark:text-slate-400" />
+              <h3 className="text-[13px] font-bold text-slate-700 dark:text-slate-200">Ownership Concentration</h3>
+            </div>
+            <p className="text-[12.5px] leading-relaxed text-slate-600 dark:text-slate-300">
+              Risk ownership is evenly distributed across {ownership.distinctOwners}{" "}
+              {ownership.distinctOwners === 1 ? "person" : "people"} — no single owner holds more than half of assigned
+              risks in this view.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* RIGHT — heat map diagram + view switcher */}
+      <div className="rounded-[24px] border border-gray-200 bg-white p-6 sm:p-7 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.18)] dark:border-[var(--border)] dark:bg-[var(--card)] dark:shadow-none">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-[16px] font-bold text-slate-800 dark:text-white">Risk Heat Map</h2>
           <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
@@ -714,79 +805,14 @@ function RiskHeatMapSection({
           Click any point to filter the risk list to that exact combination
         </p>
 
-        {view === "matrix" && <MatrixView grid={grid} selLi={selLi} selIm={selIm} onSelect={onCellSelect} />}
+        {view === "matrix" && (
+          <MatrixView grid={grid} selLi={selLi} selIm={selIm} onSelect={onCellSelect} dark={dark} />
+        )}
         {view === "bubble" && <BubbleView grid={grid} maxCount={maxCount} onSelect={onCellSelect} />}
-        {view === "density" && <DensityView grid={grid} maxCount={maxCount} onSelect={onCellSelect} />}
-
-        <IntegratedLegend counts={counts} />
+        {view === "density" && (
+          <DensityView grid={grid} maxCount={maxCount} onSelect={onCellSelect} dark={dark} />
+        )}
       </div>
-
-      {(cluster && cluster.count >= 2) || ownership.kind !== "none" ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {cluster && cluster.count >= 2 && (
-            <div className="rounded-[22px] bg-gradient-to-br from-amber-50 to-orange-50 p-5 ring-1 ring-amber-100 dark:from-amber-500/10 dark:to-orange-500/10 dark:ring-amber-500/20">
-              <div className="mb-2 flex items-center gap-2">
-                <Flame size={15} className="text-amber-500" />
-                <h3 className="text-[13px] font-bold text-amber-800 dark:text-amber-300">Biggest Cluster</h3>
-              </div>
-              <p className="text-[12.5px] leading-relaxed text-amber-900 dark:text-amber-100/90">
-                <b>
-                  {cluster.count} risk{cluster.count !== 1 ? "s" : ""}
-                </b>{" "}
-                sit at Likelihood {cluster.likelihood} / Impact {cluster.impact} ({cluster.band}) — your largest
-                concentration.
-                {cluster.band === "MEDIUM" || cluster.band === "LOW"
-                  ? " Most of your real risk exposure in this view is moderate, not extreme."
-                  : " This cell is where attention should go first."}
-              </p>
-              <button
-                type="button"
-                onClick={() => onCellSelect(cluster.likelihood, cluster.impact)}
-                className="mt-3 flex items-center gap-1 text-[12px] font-bold text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-200"
-              >
-                View these risks <ChevronRight size={13} />
-              </button>
-            </div>
-          )}
-
-          {ownership.kind === "concentrated" && (
-            <div className="rounded-[22px] bg-gradient-to-br from-rose-50 to-red-50 p-5 ring-1 ring-rose-100 dark:from-rose-500/10 dark:to-red-500/10 dark:ring-rose-500/20">
-              <div className="mb-2 flex items-center gap-2">
-                <User size={15} className="text-rose-500" />
-                <h3 className="text-[13px] font-bold text-rose-800 dark:text-rose-300">Ownership Concentration</h3>
-              </div>
-              <p className="text-[12.5px] leading-relaxed text-rose-900 dark:text-rose-100/90">
-                <b>
-                  {ownership.ownerName} owns {ownership.pct}%
-                </b>{" "}
-                of assigned risks ({ownership.ownedCount} of {ownership.totalOwned}). Only {ownership.distinctOwners}{" "}
-                {ownership.distinctOwners === 1 ? "person holds" : "people hold"} any risk ownership in this view.
-              </p>
-              <button
-                type="button"
-                onClick={() => onOwnerSelect(ownership.ownerId)}
-                className="mt-3 flex items-center gap-1 text-[12px] font-bold text-rose-700 hover:text-rose-900 dark:text-rose-400 dark:hover:text-rose-200"
-              >
-                View this owner&apos;s risks <ChevronRight size={13} />
-              </button>
-            </div>
-          )}
-
-          {ownership.kind === "even" && (
-            <div className="rounded-[22px] bg-gradient-to-br from-slate-50 to-slate-100 p-5 ring-1 ring-slate-200 dark:from-slate-500/10 dark:to-slate-600/10 dark:ring-slate-500/20">
-              <div className="mb-2 flex items-center gap-2">
-                <User size={15} className="text-slate-500 dark:text-slate-400" />
-                <h3 className="text-[13px] font-bold text-slate-700 dark:text-slate-200">Ownership Concentration</h3>
-              </div>
-              <p className="text-[12.5px] leading-relaxed text-slate-600 dark:text-slate-300">
-                Risk ownership is evenly distributed across {ownership.distinctOwners}{" "}
-                {ownership.distinctOwners === 1 ? "person" : "people"} — no single owner holds more than half of
-                assigned risks in this view.
-              </p>
-            </div>
-          )}
-        </div>
-      ) : null}
     </div>
   );
 }

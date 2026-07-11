@@ -208,7 +208,7 @@ export function EnvironmentsContent() {
         )}
       </TableFilterBar>
 
-      <div className="grid gap-6 min-w-0">
+      <div className="grid min-w-0 gap-6 [&>*]:min-w-0">
         <EnvironmentDetailsTable
           versions={desk.versions}
           isColumnVisible={isColumnVisible}

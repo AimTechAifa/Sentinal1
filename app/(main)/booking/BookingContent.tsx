@@ -1,7 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { CalendarCheck, Plus } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
+  GanttChartSquare,
+  LayoutGrid,
+  Plus,
+  Table2,
+} from "lucide-react";
 import {
   FilterRangeInputs,
   FilterSelect,
@@ -13,6 +21,8 @@ import { ProgressLink } from "@/components/layout/NavigationProgress";
 import { TopBar } from "@/components/layout/TopBar";
 import { PageDocumentation } from "@/components/help/PageDocumentation";
 import { BookingFormModal } from "@/components/booking/BookingFormModal";
+import { BookingMonthGrid } from "@/components/booking/BookingMonthGrid";
+import { BookingTimelineGantt } from "@/components/booking/BookingTimelineGantt";
 import {
   BOOKING_COLUMNS,
   BOOKING_DEFAULT_HIDDEN_FILTER_KEYS,
@@ -25,11 +35,17 @@ import { useFilteredFetch } from "@/hooks/useTableFilters";
 import { useTablePageLoading } from "@/hooks/useTablePageLoading";
 import { useTablePagePreferences } from "@/hooks/useTablePagePreferences";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
-import { BOOKING_FILTER_SCHEMA } from "@/lib/table-filters";
+import { BOOKING_FILTER_SCHEMA, SELECT_CLASS } from "@/lib/table-filters";
+import { periodTitle, shiftPeriodAnchor } from "@/lib/calendar-schedule";
+import { PERIOD_OPTIONS } from "@/lib/period-labels";
+import { timelineRangeLabel } from "@/lib/release-timeline";
+import { periodRange, type Period } from "@/lib/period-range";
 import { loadJsonEffect, safeFetchJson } from "@/lib/safe-fetch";
 import { taBtnPrimary } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import type { SessionUser } from "@/lib/auth/roles";
+
+type BookingDisplay = "calendar" | "timeline" | "table";
 
 type BookingRow = {
   id: string;
@@ -162,6 +178,12 @@ export default function BookingContent() {
   const [releases, setReleases] = useState<{ id: string; releaseCode: string; name: string }[]>([]);
   const [user, setUser] = useState<SessionUser | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [display, setDisplay] = useState<BookingDisplay>("table");
+  const [period, setPeriod] = useState<Period>("month");
+  const [anchor, setAnchor] = useState(() => new Date());
+  const [focusDayIso, setFocusDayIso] = useState<string | null>(null);
+  const [highlightCode, setHighlightCode] = useState<string | null>(null);
+  const highlightRef = useRef<HTMLTableRowElement | null>(null);
 
   const canEdit = user?.role === "editor" || user?.role === "admin";
 
@@ -195,6 +217,14 @@ export default function BookingContent() {
     return () => ac.abort();
   }, []);
 
+  useEffect(() => {
+    if (display !== "table" || !highlightCode) return;
+    const t = window.setTimeout(() => {
+      highlightRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+    return () => window.clearTimeout(t);
+  }, [display, highlightCode, bookings]);
+
   const appOptions = useMemo(
     () => (values.departmentId ? apps.filter((a) => a.departmentId === values.departmentId) : apps),
     [apps, values.departmentId]
@@ -204,6 +234,31 @@ export default function BookingContent() {
     () => [...new Set(bookings.map((b) => (b.releaseSize ?? "").trim()).filter(Boolean))].sort(),
     [bookings]
   );
+
+  const { start: periodStart, end: periodEnd } = useMemo(
+    () => periodRange(period, anchor),
+    [period, anchor]
+  );
+
+  const navLabel = useMemo(
+    () =>
+      display === "timeline"
+        ? timelineRangeLabel(periodStart, periodEnd)
+        : periodTitle(period, anchor),
+    [display, period, anchor, periodStart, periodEnd]
+  );
+
+  const selectBookingInTable = (bookingCode: string) => {
+    setFilter("bookingCodeQ", bookingCode);
+    setHighlightCode(bookingCode);
+    setFocusDayIso(null);
+    setDisplay("table");
+  };
+
+  const showDayOnTimeline = (dayIso: string) => {
+    setFocusDayIso(dayIso);
+    setDisplay("timeline");
+  };
 
   const { visibleColumns, isColumnVisible, columnPicker, filterPicker, isFilterVisible, prefsLoaded } = useTablePagePreferences(
     "env-booking",
@@ -217,6 +272,35 @@ export default function BookingContent() {
 
   const tablePending = useTablePageLoading(loading, prefsLoaded);
 
+  const viewSwitcher = (
+    <div className="flex items-center gap-1.5 rounded-2xl bg-slate-50 p-1.5 dark:bg-slate-900/60 dark:ring-1 dark:ring-slate-700">
+      {(
+        [
+          { id: "calendar" as const, label: "Calendar", Icon: LayoutGrid },
+          { id: "timeline" as const, label: "Timeline", Icon: GanttChartSquare },
+          { id: "table" as const, label: "Table", Icon: Table2 },
+        ] as const
+      ).map(({ id, label, Icon }) => (
+        <button
+          key={id}
+          type="button"
+          onClick={() => {
+            setDisplay(id);
+            if (id !== "timeline") setFocusDayIso(null);
+          }}
+          className={cn(
+            "flex items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold transition-all",
+            display === id
+              ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
+              : "text-slate-500 hover:bg-white dark:text-white/60 dark:hover:bg-white/5"
+          )}
+        >
+          <Icon size={15} /> {label}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="space-y-6 pb-12 font-sans">
       <TopBar
@@ -224,7 +308,7 @@ export default function BookingContent() {
         title="Environment Booking"
         subtitle={`${bookings.length} booking${bookings.length === 1 ? "" : "s"}`}
         trailing={
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
             {canEdit && (
               <button type="button" className={cn(taBtnPrimary, "text-sm")} onClick={() => setModalOpen(true)}>
                 <Plus className="mr-1 inline h-4 w-4" /> New Booking
@@ -317,7 +401,10 @@ export default function BookingContent() {
           {isFilterVisible("bookingCodeQ") && (
             <FilterTextInput
               value={values.bookingCodeQ}
-              onChange={(v) => setFilter("bookingCodeQ", v)}
+              onChange={(v) => {
+                setFilter("bookingCodeQ", v);
+                if (!v) setHighlightCode(null);
+              }}
               placeholder="Booking ID…"
             />
           )}
@@ -451,83 +538,176 @@ export default function BookingContent() {
       {tablePending ? (
         <TableSkeleton showTitle={false} columns={BOOKING_COLUMNS.length} />
       ) : (
-        <DataTable
-          title="All Bookings"
-          icon={CalendarCheck}
-          toolbar={
-            <TablePageToolbar
-              columnPicker={columnPicker}
-              presets={BOOKING_SORT_PRESETS}
-              sortKey={sortKey}
-              sortDir={sortDir}
-              onSelectSort={setSort}
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            {(display === "calendar" || display === "timeline") && (
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  className={cn(SELECT_CLASS, "h-8 min-w-[110px] text-xs font-semibold")}
+                  value={period}
+                  onChange={(e) => {
+                    setPeriod(e.target.value as Period);
+                    setFocusDayIso(null);
+                  }}
+                  aria-label="Period grain"
+                >
+                  {PERIOD_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAnchor(shiftPeriodAnchor(period, anchor, -1));
+                    setFocusDayIso(null);
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 text-slate-500 hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-white/5"
+                  aria-label="Previous period"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <span className="min-w-[100px] text-center text-sm font-semibold text-slate-800 dark:text-white">
+                  {navLabel}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAnchor(shiftPeriodAnchor(period, anchor, 1));
+                    setFocusDayIso(null);
+                  }}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 text-slate-500 hover:bg-slate-50 dark:border-slate-600 dark:hover:bg-white/5"
+                  aria-label="Next period"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
+            {viewSwitcher}
+            {focusDayIso && display === "timeline" && (
+              <button
+                type="button"
+                onClick={() => setFocusDayIso(null)}
+                className="text-xs font-semibold text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                Clear day focus
+              </button>
+            )}
+          </div>
+
+          {display === "calendar" && (
+            <BookingMonthGrid
+              bookings={bookings}
+              viewDate={anchor}
+              period={period}
+              onSelectBooking={selectBookingInTable}
+              onShowDayOnTimeline={showDayOnTimeline}
             />
-          }
-        >
-          <table className={dataTableTableClass}>
-            <thead>
-              <DataTableHeadRow
-                columns={BOOKING_COLUMNS}
-                isColumnVisible={isColumnVisible}
-                sortKey={sortKey}
-                sortDir={sortDir}
-                onSort={toggleSort}
-              />
-            </thead>
-            <tbody>
-              {bookings.length === 0 ? (
-                <tr>
-                  <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
-                    {hasActive ? "No bookings match filters." : "No data found."}
-                  </td>
-                </tr>
-              ) : (
-                bookings.map((row) => (
-                  <tr key={row.id} className={tableRow}>
-                    {visibleColumns.map((col) => {
-                      const key = col.key as BookingColumnKey;
-                      const value = cellValue(row, key);
-                      const isConflict = col.key === "conflictFlag" && row.conflictFlag;
-                      const isNotes = col.key === "notes";
-                      const display =
-                        value !== ""
-                          ? value
-                          : col.key === "dependencies"
-                            ? "NA"
-                            : col.key === "conflictFlag" || col.key === "notes"
-                              ? ""
-                              : "—";
+          )}
+
+          {display === "timeline" && (
+            <BookingTimelineGantt
+              bookings={bookings}
+              viewDate={anchor}
+              period={period}
+              focusDayIso={focusDayIso}
+              onSelectBooking={selectBookingInTable}
+            />
+          )}
+
+          {display === "table" && (
+            <DataTable
+              title="All Bookings"
+              icon={CalendarCheck}
+              toolbar={
+                <TablePageToolbar
+                  columnPicker={columnPicker}
+                  presets={BOOKING_SORT_PRESETS}
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSelectSort={setSort}
+                />
+              }
+            >
+              <table className={dataTableTableClass}>
+                <thead>
+                  <DataTableHeadRow
+                    columns={BOOKING_COLUMNS}
+                    isColumnVisible={isColumnVisible}
+                    sortKey={sortKey}
+                    sortDir={sortDir}
+                    onSort={toggleSort}
+                  />
+                </thead>
+                <tbody>
+                  {bookings.length === 0 ? (
+                    <tr>
+                      <td colSpan={visibleColumns.length} className="p-4 text-center text-gray-500">
+                        {hasActive ? "No bookings match filters." : "No data found."}
+                      </td>
+                    </tr>
+                  ) : (
+                    bookings.map((row) => {
+                      const code = row.bookingCode ?? "";
+                      const highlighted = highlightCode && code === highlightCode;
                       return (
-                        <td
-                          key={col.key}
+                        <tr
+                          key={row.id}
+                          ref={highlighted ? highlightRef : undefined}
+                          data-booking-code={code}
                           className={cn(
-                            tableCell,
-                            "whitespace-nowrap",
-                            col.key === "releaseId" && "font-semibold text-brand-600 dark:text-brand-400",
-                            isConflict && "font-medium text-error-600 dark:text-rose-400",
-                            isNotes && "max-w-[280px] truncate",
+                            tableRow,
+                            highlighted && "bg-brand-50/80 ring-1 ring-inset ring-brand-300 dark:bg-brand-500/10 dark:ring-brand-500/40"
                           )}
-                          title={isNotes ? String(value) : undefined}
                         >
-                          {col.key === "releaseId" && row.release?.id && row.release.releaseCode ? (
-                            <ProgressLink
-                              href={`/releases/${row.release.id}`}
-                              className="font-semibold text-brand-600 hover:underline dark:text-brand-400"
-                            >
-                              {row.release.releaseCode}
-                            </ProgressLink>
-                          ) : (
-                            display
-                          )}
-                        </td>
+                          {visibleColumns.map((col) => {
+                            const key = col.key as BookingColumnKey;
+                            const value = cellValue(row, key);
+                            const isConflict = col.key === "conflictFlag" && row.conflictFlag;
+                            const isNotes = col.key === "notes";
+                            const displayVal =
+                              value !== ""
+                                ? value
+                                : col.key === "dependencies"
+                                  ? "NA"
+                                  : col.key === "conflictFlag" || col.key === "notes"
+                                    ? ""
+                                    : "—";
+                            return (
+                              <td
+                                key={col.key}
+                                className={cn(
+                                  tableCell,
+                                  "whitespace-nowrap",
+                                  col.key === "releaseId" && "font-semibold text-brand-600 dark:text-brand-400",
+                                  isConflict && "font-medium text-error-600 dark:text-rose-400",
+                                  isNotes && "max-w-[280px] truncate"
+                                )}
+                                title={isNotes ? String(value) : undefined}
+                              >
+                                {col.key === "releaseId" && row.release?.id && row.release.releaseCode ? (
+                                  <ProgressLink
+                                    href={`/releases/${row.release.id}`}
+                                    className="font-semibold text-brand-600 hover:underline dark:text-brand-400"
+                                  >
+                                    {row.release.releaseCode}
+                                  </ProgressLink>
+                                ) : (
+                                  displayVal
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
                       );
-                    })}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </DataTable>
+                    })
+                  )}
+                </tbody>
+              </table>
+            </DataTable>
+          )}
+        </div>
       )}
     </div>
   );

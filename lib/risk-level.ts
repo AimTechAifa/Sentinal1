@@ -17,8 +17,8 @@ export function getRiskLevel(score: number): RiskLevel {
 }
 
 export const RISK_LEVEL_COLOR: Record<RiskLevel, string> = {
-  LOW: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300",
-  MEDIUM: "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300",
-  HIGH: "bg-orange-100 text-orange-800 dark:bg-orange-500/20 dark:text-orange-300",
-  CRITICAL: "bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300",
+  LOW: "bg-[#d1fae5] text-[#065f46] dark:bg-emerald-500/25 dark:text-emerald-300",
+  MEDIUM: "bg-[#fef9c3] text-[#854d0e] dark:bg-yellow-500/25 dark:text-yellow-300",
+  HIGH: "bg-[#fed7aa] text-[#9a3412] dark:bg-orange-500/30 dark:text-orange-300",
+  CRITICAL: "bg-[#fecaca] text-[#7f1d1d] dark:bg-red-500/30 dark:text-red-300",
 };
