@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { usePageDocumentationContext } from "@/context/PageDocumentationContext";
 import { getPageDocumentation, type PageDocKey } from "@/lib/page-documentation";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,8 @@ export function PageDocumentation({
   const [open, setOpen] = useState(false);
   const [fullOpen, setFullOpen] = useState(true);
   const [quickOpen, setQuickOpen] = useState(true);
+  /** Ignore the request id present at mount so navigation doesn't re-open a prior "Know more". */
+  const seenRequestIdRef = useRef<number | null>(null);
 
   const openModal = useCallback(() => {
     setFullOpen(true);
@@ -32,9 +34,15 @@ export function PageDocumentation({
   }, [registerPageDocumentationOpener, openModal]);
 
   useEffect(() => {
+    if (seenRequestIdRef.current === null) {
+      seenRequestIdRef.current = openRequestId;
+      return;
+    }
+    if (openRequestId === seenRequestIdRef.current) return;
+    seenRequestIdRef.current = openRequestId;
     if (openRequestId === 0) return;
     openModal();
-  }, [openRequestId]);
+  }, [openRequestId, openModal]);
 
   useEffect(() => {
     if (!open) return;
