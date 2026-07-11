@@ -299,7 +299,7 @@ function MatrixView({
   dark: boolean;
 }) {
   return (
-    <div className="flex gap-3">
+    <div className="mx-auto flex w-fit gap-3">
       <div className="flex flex-col items-center justify-center pr-1">
         <span
           className="whitespace-nowrap text-[11px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500"
@@ -674,9 +674,9 @@ function RiskHeatMapSection({
   ];
 
   return (
-    <div className="mb-6 grid grid-cols-1 gap-5 lg:grid-cols-[340px_1fr]">
+    <div className="mb-6 flex flex-col items-stretch gap-5 lg:flex-row lg:items-start lg:justify-center">
       {/* LEFT — explanatory info panel */}
-      <div className="flex flex-col gap-4">
+      <div className="flex w-full shrink-0 flex-col gap-4 lg:w-[320px]">
         <div className="rounded-[22px] border border-gray-200 bg-white p-5 shadow-[0_16px_36px_-24px_rgba(112,144,176,0.25)] dark:border-[var(--border)] dark:bg-[var(--card)] dark:shadow-none">
           <div className="mb-3 flex items-center gap-2">
             <HelpCircle size={16} className="text-brand-500 dark:text-brand-400" />
@@ -776,8 +776,8 @@ function RiskHeatMapSection({
         )}
       </div>
 
-      {/* RIGHT — heat map diagram + view switcher */}
-      <div className="rounded-[24px] border border-gray-200 bg-white p-6 sm:p-7 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.18)] dark:border-[var(--border)] dark:bg-[var(--card)] dark:shadow-none">
+      {/* Heat map card — sized to the matrix, no empty white stretch */}
+      <div className="mx-auto w-fit max-w-full rounded-[24px] border border-gray-200 bg-white p-5 sm:p-6 shadow-[0_18px_40px_-24px_rgba(112,144,176,0.18)] dark:border-[var(--border)] dark:bg-[var(--card)] dark:shadow-none lg:mx-0">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-[16px] font-bold text-slate-800 dark:text-white">Risk Heat Map</h2>
           <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
@@ -801,17 +801,19 @@ function RiskHeatMapSection({
             })}
           </div>
         </div>
-        <p className="mb-6 text-[12.5px] text-slate-400 dark:text-slate-500">
+        <p className="mb-5 text-center text-[12.5px] text-slate-400 dark:text-slate-500">
           Click any point to filter the risk list to that exact combination
         </p>
 
-        {view === "matrix" && (
-          <MatrixView grid={grid} selLi={selLi} selIm={selIm} onSelect={onCellSelect} dark={dark} />
-        )}
-        {view === "bubble" && <BubbleView grid={grid} maxCount={maxCount} onSelect={onCellSelect} />}
-        {view === "density" && (
-          <DensityView grid={grid} maxCount={maxCount} onSelect={onCellSelect} dark={dark} />
-        )}
+        <div className="flex justify-center">
+          {view === "matrix" && (
+            <MatrixView grid={grid} selLi={selLi} selIm={selIm} onSelect={onCellSelect} dark={dark} />
+          )}
+          {view === "bubble" && <BubbleView grid={grid} maxCount={maxCount} onSelect={onCellSelect} />}
+          {view === "density" && (
+            <DensityView grid={grid} maxCount={maxCount} onSelect={onCellSelect} dark={dark} />
+          )}
+        </div>
       </div>
     </div>
   );
